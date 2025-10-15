@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registrar venta</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:16px;max-width:640px}
+    label{display:block;margin:12px 0 6px}
+    input,select,button{width:100%;font-size:18px;padding:10px;border:1px solid #ccc;border-radius:8px}
+    button{cursor:pointer}
+    .row{display:flex;gap:8px}
+    .row > *{flex:1}
+    .help{font-size:12px;color:#666}
+  </style>
+</head>
+<body>
+  <h1>Registrar venta</h1>
+  <p class="help">Selecciona producto y cantidad. Al enviar, se abrirá GitHub con la venta prellenada para confirmar.</p>
+
+  <label for="fecha">Fecha</label>
+  <input id="fecha" type="date" />
+
+  <label for="item">Producto</label>
+  <select id="item"></select>
+
+  <div class="row">
+    <div>
+      <label for="cantidad">Cantidad</label>
+      <input id="cantidad" type="number" min="1" value="1" />
+    </div>
+    <div>
+      <label for="precio">Precio unitario (opcional)</label>
+      <input id="precio" type="number" step="0.01" placeholder="0.00" />
+    </div>
+  </div>
+
+  <label for="notas">Notas (opcional)</label>
+  <input id="notas" type="text" placeholder="Cliente, canal, etc." />
+
+  <button id="enviar">Enviar</button>
+
+  <p class="help">¿Vas a registrar muchas ventas del mismo sabor? Genera un <a id="qr-link" href="#">QR</a> con ese producto precargado.</p>
+
+  <script>
+    // 👉 Ajusta estos dos valores con tu ORG/REPO
+    const ORG = "TU_ORG_O_USUARIO";
+    const REPO = "TU_REPO";
+
+    // Carga el menú publicado como JSON (lo genera el workflow desde inventory.csv)
+    async function loadMenu(){
+      const res = await fetch('menu.json?_=' + Date.now());
+      const items = res.ok ? await res.json() : [];
+      const sel = document.getElementById('item');
+      sel.innerHTML = items.map(x => `<option value="${x.item}" data-precio="${x.precio||''}">${x.item} — ${x.descripcion}${x.precio?(' ($'+x.precio+')'):''}</option>`).join('');
+      // autopopular precio
+      sel.addEventListener('change', e=>{
+        const opt = sel.selectedOptions[0];
+        const p = opt?.dataset?.precio;
+        if(p && !document.getElementById('precio').value) document.getElementById('precio').value = p;
+      });
+    }
+
+    // defaults
+    document.getElementById('fecha').valueAsDate = new Date();
+
+    // Permite precargar ?item=SKU-001
+    function applyQueryDefaults(){
+      const q = new URLSearchParams(location.search);
+      if(q.get('item')) {
+        // set after menu loads
+        const wanted = q.get('item');
+        const iv = setInterval(()=>{
+          const sel = document.getElementById('item');
+          if(sel.options.length){
+            for(const o of sel.options){ if(o.value===wanted) sel.value=wanted; }
+            clearInterval(iv);
+          }
+        },50);
+      }
+    }
+
+    function buildIssueUrl({fecha,item,cantidad,precio,notas}){
+      // Usamos la plantilla sale.md para aplicar la label "venta"
+      const base = `https://github.com/${ORG}/${REPO}/issues/new`;
+      const title = `Venta: ${item} x${cantidad} @ ${fecha}`;
+      const body = [
+        `**Fecha**: ${fecha}`,
+        `**Item**: ${item}`,
+        `**Cantidad**: ${cantidad}`,
+        `**Precio unitario (opcional)**: ${precio||''}`,
+        `**Notas**: ${notas||''}`
+      ].join('\n');
+
+      const params = new URLSearchParams({
+        template: 'sale.md',
+        title,
+        body
+      });
+      return `${base}?${params.toString()}`;
+    }
+
+    document.getElementById('enviar').addEventListener('click', ()=>{
+      const fecha = document.getElementById('fecha').value;
+      const item  = document.getElementById('item').value;
+      const cantidad = document.getElementById('cantidad').value || "1";
+      const precio = document.getElementById('precio').value;
+      const notas = document.getElementById('notas').value;
+      if(!fecha || !item || !cantidad) { alert("Completa fecha, producto y cantidad."); return; }
+      const url = buildIssueUrl({fecha,item,cantidad,precio,notas});
+      location.href = url; // abre GitHub con el issue prellenado
+    });
+
+    // Link para QR del producto actual
+    document.getElementById('qr-link').addEventListener('click', (e)=>{
+      e.preventDefault();
+      const item = document.getElementById('item').value;
+      const u = new URL(location.href);
+      u.searchParams.set('item', item);
+      // Copia o muestra la URL para generar QR (puedes usar cualquier generador de QR)
+      prompt("Copia este enlace y conviértelo en QR:", u.toString());
+    });
+
+    loadMenu().then(applyQueryDefaults);
+  </script>
+</body>
+</html>
