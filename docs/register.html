@@ -19,7 +19,7 @@ input,select,button{width:100%;font-size:18px;padding:10px;border:1px solid #ccc
 
 <script>
   // ⬇️ Cambia por tu usuario/org y repo
-  const ORG = "TU_USUARIO_O_ORG"; const REPO = "TU_REPO";
+  const ORG = "OswaldoCasillas"; const REPO = "Ventas";
   document.getElementById('fecha').valueAsDate = new Date();
   async function loadMenu(){
     const res = await fetch('menu.json?_='+Date.now()); const items = res.ok?await res.json():[];
