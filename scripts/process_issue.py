@@ -1,4 +1,4 @@
-import json, os, re
+import json, os, re, secrets, hashlib
 from datetime import datetime
 from pathlib import Path
 import pandas as pd
@@ -6,11 +6,21 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
 DOCS = ROOT / "docs"
+
 INVENTORY_CSV = DATA / "inventory.csv"
-SALES_CSV = DATA / "sales.csv"
-REPORT_JSON = DOCS / "report.json"
-MENU_JSON = DOCS / "menu.json"
-INDEX_HTML = DOCS / "index.html"  # dashboard (opcional, puedes usar el que te di antes)
+SALES_CSV     = DATA / "sales.csv"
+PROD_CSV      = DATA / "production.csv"
+
+MENU_JSON       = DOCS / "menu.json"
+REPORT_JSON     = DOCS / "report.json"
+INV_OUT_CSV     = DOCS / "inventario_actual.csv"
+SALES_ITEM_CSV  = DOCS / "ventas_por_item.csv"
+SALES_DAY_CSV   = DOCS / "ventas_por_dia.csv"
+SALES_DETAIL_CSV= DOCS / "ventas_detalle.csv"
+PROD_DETAIL_CSV = DOCS / "produccion_detalle.csv"
+REPORT_HTML     = DOCS / "reporte.html"
+
+# --------------------- utilidades ---------------------
 
 def ensure_files():
     DATA.mkdir(parents=True, exist_ok=True)
@@ -18,327 +28,253 @@ def ensure_files():
     if not INVENTORY_CSV.exists():
         INVENTORY_CSV.write_text("item,descripcion,stock,precio\n", encoding="utf-8")
     if not SALES_CSV.exists():
-        SALES_CSV.write_text("fecha,item,cantidad,precio_unit,issue\n", encoding="utf-8")
+        SALES_CSV.write_text("txn_id,fecha,item,cantidad,precio_unit,importe,issue\n", encoding="utf-8")
+    if not PROD_CSV.exists():
+        PROD_CSV.write_text("txn_id,fecha,item,cantidad,issue\n", encoding="utf-8")
 
 def load_event_issue():
     path = os.environ.get("GITHUB_EVENT_PATH")
-    if not path or not os.path.exists(path): return None
+    if not path or not os.path.exists(path):
+        return None
     with open(path, "r", encoding="utf-8") as fh:
         evt = json.load(fh)
     return evt.get("issue")
 
-def parse_issue(issue):
-    """
-    Acepta cuerpo tipo:
-      **Fecha**: 2025-10-15
-      **Item**: PALETA-MANGO
-      **Cantidad**: 2
-      **Precio unitario (opcional)**: 25
-      **Notas**: cliente X
-    """
-    body = (issue or {}).get("body") or ""
-    def grab(key):
-        # busca "**Key**: valor" o "Key: valor"
-        pat = rf"(?:\*\*\s*{re.escape(key)}\s*\*\*|{re.escape(key)})\s*:\s*(.+)"
-        m = re.search(pat, body, re.IGNORECASE)
-        return m.group(1).strip() if m else ""
-    fecha = grab("Fecha")
-    item = grab("Item")
-    cantidad = grab("Cantidad")
-    precio = grab("Precio unitario (opcional)")
-    notas = grab("Notas")
+def grab_field(body: str, key: str) -> str:
+    pat = rf"(?:\*\*\s*{re.escape(key)}\s*\*\*|{re.escape(key)})\s*:\s*(.+)"
+    m = re.search(pat, body, re.IGNORECASE)
+    return m.group(1).strip() if m else ""
 
-    # normaliza y valida
-    try:
-        fecha_dt = datetime.strptime(fecha, "%Y-%m-%d").date()
-    except Exception as e:
-        # Si es un push del inventario, no hay issue que procesar
-        if issue is None:
-            return None
-        raise ValueError(f"Fecha inválida: {fecha!r}") from e
-    try:
-        cantidad_i = int(cantidad)
-        if cantidad_i <= 0: raise ValueError
-    except Exception as e:
-        raise ValueError(f"Cantidad inválida: {cantidad!r}") from e
-    try:
-        precio_f = float(precio) if precio else None
-    except Exception:
-        precio_f = None
+def parse_issue(issue):
+    body = (issue or {}).get("body") or ""
+    fecha = grab_field(body, "Fecha")
+    item  = grab_field(body, "Item")  # sku
+    cantidad = grab_field(body, "Cantidad")
+    precio = grab_field(body, "Precio unitario (opcional)")
+    notas  = grab_field(body, "Notas")
+
+    fecha_dt = datetime.strptime(fecha, "%Y-%m-%d").date()
+    cantidad_i = int(cantidad)
+    if cantidad_i <= 0: raise ValueError("Cantidad debe ser > 0")
+
+    precio_f = None
+    if precio:
+        try: precio_f = float(precio)
+        except ValueError: precio_f = None
 
     return {
         "fecha": str(fecha_dt),
-        "item": item,
+        "item": item.strip(),               # SKU
         "cantidad": cantidad_i,
         "precio_unit": (f"{precio_f:.2f}" if precio_f is not None else ""),
-        "notas": notas,
-        "issue_url": (issue or {}).get("html_url", "")
+        "notas": notas.strip(),
+        "issue_url": (issue or {}).get("html_url", ""),
+        "labels": {l.get("name","").lower() for l in (issue or {}).get("labels", [])}
     }
+
+def short_id_from_sku(sku: str) -> str:
+    """hash determinístico de 8 chars para product_id."""
+    h = hashlib.sha1(sku.encode("utf-8")).hexdigest()[:8]
+    return h.upper()
+
+def new_txn_id(prefix: str) -> str:
+    """S-... para ventas, P-... para producción."""
+    now = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+    rand = secrets.token_hex(3).upper()   # 6 hex
+    return f"{prefix}-{now}-{rand}"
+
+# --------------------- inventario / menú ---------------------
 
 def load_inventory():
     if INVENTORY_CSV.exists() and INVENTORY_CSV.stat().st_size>0:
-        df = pd.read_csv(INVENTORY_CSV)
+        inv = pd.read_csv(INVENTORY_CSV)
     else:
-        df = pd.DataFrame(columns=["item","descripcion","stock","precio"])
+        inv = pd.DataFrame(columns=["item","descripcion","stock","precio"])
     for col in ["descripcion","precio","stock"]:
-        if col not in df.columns:
-            df[col] = "" if col!="stock" else 0
-    if "precio" in df.columns:
-        df["precio"] = pd.to_numeric(df["precio"], errors="coerce")
-    if "stock" in df.columns:
-        df["stock"] = pd.to_numeric(df["stock"], errors="coerce").fillna(0).astype(int)
-    df["item"] = df["item"].astype(str)
-    return df
+        if col not in inv.columns:
+            inv[col] = "" if col!="stock" else 0
+    inv["precio"] = pd.to_numeric(inv["precio"], errors="coerce")
+    inv["stock"]  = pd.to_numeric(inv["stock"], errors="coerce").fillna(0).astype(int)
+    inv["item"]   = inv["item"].astype(str)
+
+    # product_id (si no existe, lo calculamos)
+    if "product_id" not in inv.columns:
+        inv["product_id"] = inv["item"].apply(short_id_from_sku)
+    else:
+        inv["product_id"] = inv["product_id"].astype(str)
+        inv.loc[inv["product_id"].isna() | (inv["product_id"]==""), "product_id"] = inv["item"].apply(short_id_from_sku)
+
+    return inv
+
+def write_inventory(inv: pd.DataFrame):
+    inv.to_csv(INVENTORY_CSV, index=False)
 
 def write_menu_json(inv: pd.DataFrame):
-    # publicamos menú con {item, descripcion, precio}
-    cols = [c for c in ["item","descripcion","precio"] if c in inv.columns]
-    menu = inv[cols].fillna("").to_dict(orient="records")
-    MENU_JSON.write_text(json.dumps(menu, ensure_ascii=False, indent=2), encoding="utf-8")
+    cols = [c for c in ["product_id","item","descripcion","precio"] if c in inv.columns]
+    MENU_JSON.write_text(json.dumps(inv[cols].fillna("").to_dict(orient="records"),
+                                    ensure_ascii=False, indent=2),
+                         encoding="utf-8")
 
-def append_sale(sale):
+# --------------------- movimientos ---------------------
+
+def append_sale(inv: pd.DataFrame, sale):
+    txn_id = new_txn_id("S")
+    precio_unit = pd.to_numeric(sale["precio_unit"], errors="coerce")
+    if pd.isna(precio_unit):
+        # si no viene precio, intenta tomarlo del inventario
+        row = inv.loc[inv["item"]==sale["item"]]
+        precio_unit = float(row["precio"].iloc[0]) if not row.empty and pd.notna(row["precio"].iloc[0]) else 0.0
+    importe = float(sale["cantidad"]) * float(precio_unit)
+
     row = {
+        "txn_id": txn_id,
         "fecha": sale["fecha"],
         "item": sale["item"],
         "cantidad": sale["cantidad"],
-        "precio_unit": sale["precio_unit"],
+        "precio_unit": f"{precio_unit:.2f}",
+        "importe": f"{importe:.2f}",
         "issue": sale["issue_url"],
     }
-    if SALES_CSV.exists() and SALES_CSV.stat().st_size>0:
-        df = pd.read_csv(SALES_CSV)
-        df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
-    else:
-        df = pd.DataFrame([row])
+    df = pd.read_csv(SALES_CSV) if SALES_CSV.exists() and SALES_CSV.stat().st_size>0 else pd.DataFrame()
+    df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
     df.to_csv(SALES_CSV, index=False)
+    return txn_id, importe
 
-def update_stock(inv: pd.DataFrame, sale):
-    mask = inv["item"] == sale["item"]
+def append_production(entry):
+    txn_id = new_txn_id("P")
+    row = {
+        "txn_id": txn_id,
+        "fecha": entry["fecha"],
+        "item": entry["item"],
+        "cantidad": entry["cantidad"],
+        "issue": entry["issue_url"],
+    }
+    df = pd.read_csv(PROD_CSV) if PROD_CSV.exists() and PROD_CSV.stat().st_size>0 else pd.DataFrame()
+    df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+    df.to_csv(PROD_CSV, index=False)
+    return txn_id
+
+def update_stock(inv: pd.DataFrame, item: str, delta: int):
+    mask = inv["item"] == item
     if not mask.any():
+        # si no existe, lo creamos con product_id
         inv = pd.concat([inv, pd.DataFrame([{
-            "item": sale["item"], "descripcion":"", "stock":0, "precio": ""
+            "item": item, "descripcion":"", "stock":0, "precio":"", "product_id": short_id_from_sku(item)
         }])], ignore_index=True)
-        mask = inv["item"] == sale["item"]
-    inv.loc[mask, "stock"] = inv.loc[mask, "stock"].fillna(0).astype(int) - int(sale["cantidad"])
+        mask = inv["item"] == item
+    inv.loc[mask, "stock"] = inv.loc[mask, "stock"].fillna(0).astype(int) + int(delta)
     inv["stock"] = inv["stock"].astype(int)
-    inv.to_csv(INVENTORY_CSV, index=False)
+    write_inventory(inv)
     return inv
 
-def build_report(inv: pd.DataFrame):
+# --------------------- reportes ---------------------
+
+def build_reports(inv: pd.DataFrame):
+    # Ventas
     sales = pd.read_csv(SALES_CSV) if SALES_CSV.exists() else pd.DataFrame(
-        columns=["fecha","item","cantidad","precio_unit","issue"]
-    )
+        columns=["txn_id","fecha","item","cantidad","precio_unit","importe","issue"])
     if not sales.empty:
         sales["cantidad"] = pd.to_numeric(sales["cantidad"], errors="coerce").fillna(0).astype(int)
-        sales["precio_unit"] = pd.to_numeric(sales["precio_unit"], errors="coerce")
-        sales["importe"] = (sales["cantidad"] * sales["precio_unit"]).fillna(0.0)
-    else:
-        sales["importe"] = []
+        sales["precio_unit"] = pd.to_numeric(sales["precio_unit"], errors="coerce").fillna(0.0)
+        sales["importe"] = pd.to_numeric(sales["importe"], errors="coerce").fillna(0.0)
+    # Producción
+    prod = pd.read_csv(PROD_CSV) if PROD_CSV.exists() else pd.DataFrame(
+        columns=["txn_id","fecha","item","cantidad","issue"])
+    if not prod.empty:
+        prod["cantidad"] = pd.to_numeric(prod["cantidad"], errors="coerce").fillna(0).astype(int)
+
+    # Agrega product_id/descripcion al detalle de ventas y producción
+    inv_key = inv[["item","product_id","descripcion"]]
+    sales_detail = sales.merge(inv_key, on="item", how="left")
+    prod_detail  = prod.merge(inv_key, on="item", how="left")
+
+    # CSVs
+    inv_out = inv[["product_id","item","descripcion","precio","stock"]].sort_values("item")
+    inv_out.to_csv(INV_OUT_CSV, index=False)
+    sales_detail.to_csv(SALES_DETAIL_CSV, index=False)
+    prod_detail.to_csv(PROD_DETAIL_CSV, index=False)
+
+    by_item = (sales.groupby("item", as_index=False)[["cantidad","importe"]]
+               .sum().sort_values(["cantidad","importe"], ascending=False))
+    by_item.to_csv(SALES_ITEM_CSV, index=False)
+
+    by_day = (sales.groupby("fecha", as_index=False)[["cantidad","importe"]]
+              .sum().sort_values("fecha"))
+    by_day.to_csv(SALES_DAY_CSV, index=False)
+
+    # JSON para dashboards
     low = inv[inv["stock"] <= 5].sort_values("stock")
-    by_day = sales.groupby("fecha", as_index=False)[["cantidad","importe"]].sum().sort_values("fecha").to_dict(orient="records") if not sales.empty else []
-    by_item = sales.groupby("item", as_index=False)[["cantidad","importe"]].sum().sort_values(["cantidad","importe"], ascending=False).to_dict(orient="records") if not sales.empty else []
+    prod_by_day = prod.groupby("fecha", as_index=False)["cantidad"].sum().sort_values("fecha") if not prod.empty else pd.DataFrame(columns=["fecha","cantidad"])
     report = {
-        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "generated_at": datetime.utcnow().isoformat()+"Z",
         "summary": {
             "items_distintos": int(inv["item"].nunique()) if not inv.empty else 0,
-            "items_low_stock": int((inv["stock"] <= 5).sum()) if not inv.empty else 0,
+            "items_low_stock": int((inv["stock"]<=5).sum()) if not inv.empty else 0,
             "total_ventas": int(sales["cantidad"].sum()) if not sales.empty else 0,
             "total_importe": float(sales["importe"].sum()) if not sales.empty else 0.0,
+            "total_producido": int(prod["cantidad"].sum()) if not prod.empty else 0
         },
-        "low_stock": low[["item","descripcion","stock"]].to_dict(orient="records"),
-        "ventas_por_dia": by_day,
-        "ventas_por_item": by_item,
+        "low_stock": low[["product_id","item","descripcion","stock"]].to_dict(orient="records"),
+        "ventas_por_dia": by_day.to_dict(orient="records"),
+        "ventas_por_item": by_item.to_dict(orient="records"),
+        "produccion_por_dia": prod_by_day.to_dict(orient="records")
     }
     REPORT_JSON.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    # HTML imprimible
+    html = f"""<!doctype html><html lang="es"><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Reporte Inventario/Ventas</title>
+    <style>body{{font-family:system-ui;margin:20px}} table{{border-collapse:collapse;width:100%}}
+    th,td{{border:1px solid #ddd;padding:6px;text-align:left}} th{{background:#f7f7f7}} .kpi{{margin:0 0 6px}}</style>
+    <h1>Reporte</h1>
+    <p class="kpi">Generado: {report['generated_at']}</p>
+    <ul>
+      <li class="kpi">Items: {report['summary']['items_distintos']}</li>
+      <li class="kpi">Low stock (≤5): {report['summary']['items_low_stock']}</li>
+      <li class="kpi">Unidades vendidas: {report['summary']['total_ventas']}</li>
+      <li class="kpi">Importe total: ${report['summary']['total_importe']:.2f}</li>
+      <li class="kpi">Total producido: {report['summary']['total_producido']}</li>
+    </ul>
+    <h2>Inventario actual</h2>
+    {inv_out.to_html(index=False)}
+    <h2>Ventas (detalle)</h2>
+    {sales_detail[["txn_id","fecha","product_id","item","descripcion","cantidad","precio_unit","importe","issue"]].to_html(index=False)}
+    <h2>Producción (detalle)</h2>
+    {prod_detail[["txn_id","fecha","product_id","item","descripcion","cantidad","issue"]].to_html(index=False)}
+    <h2>Ventas por día</h2>
+    {by_day.to_html(index=False)}
+    <h2>Ventas por item</h2>
+    {by_item.to_html(index=False)}
+    </html>"""
+    REPORT_HTML.write_text(html, encoding="utf-8")
+
+# --------------------- flujo principal ---------------------
 
 def main():
     ensure_files()
     inv = load_inventory()
-    # Siempre actualizamos el menú si cambió inventario.csv (por evento push) o si hay venta
-    write_menu_json(inv)
+    write_menu_json(inv)   # para que el selector de productos funcione
+
     issue = load_event_issue()
-    # Si vino por "push" (sin issue), solo regeneramos menu.json y terminamos
     if issue is None:
+        build_reports(inv)
         return
-    # Procesar venta
-    if not any(lbl.get("name")=="venta" for lbl in issue.get("labels", [])):
-        # No es venta: nada que hacer
-        return
-    sale = parse_issue(issue)
-    append_sale(sale)
-    inv = update_stock(inv, sale)
-    build_report(inv)
 
-if __name__ == "__main__":
-    main()
-import json, os, re
-from datetime import datetime
-from pathlib import Path
-import pandas as pd
+    data = parse_issue(issue)
+    labels = data["labels"]
 
-ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / "data"
-DOCS = ROOT / "docs"
-INVENTORY_CSV = DATA / "inventory.csv"
-SALES_CSV = DATA / "sales.csv"
-REPORT_JSON = DOCS / "report.json"
-MENU_JSON = DOCS / "menu.json"
-INDEX_HTML = DOCS / "index.html"  # dashboard (opcional, puedes usar el que te di antes)
+    if "venta" in labels:
+        txn_id, _importe = append_sale(inv, data)
+        inv = update_stock(inv, data["item"], delta=-data["cantidad"])
+        # (Opcional: podríamos comentar en el issue el txn_id)
 
-def ensure_files():
-    DATA.mkdir(parents=True, exist_ok=True)
-    DOCS.mkdir(parents=True, exist_ok=True)
-    if not INVENTORY_CSV.exists():
-        INVENTORY_CSV.write_text("item,descripcion,stock,precio\n", encoding="utf-8")
-    if not SALES_CSV.exists():
-        SALES_CSV.write_text("fecha,item,cantidad,precio_unit,issue\n", encoding="utf-8")
+    elif "produccion" in labels:
+        txn_id = append_production(data)
+        inv = update_stock(inv, data["item"], delta=+data["cantidad"])
 
-def load_event_issue():
-    path = os.environ.get("GITHUB_EVENT_PATH")
-    if not path or not os.path.exists(path): return None
-    with open(path, "r", encoding="utf-8") as fh:
-        evt = json.load(fh)
-    return evt.get("issue")
-
-def parse_issue(issue):
-    """
-    Acepta cuerpo tipo:
-      **Fecha**: 2025-10-15
-      **Item**: PALETA-MANGO
-      **Cantidad**: 2
-      **Precio unitario (opcional)**: 25
-      **Notas**: cliente X
-    """
-    body = (issue or {}).get("body") or ""
-    def grab(key):
-        # busca "**Key**: valor" o "Key: valor"
-        pat = rf"(?:\*\*\s*{re.escape(key)}\s*\*\*|{re.escape(key)})\s*:\s*(.+)"
-        m = re.search(pat, body, re.IGNORECASE)
-        return m.group(1).strip() if m else ""
-    fecha = grab("Fecha")
-    item = grab("Item")
-    cantidad = grab("Cantidad")
-    precio = grab("Precio unitario (opcional)")
-    notas = grab("Notas")
-
-    # normaliza y valida
-    try:
-        fecha_dt = datetime.strptime(fecha, "%Y-%m-%d").date()
-    except Exception as e:
-        # Si es un push del inventario, no hay issue que procesar
-        if issue is None:
-            return None
-        raise ValueError(f"Fecha inválida: {fecha!r}") from e
-    try:
-        cantidad_i = int(cantidad)
-        if cantidad_i <= 0: raise ValueError
-    except Exception as e:
-        raise ValueError(f"Cantidad inválida: {cantidad!r}") from e
-    try:
-        precio_f = float(precio) if precio else None
-    except Exception:
-        precio_f = None
-
-    return {
-        "fecha": str(fecha_dt),
-        "item": item,
-        "cantidad": cantidad_i,
-        "precio_unit": (f"{precio_f:.2f}" if precio_f is not None else ""),
-        "notas": notas,
-        "issue_url": (issue or {}).get("html_url", "")
-    }
-
-def load_inventory():
-    if INVENTORY_CSV.exists() and INVENTORY_CSV.stat().st_size>0:
-        df = pd.read_csv(INVENTORY_CSV)
-    else:
-        df = pd.DataFrame(columns=["item","descripcion","stock","precio"])
-    for col in ["descripcion","precio","stock"]:
-        if col not in df.columns:
-            df[col] = "" if col!="stock" else 0
-    if "precio" in df.columns:
-        df["precio"] = pd.to_numeric(df["precio"], errors="coerce")
-    if "stock" in df.columns:
-        df["stock"] = pd.to_numeric(df["stock"], errors="coerce").fillna(0).astype(int)
-    df["item"] = df["item"].astype(str)
-    return df
-
-def write_menu_json(inv: pd.DataFrame):
-    # publicamos menú con {item, descripcion, precio}
-    cols = [c for c in ["item","descripcion","precio"] if c in inv.columns]
-    menu = inv[cols].fillna("").to_dict(orient="records")
-    MENU_JSON.write_text(json.dumps(menu, ensure_ascii=False, indent=2), encoding="utf-8")
-
-def append_sale(sale):
-    row = {
-        "fecha": sale["fecha"],
-        "item": sale["item"],
-        "cantidad": sale["cantidad"],
-        "precio_unit": sale["precio_unit"],
-        "issue": sale["issue_url"],
-    }
-    if SALES_CSV.exists() and SALES_CSV.stat().st_size>0:
-        df = pd.read_csv(SALES_CSV)
-        df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
-    else:
-        df = pd.DataFrame([row])
-    df.to_csv(SALES_CSV, index=False)
-
-def update_stock(inv: pd.DataFrame, sale):
-    mask = inv["item"] == sale["item"]
-    if not mask.any():
-        inv = pd.concat([inv, pd.DataFrame([{
-            "item": sale["item"], "descripcion":"", "stock":0, "precio": ""
-        }])], ignore_index=True)
-        mask = inv["item"] == sale["item"]
-    inv.loc[mask, "stock"] = inv.loc[mask, "stock"].fillna(0).astype(int) - int(sale["cantidad"])
-    inv["stock"] = inv["stock"].astype(int)
-    inv.to_csv(INVENTORY_CSV, index=False)
-    return inv
-
-def build_report(inv: pd.DataFrame):
-    sales = pd.read_csv(SALES_CSV) if SALES_CSV.exists() else pd.DataFrame(
-        columns=["fecha","item","cantidad","precio_unit","issue"]
-    )
-    if not sales.empty:
-        sales["cantidad"] = pd.to_numeric(sales["cantidad"], errors="coerce").fillna(0).astype(int)
-        sales["precio_unit"] = pd.to_numeric(sales["precio_unit"], errors="coerce")
-        sales["importe"] = (sales["cantidad"] * sales["precio_unit"]).fillna(0.0)
-    else:
-        sales["importe"] = []
-    low = inv[inv["stock"] <= 5].sort_values("stock")
-    by_day = sales.groupby("fecha", as_index=False)[["cantidad","importe"]].sum().sort_values("fecha").to_dict(orient="records") if not sales.empty else []
-    by_item = sales.groupby("item", as_index=False)[["cantidad","importe"]].sum().sort_values(["cantidad","importe"], ascending=False).to_dict(orient="records") if not sales.empty else []
-    report = {
-        "generated_at": datetime.utcnow().isoformat() + "Z",
-        "summary": {
-            "items_distintos": int(inv["item"].nunique()) if not inv.empty else 0,
-            "items_low_stock": int((inv["stock"] <= 5).sum()) if not inv.empty else 0,
-            "total_ventas": int(sales["cantidad"].sum()) if not sales.empty else 0,
-            "total_importe": float(sales["importe"].sum()) if not sales.empty else 0.0,
-        },
-        "low_stock": low[["item","descripcion","stock"]].to_dict(orient="records"),
-        "ventas_por_dia": by_day,
-        "ventas_por_item": by_item,
-    }
-    REPORT_JSON.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-
-def main():
-    ensure_files()
-    inv = load_inventory()
-    # Siempre actualizamos el menú si cambió inventario.csv (por evento push) o si hay venta
-    write_menu_json(inv)
-    issue = load_event_issue()
-    # Si vino por "push" (sin issue), solo regeneramos menu.json y terminamos
-    if issue is None:
-        return
-    # Procesar venta
-    if not any(lbl.get("name")=="venta" for lbl in issue.get("labels", [])):
-        # No es venta: nada que hacer
-        return
-    sale = parse_issue(issue)
-    append_sale(sale)
-    inv = update_stock(inv, sale)
-    build_report(inv)
+    # genera reportes para ambos casos
+    build_reports(inv)
 
 if __name__ == "__main__":
     main()
