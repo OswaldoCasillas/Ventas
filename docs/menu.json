@@ -1,0 +1,578 @@
+[
+  {
+    "product_id": "6D8A2D50",
+    "item": "PALETA-AGUA-FRESA",
+    "descripcion": "PALETA AGUA Fresa",
+    "precio": 25
+  },
+  {
+    "product_id": "81CEF3B7",
+    "item": "PALETA-AGUA-GROSSELLA",
+    "descripcion": "PALETA AGUA Grosella",
+    "precio": 25
+  },
+  {
+    "product_id": "F2E6E9F9",
+    "item": "PALETA-AGUA-GUAYABA",
+    "descripcion": "PALETA AGUA Guayaba",
+    "precio": 25
+  },
+  {
+    "product_id": "FFFB8948",
+    "item": "PALETA-AGUA-LIMON",
+    "descripcion": "PALETA AGUA Limon",
+    "precio": 25
+  },
+  {
+    "product_id": "3D2B18C9",
+    "item": "PALETA-AGUA-MANDARINA",
+    "descripcion": "PALETA AGUA Mandarina",
+    "precio": 25
+  },
+  {
+    "product_id": "6263D0A1",
+    "item": "PALETA-AGUA-MANGO",
+    "descripcion": "PALETA AGUA Mango",
+    "precio": 25
+  },
+  {
+    "product_id": "4E1A8D0F",
+    "item": "PALETA-AGUA-MARACUYA",
+    "descripcion": "PALETA AGUA Maracuya",
+    "precio": 25
+  },
+  {
+    "product_id": "5A40D3E3",
+    "item": "PALETA-AGUA-MELON",
+    "descripcion": "PALETA AGUA Melon",
+    "precio": 25
+  },
+  {
+    "product_id": "BFE88BE3",
+    "item": "PALETA-AGUA-PINA",
+    "descripcion": "PALETA AGUA Pina",
+    "precio": 25
+  },
+  {
+    "product_id": "21BFA58F",
+    "item": "PALETA-AGUA-SANDIA",
+    "descripcion": "PALETA AGUA Sandia",
+    "precio": 25
+  },
+  {
+    "product_id": "98C5FF9E",
+    "item": "PALETA-AGUA-TAMARINDO",
+    "descripcion": "PALETA AGUA Tamarindo",
+    "precio": 25
+  },
+  {
+    "product_id": "27D27C45",
+    "item": "PALETA-AGUA-UVA",
+    "descripcion": "PALETA AGUA Uva",
+    "precio": 25
+  },
+  {
+    "product_id": "B4564A9B",
+    "item": "PALETA-AGUA-ZAPOTE",
+    "descripcion": "PALETA AGUA Zapote",
+    "precio": 25
+  },
+  {
+    "product_id": "746FF175",
+    "item": "PALETA-AGUA-PREMIUM-FRUTOS-ROJOS",
+    "descripcion": "PALETA AGUA PREMIUM Frutos Rojos",
+    "precio": 30
+  },
+  {
+    "product_id": "BBF0DD66",
+    "item": "PALETA-AGUA-PREMIUM-LIMON-CHAMOY",
+    "descripcion": "PALETA AGUA PREMIUM Limon-Chamoy",
+    "precio": 30
+  },
+  {
+    "product_id": "331268B8",
+    "item": "PALETA-AGUA-PREMIUM-MANGO-CHAMOY",
+    "descripcion": "PALETA AGUA PREMIUM Mango-Chamoy",
+    "precio": 30
+  },
+  {
+    "product_id": "EBCA445D",
+    "item": "PALETA-CREMA-ALGODON",
+    "descripcion": "PALETA CREMA Algodon",
+    "precio": 35
+  },
+  {
+    "product_id": "D24145B9",
+    "item": "PALETA-CREMA-ARROZ",
+    "descripcion": "PALETA CREMA Arroz",
+    "precio": 35
+  },
+  {
+    "product_id": "0F878660",
+    "item": "PALETA-CREMA-BESO-DE-ANGEL",
+    "descripcion": "PALETA CREMA Beso de Angel",
+    "precio": 35
+  },
+  {
+    "product_id": "13A74508",
+    "item": "PALETA-CREMA-CAPUCHINO",
+    "descripcion": "PALETA CREMA Capuchino",
+    "precio": 35
+  },
+  {
+    "product_id": "053D0623",
+    "item": "PALETA-CREMA-CHICLE",
+    "descripcion": "PALETA CREMA Chicle",
+    "precio": 35
+  },
+  {
+    "product_id": "3D836156",
+    "item": "PALETA-CREMA-CHOCOLATE",
+    "descripcion": "PALETA CREMA Chocolate",
+    "precio": 35
+  },
+  {
+    "product_id": "7B6778AE",
+    "item": "PALETA-CREMA-COCO",
+    "descripcion": "PALETA CREMA Coco",
+    "precio": 35
+  },
+  {
+    "product_id": "C8A28FAC",
+    "item": "PALETA-CREMA-DURAZNOS-CON-CREMA",
+    "descripcion": "PALETA CREMA Duraznos con Crema",
+    "precio": 35
+  },
+  {
+    "product_id": "92CFB2A5",
+    "item": "PALETA-CREMA-NUEZ",
+    "descripcion": "PALETA CREMA Nuez",
+    "precio": 35
+  },
+  {
+    "product_id": "F6F287A9",
+    "item": "PALETA-CREMA-PINON",
+    "descripcion": "PALETA CREMA Pinon",
+    "precio": 35
+  },
+  {
+    "product_id": "5D44B5F6",
+    "item": "PALETA-CREMA-QUESO",
+    "descripcion": "PALETA CREMA Queso",
+    "precio": 35
+  },
+  {
+    "product_id": "61B423B6",
+    "item": "PALETA-CREMA-QUESO-CON-ZARZAMORA",
+    "descripcion": "PALETA CREMA Queso con Zarzamora",
+    "precio": 35
+  },
+  {
+    "product_id": "05833CE3",
+    "item": "PALETA-CREMA-SELVA-NEGRA",
+    "descripcion": "PALETA CREMA Selva Negra",
+    "precio": 35
+  },
+  {
+    "product_id": "790D9A06",
+    "item": "PALETA-CREMA-STRACCIATELLA",
+    "descripcion": "PALETA CREMA Stracciatella",
+    "precio": 35
+  },
+  {
+    "product_id": "03C761CC",
+    "item": "PALETA-CREMA-FRESA-CON-CREMA",
+    "descripcion": "PALETA CREMA Fresa con Crema",
+    "precio": 35
+  },
+  {
+    "product_id": "07A7670E",
+    "item": "PALETA-CREMA-MAMEY",
+    "descripcion": "PALETA CREMA Mamey",
+    "precio": 35
+  },
+  {
+    "product_id": "02298874",
+    "item": "PALETA-CREMA-OREO",
+    "descripcion": "PALETA CREMA Oreo",
+    "precio": 35
+  },
+  {
+    "product_id": "7B72DC7E",
+    "item": "PALETA-CREMA-PAY-DE-LIMON",
+    "descripcion": "PALETA CREMA Pay de Limon",
+    "precio": 35
+  },
+  {
+    "product_id": "ACF8DA00",
+    "item": "PALETA-CREMA-ROMPOPE",
+    "descripcion": "PALETA CREMA Rompope",
+    "precio": 35
+  },
+  {
+    "product_id": "866B8AED",
+    "item": "PALETA-CREMA-TARO",
+    "descripcion": "PALETA CREMA Taro",
+    "precio": 35
+  },
+  {
+    "product_id": "F6AEC245",
+    "item": "PALETA-CREMA-VAINILLA",
+    "descripcion": "PALETA CREMA Vainilla",
+    "precio": 35
+  },
+  {
+    "product_id": "71F27465",
+    "item": "PALETA-CREMA-PREMIUM-BAILEYS",
+    "descripcion": "PALETA CREMA PREMIUM Baileys",
+    "precio": 40
+  },
+  {
+    "product_id": "6AD82AE1",
+    "item": "PALETA-CREMA-PREMIUM-CAJETA",
+    "descripcion": "PALETA CREMA PREMIUM Cajeta",
+    "precio": 40
+  },
+  {
+    "product_id": "884118CA",
+    "item": "PALETA-CREMA-PREMIUM-CHONGOS",
+    "descripcion": "PALETA CREMA PREMIUM Chongos",
+    "precio": 40
+  },
+  {
+    "product_id": "516E1BCF",
+    "item": "PALETA-CREMA-PREMIUM-FERRERO",
+    "descripcion": "PALETA CREMA PREMIUM Ferrero",
+    "precio": 40
+  },
+  {
+    "product_id": "2CF84FBA",
+    "item": "PALETA-CREMA-PREMIUM-KAHLUA",
+    "descripcion": "PALETA CREMA PREMIUM Kahlua",
+    "precio": 40
+  },
+  {
+    "product_id": "000CCCFD",
+    "item": "PALETA-CREMA-PREMIUM-QUESO-CON-ZARZAMORA",
+    "descripcion": "PALETA CREMA PREMIUM Queso con Zarzamora",
+    "precio": 40
+  },
+  {
+    "product_id": "92BA8FD0",
+    "item": "PALETA-CREMA-PREMIUM-RON-CON-PASAS",
+    "descripcion": "PALETA CREMA PREMIUM Ron con Pasas",
+    "precio": 40
+  },
+  {
+    "product_id": "3A0CCE07",
+    "item": "PALETA-CREMA-PREMIUM-SNICKERS",
+    "descripcion": "PALETA CREMA PREMIUM Snickers",
+    "precio": 40
+  },
+  {
+    "product_id": "6DF1F449",
+    "item": "PALETA-CREMA-PREMIUM-VINO-TINTO-RELLENO",
+    "descripcion": "PALETA CREMA PREMIUM Vino Tinto (Relleno)",
+    "precio": 40
+  },
+  {
+    "product_id": "03390F0A",
+    "item": "PALETA-SIN-AZUCAR-CHOCOLATE",
+    "descripcion": "PALETA SIN AZUCAR Chocolate",
+    "precio": 45
+  },
+  {
+    "product_id": "68D4185D",
+    "item": "PALETA-SIN-AZUCAR-COCO",
+    "descripcion": "PALETA SIN AZUCAR Coco",
+    "precio": 45
+  },
+  {
+    "product_id": "43F5B285",
+    "item": "PALETA-SIN-AZUCAR-MAMEY",
+    "descripcion": "PALETA SIN AZUCAR Mamey",
+    "precio": 45
+  },
+  {
+    "product_id": "66B31F3E",
+    "item": "PALETA-SIN-AZUCAR-PISTACHE",
+    "descripcion": "PALETA SIN AZUCAR Pistache",
+    "precio": 45
+  },
+  {
+    "product_id": "0935F20F",
+    "item": "PALETA-SIN-AZUCAR-FERRERO",
+    "descripcion": "PALETA SIN AZUCAR Ferrero",
+    "precio": 45
+  },
+  {
+    "product_id": "498B2E60",
+    "item": "PALETA-SIN-AZUCAR-FRESA-CHAMOY",
+    "descripcion": "PALETA SIN AZUCAR Fresa-Chamoy",
+    "precio": 45
+  },
+  {
+    "product_id": "EE158D68",
+    "item": "PALETA-SIN-AZUCAR-FRUTOS-ROJOS",
+    "descripcion": "PALETA SIN AZUCAR Frutos Rojos",
+    "precio": 45
+  },
+  {
+    "product_id": "6B274D02",
+    "item": "PALETA-SIN-AZUCAR-LIMON-CHAMOY",
+    "descripcion": "PALETA SIN AZUCAR Limon-Chamoy",
+    "precio": 45
+  },
+  {
+    "product_id": "DC109062",
+    "item": "PALETA-SIN-AZUCAR-MANGO",
+    "descripcion": "PALETA SIN AZUCAR Mango",
+    "precio": 45
+  },
+  {
+    "product_id": "CD42C696",
+    "item": "PALETA-SIN-AZUCAR-MAZAPAN",
+    "descripcion": "PALETA SIN AZUCAR Mazapan",
+    "precio": 45
+  },
+  {
+    "product_id": "24E6A7FD",
+    "item": "PALETA-SIN-AZUCAR-NUEZ",
+    "descripcion": "PALETA SIN AZUCAR Nuez",
+    "precio": 45
+  },
+  {
+    "product_id": "F797E587",
+    "item": "PALETA-SIN-AZUCAR-PINON",
+    "descripcion": "PALETA SIN AZUCAR Pinon",
+    "precio": 45
+  },
+  {
+    "product_id": "6A09314A",
+    "item": "PALETA-SIN-AZUCAR-VAINILLA",
+    "descripcion": "PALETA SIN AZUCAR Vainilla",
+    "precio": 45
+  },
+  {
+    "product_id": "7A03C7DC",
+    "item": "PALETA-MINI-MINI-AGUA",
+    "descripcion": "PALETA MINI Mini Agua",
+    "precio": 6
+  },
+  {
+    "product_id": "C371ED40",
+    "item": "PALETA-MINI-MINI-CREMA",
+    "descripcion": "PALETA MINI Mini Crema",
+    "precio": 8
+  },
+  {
+    "product_id": "D189174D",
+    "item": "PALETA-MINI-MINI-SIN-AZUCAR",
+    "descripcion": "PALETA MINI Mini Sin Azucar",
+    "precio": 10
+  },
+  {
+    "product_id": "6A3513FD",
+    "item": "EXTRA-PALETAS-PARA-PERRO",
+    "descripcion": "EXTRA Paletas para Perro",
+    "precio": 30
+  },
+  {
+    "product_id": "062CFB68",
+    "item": "EXTRA-COBERTURA-CHOCOLATE",
+    "descripcion": "EXTRA Cobertura Chocolate",
+    "precio": 10
+  },
+  {
+    "product_id": "A9581B56",
+    "item": "EXTRA-COBERTURA-CON-TOPPING",
+    "descripcion": "EXTRA Cobertura con Topping",
+    "precio": 15
+  },
+  {
+    "product_id": "641AA19F",
+    "item": "HELADO-NIEVE-SENCILLO",
+    "descripcion": "Helado Nieve Sencillo",
+    "precio": 25
+  },
+  {
+    "product_id": "3021BE59",
+    "item": "HELADO-NIEVE-DOBLE",
+    "descripcion": "Helado Nieve Doble",
+    "precio": 45
+  },
+  {
+    "product_id": "7081D5FB",
+    "item": "HELADO-NIEVE-MEDIO-LITRO",
+    "descripcion": "Helado Nieve Medio Litro",
+    "precio": 75
+  },
+  {
+    "product_id": "D6B795F8",
+    "item": "HELADO-NIEVE-LITRO",
+    "descripcion": "Helado Nieve Litro",
+    "precio": 150
+  },
+  {
+    "product_id": "9D68612D",
+    "item": "HELADO-CLASICO-SENCILLO",
+    "descripcion": "Helado Clasico Sencillo",
+    "precio": 35
+  },
+  {
+    "product_id": "BD4D8B7F",
+    "item": "HELADO-CLASICO-DOBLE",
+    "descripcion": "Helado Clasico Doble",
+    "precio": 60
+  },
+  {
+    "product_id": "AA40C33B",
+    "item": "HELADO-CLASICO-MEDIO-LITRO",
+    "descripcion": "Helado Clasico Medio Litro",
+    "precio": 90
+  },
+  {
+    "product_id": "7968996E",
+    "item": "HELADO-CLASICO-LITRO",
+    "descripcion": "Helado Clasico Litro",
+    "precio": 160
+  },
+  {
+    "product_id": "97EEAB91",
+    "item": "HELADO-GOURMET-SENCILLO",
+    "descripcion": "Helado Gourmet Sencillo",
+    "precio": 40
+  },
+  {
+    "product_id": "7888486E",
+    "item": "HELADO-GOURMET-DOBLE",
+    "descripcion": "Helado Gourmet Doble",
+    "precio": 70
+  },
+  {
+    "product_id": "2682D29D",
+    "item": "HELADO-GOURMET-MEDIO-LITRO",
+    "descripcion": "Helado Gourmet Medio Litro",
+    "precio": 95
+  },
+  {
+    "product_id": "28C3B90F",
+    "item": "HELADO-GOURMET-LITRO",
+    "descripcion": "Helado Gourmet Litro",
+    "precio": 170
+  },
+  {
+    "product_id": "9E69701A",
+    "item": "HELADO-SIN-AZUCAR-SENCILLO",
+    "descripcion": "Helado Sin Azucar Sencillo",
+    "precio": 45
+  },
+  {
+    "product_id": "93BBD957",
+    "item": "HELADO-SIN-AZUCAR-DOBLE",
+    "descripcion": "Helado Sin Azucar Doble",
+    "precio": 75
+  },
+  {
+    "product_id": "DA2364A6",
+    "item": "HELADO-SIN-AZUCAR-MEDIO-LITRO",
+    "descripcion": "Helado Sin Azucar Medio Litro",
+    "precio": 95
+  },
+  {
+    "product_id": "9DC9D6D6",
+    "item": "HELADO-SIN-AZUCAR-LITRO",
+    "descripcion": "Helado Sin Azucar Litro",
+    "precio": 180
+  },
+  {
+    "product_id": "74CEF70C",
+    "item": "AGUA-FRESCA-HORCHATA-CHICA",
+    "descripcion": "AGUA FRESCA Horchata Chica",
+    "precio": 25
+  },
+  {
+    "product_id": "9C1B04E4",
+    "item": "AGUA-FRESCA-HORCHATA-GRANDE",
+    "descripcion": "AGUA FRESCA Horchata Grande",
+    "precio": 35
+  },
+  {
+    "product_id": "C7316792",
+    "item": "AGUA-FRESCA-LIMON-CON-CHIA-CHICA",
+    "descripcion": "AGUA FRESCA Limon con Chia Chica",
+    "precio": 25
+  },
+  {
+    "product_id": "5E6808D9",
+    "item": "AGUA-FRESCA-LIMON-CON-CHIA-GRANDE",
+    "descripcion": "AGUA FRESCA Limon con Chia Grande",
+    "precio": 35
+  },
+  {
+    "product_id": "CFCEA938",
+    "item": "BOTANA-DORILOCOS",
+    "descripcion": "BOTANA Dorilocos",
+    "precio": 50
+  },
+  {
+    "product_id": "7E9B8EC2",
+    "item": "BOTANA-PLATANITOS",
+    "descripcion": "BOTANA Platanitos",
+    "precio": 15
+  },
+  {
+    "product_id": "1C271C39",
+    "item": "BEBIDA-CHAMOYADA",
+    "descripcion": "BEBIDA Chamoyada",
+    "precio": 60
+  },
+  {
+    "product_id": "2188FC39",
+    "item": "BEBIDA-FRAPUCHINO",
+    "descripcion": "BEBIDA Frapuchino",
+    "precio": 60
+  },
+  {
+    "product_id": "2BDB89ED",
+    "item": "POSTRE-DANONINO-CHICO-CON-COBERTURA",
+    "descripcion": "POSTRE Danonino Chico con Cobertura",
+    "precio": 20
+  },
+  {
+    "product_id": "3B6B12C9",
+    "item": "POSTRE-DANONINO-GRANDE-CON-COBERTURA",
+    "descripcion": "POSTRE Danonino Grande con Cobertura",
+    "precio": 30
+  },
+  {
+    "product_id": "F76E2099",
+    "item": "BEBIDA-CHOCOLATE-CALIENTE",
+    "descripcion": "BEBIDA Chocolate Caliente",
+    "precio": 35
+  },
+  {
+    "product_id": "1DD9CEE1",
+    "item": "BEBIDA-CHOCOLATE-CALIENTE-VEGANO",
+    "descripcion": "BEBIDA Chocolate Caliente Vegano",
+    "precio": 40
+  },
+  {
+    "product_id": "D7361A46",
+    "item": "MALTEADA-CLASICA",
+    "descripcion": "MALTEADA Clasica",
+    "precio": 65
+  },
+  {
+    "product_id": "F63212B1",
+    "item": "MALTEADA-GOURMET",
+    "descripcion": "MALTEADA Gourmet",
+    "precio": 70
+  },
+  {
+    "product_id": "8E1F2139",
+    "item": "MALTEADA-SIN-AZUCAR",
+    "descripcion": "MALTEADA Sin Azucar",
+    "precio": 75
+  }
+]
