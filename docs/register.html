@@ -1,47 +1,213 @@
-<!doctype html><html lang="es"><head>
+<!doctype html>
+<html lang="es">
+<head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Registrar venta</title>
-<style>body{font-family:system-ui;margin:16px;max-width:640px}label{display:block;margin:12px 0 6px}
-input,select,button{width:100%;font-size:18px;padding:10px;border:1px solid #ccc;border-radius:8px}
-.row{display:flex;gap:8px}.row>*{flex:1}.help{font-size:12px;color:#666}</style>
-</head><body>
+<style>
+  body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:16px;max-width:900px}
+  h1{font-size:40px;margin:0 0 12px}
+  label{display:block;margin:12px 0 6px}
+  input,select,button{font-size:16px;padding:10px;border:1px solid #ccc;border-radius:8px}
+  select,input{width:100%}
+  .row{display:flex;gap:8px;flex-wrap:wrap}
+  .row>div{flex:1 1 240px}
+  .cats{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
+  .cat{border:1px solid #ccc;border-radius:999px;padding:6px 12px;background:#f5f5f5;cursor:pointer}
+  .cat.active{outline:2px solid #000;background:#fff}
+  table{border-collapse:collapse;width:100%;margin-top:12px}
+  th,td{border:1px solid #ddd;padding:6px;text-align:left}
+  th{background:#f7f7f7}
+  .right{text-align:right}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .primary{background:#111;color:#fff;border-color:#111}
+  .danger{background:#c62828;color:#fff;border-color:#c62828}
+  .muted{color:#666;font-size:12px}
+</style>
+</head>
+<body>
 <h1>Registrar venta</h1>
-<p class="help">Selecciona producto y cantidad. Al enviar, se abrirá GitHub con la venta prellenada.</p>
-<label>Fecha</label><input id="fecha" type="date">
-<label>Producto</label><select id="item"></select>
+<p class="muted">Selecciona productos por categoría, agrégalos al carrito y confirma. Al confirmar se abrirá GitHub con la venta prellenada.</p>
+
+<label>Fecha</label>
+<input id="fecha" type="date">
+
+<label>Categoría</label>
+<div class="cats" id="cats"></div>
+
+<label>Producto</label>
+<select id="item"></select>
+
 <div class="row">
-  <div><label>Cantidad</label><input id="cantidad" type="number" min="1" value="1"></div>
-  <div><label>Precio unitario (opcional)</label><input id="precio" type="number" step="0.01"></div>
+  <div>
+    <label>Cantidad</label>
+    <input id="cantidad" type="number" min="1" value="1">
+  </div>
+  <div>
+    <label>Precio unitario (opcional)</label>
+    <input id="precio" type="number" step="0.01" placeholder="0.00">
+  </div>
 </div>
-<label>Notas (opcional)</label><input id="notas" type="text">
-<button id="enviar">Enviar</button>
-<p class="help">QR rápido por producto: <a id="qr-link" href="#">crear</a></p>
+
+<div class="actions">
+  <button id="add">Agregar al carrito</button>
+  <button id="clear" class="danger">Vaciar carrito</button>
+</div>
+
+<h3>Carrito</h3>
+<table id="cartTbl">
+  <thead><tr><th>SKU</th><th>Descripción</th><th class="right">Cantidad</th><th class="right">Precio</th><th class="right">Importe</th><th></th></tr></thead>
+  <tbody></tbody>
+  <tfoot><tr><th colspan="4" class="right">Total</th><th class="right" id="totalCell">$0.00</th><th></th></tr></tfoot>
+</table>
+
+<label>Notas (opcional)</label>
+<input id="notas" type="text" placeholder="Cliente, canal, etc.">
+
+<div class="actions">
+  <button id="confirm" class="primary">Confirmar venta</button>
+</div>
+
+<p class="muted">QR rápido por producto: <a id="qr-link" href="#">crear</a></p>
 
 <script>
-  // ⬇️ Cambia por tu usuario/org y repo
-  const ORG = "OswaldoCasillas"; const REPO = "Ventas";
+  // 👇 AJUSTA ESTOS DOS SI CAMBIAN
+  const ORG  = "OswaldoCasillas";
+  const REPO = "Ventas";
+
+  // Map categorías por prefijo de SKU
+  const CAT_LABELS = {
+    "PALETA-AGUA": "Paleta de Agua",
+    "PALETA-AGUA-PREMIUM": "Paleta Agua Premium",
+    "PALETA-CREMA": "Paleta de Crema",
+    "PALETA-CREMA-PREMIUM": "Paleta Crema Premium",
+    "PALETA-SIN-AZUCAR": "Paleta Sin Azúcar/Keto",
+    "PALETA-MINI": "Paleta Mini",
+    "HELADO-NIEVE": "Helado Nieve",
+    "HELADO-CLASICO": "Helado Clásico",
+    "HELADO-GOURMET": "Helado Gourmet",
+    "HELADO-SIN-AZUCAR": "Helado Sin Azúcar",
+    "MALTEADA": "Malteada",
+    "AGUA-FRESCA": "Aguas Frescas",
+    "BEBIDA": "Bebidas",
+    "POSTRE": "Postres",
+    "BOTANA": "Botanas",
+    "EXTRA": "Extras"
+  };
+
+  let MENU = [];       // {product_id, item, descripcion, precio}
+  let FILTER = null;   // prefijo de categoría
+  const cart = [];     // {item, descripcion, cantidad, precio}
+
   document.getElementById('fecha').valueAsDate = new Date();
+
+  function fmt(n){ return (n==null||n==='') ? '' : Number(n).toLocaleString('es-MX',{style:'currency',currency:'MXN'}); }
+
   async function loadMenu(){
-    const res = await fetch('menu.json?_='+Date.now()); const items = res.ok?await res.json():[];
+    const r = await fetch('menu.json?_='+Date.now());
+    MENU = r.ok ? await r.json() : [];
+    buildCategories();
+    renderOptions();
+    // Si venimos con ?item preseleccionado
+    const q = new URLSearchParams(location.search);
+    if(q.get('item')){
+      document.getElementById('item').value = q.get('item');
+      const prod = MENU.find(x=>x.item===q.get('item'));
+      if(prod && prod.precio) document.getElementById('precio').value = prod.precio;
+    }
+  }
+
+  function getCategoryOf(sku){
+    const keys = Object.keys(CAT_LABELS).sort((a,b)=>b.length-a.length);
+    for(const k of keys){ if(sku.startsWith(k)) return k; }
+    return "OTROS";
+  }
+
+  function buildCategories(){
+    const set = new Set(MENU.map(x=>getCategoryOf(x.item)).filter(k=>k!=="OTROS"));
+    const wrap = document.getElementById('cats');
+    wrap.innerHTML = `<span class="cat ${FILTER===null?'active':''}" data-k="">Todos</span>` +
+      [...set].map(k=>`<span class="cat ${FILTER===k?'active':''}" data-k="${k}">${CAT_LABELS[k]||k}</span>`).join('');
+    wrap.querySelectorAll('.cat').forEach(btn=>{
+      btn.onclick = ()=>{
+        FILTER = btn.dataset.k || null;
+        wrap.querySelectorAll('.cat').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        renderOptions();
+      };
+    });
+  }
+
+  function renderOptions(){
     const sel = document.getElementById('item');
+    let items = MENU.slice();
+    if(FILTER) items = items.filter(x=>getCategoryOf(x.item)===FILTER);
     sel.innerHTML = items.map(x=>`<option value="${x.item}" data-precio="${x.precio||''}">${x.item} — ${x.descripcion}${x.precio?(' ($'+x.precio+')'):''}</option>`).join('');
-    sel.addEventListener('change',()=>{const p=sel.selectedOptions[0]?.dataset?.precio; if(p && !precio.value) precio.value=p;});
+    sel.onchange = ()=>{
+      const p = sel.selectedOptions[0]?.dataset?.precio;
+      if(p && !document.getElementById('precio').value) document.getElementById('precio').value = p;
+    };
   }
-  function buildIssueUrl({fecha,item,cantidad,precio,notas}){
+
+  function renderCart(){
+    const tb = document.querySelector('#cartTbl tbody');
+    tb.innerHTML = cart.map((c,i)=>{
+      const imp = (Number(c.precio||0)*Number(c.cantidad||0));
+      return `<tr>
+        <td>${c.item}</td><td>${c.descripcion||''}</td>
+        <td class="right">${c.cantidad}</td>
+        <td class="right">${fmt(c.precio)}</td>
+        <td class="right">${fmt(imp)}</td>
+        <td><button data-i="${i}" class="rm">Quitar</button></td>
+      </tr>`;
+    }).join('');
+    tb.querySelectorAll('.rm').forEach(b=>b.onclick=()=>{ cart.splice(Number(b.dataset.i),1); renderCart(); });
+    const total = cart.reduce((s,c)=>s+(Number(c.precio||0)*Number(c.cantidad||0)),0);
+    document.getElementById('totalCell').textContent = fmt(total);
+  }
+
+  document.getElementById('add').onclick = ()=>{
+    const sku = document.getElementById('item').value;
+    const cantidad = Number(document.getElementById('cantidad').value||1);
+    if(!sku || cantidad<=0) return alert("Selecciona producto y cantidad válida");
+    const prod = MENU.find(x=>x.item===sku) || {descripcion:'',precio:''};
+    const precio = document.getElementById('precio').value || prod.precio || '';
+    // Si ya existe en carrito, acumula
+    const idx = cart.findIndex(c=>c.item===sku && String(c.precio||'')===String(precio||''));
+    if(idx>=0) cart[idx].cantidad += cantidad;
+    else cart.push({item:sku, descripcion:prod.descripcion, cantidad, precio});
+    renderCart();
+    // limpia cantidad (y deja precio si vino del menú)
+    document.getElementById('cantidad').value = 1;
+  };
+
+  document.getElementById('clear').onclick = ()=>{ cart.splice(0,cart.length); renderCart(); };
+
+  document.getElementById('qr-link').onclick = (e)=>{
+    e.preventDefault();
+    const item = document.getElementById('item').value;
+    const u = new URL(location.href); u.searchParams.set('item', item);
+    prompt("Copia este enlace y conviértelo en QR:", u.toString());
+  };
+
+  function buildIssueUrl(){
+    const fecha = document.getElementById('fecha').value;
+    const notas = document.getElementById('notas').value;
+    if(!fecha) return alert("Falta la fecha");
+    if(cart.length===0) return alert("Agrega al menos un producto");
     const base = `https://github.com/${ORG}/${REPO}/issues/new`;
-    const title = `Venta: ${item} x${cantidad} @ ${fecha}`;
-    const body  = `**Fecha**: ${fecha}\n**Item**: ${item}\n**Cantidad**: ${cantidad}\n**Precio unitario (opcional)**: ${precio||''}\n**Notas**: ${notas||''}`;
-    const p = new URLSearchParams({template:'sale.md', title, body}); return `${base}?${p.toString()}`;
+    const title = `Venta: ${cart.length} items @ ${fecha}`;
+    // Marcamos sección **Items** como tabla simple SKU|Cantidad|Precio
+    let body = `**Fecha**: ${fecha}\n**Notas**: ${notas||''}\n\n**Items**\nSKU | Cantidad | Precio\n`;
+    cart.forEach(c=>{ body += `${c.item} | ${c.cantidad} | ${c.precio||''}\n`; });
+    const params = new URLSearchParams({ template:'sale.md', title, body });
+    return `${base}?${params.toString()}`;
   }
-  enviar.onclick = ()=> {
-    const fecha=fechaInput.value||fecha.value, item=itemSelect.value||item.value, cantidad=cantidadInput?.value||cantidad.value;
-    const url=buildIssueUrl({fecha,item,cantidad,precio:precio.value,notas:notas.value});
-    if(!fecha||!item||!cantidad) return alert("Completa fecha, producto y cantidad.");
-    location.href=url;
-  }
-  document.getElementById('qr-link').onclick = e => {e.preventDefault(); const u = new URL(location.href); u.searchParams.set('item', document.getElementById('item').value); prompt("Copia este enlace y conviértelo en QR:", u.toString());};
-  // helpers
-  const fechaInput=document.getElementById('fecha'), itemSelect=document.getElementById('item'), cantidadInput=document.getElementById('cantidad');
+
+  document.getElementById('confirm').onclick = ()=>{
+    location.href = buildIssueUrl();
+  };
+
   loadMenu();
 </script>
-</body></html>
+</body>
+</html>
