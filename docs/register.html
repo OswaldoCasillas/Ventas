@@ -70,11 +70,11 @@
 <p class="muted">QR rápido por producto: <a id="qr-link" href="#">crear</a></p>
 
 <script>
-  // 👇 AJUSTA ESTOS DOS SI CAMBIAN
+  // 👇 AJUSTA SI CAMBIA EL REPO
   const ORG  = "OswaldoCasillas";
   const REPO = "Ventas";
 
-  // Map categorías por prefijo de SKU
+  // Categorías por prefijo de SKU
   const CAT_LABELS = {
     "PALETA-AGUA": "Paleta de Agua",
     "PALETA-AGUA-PREMIUM": "Paleta Agua Premium",
@@ -94,32 +94,57 @@
     "EXTRA": "Extras"
   };
 
-  let MENU = [];       // {product_id, item, descripcion, precio}
-  let FILTER = null;   // prefijo de categoría
-  const cart = [];     // {item, descripcion, cantidad, precio}
+  let MENU = [];     // {product_id,item,descripcion,precio}
+  let FILTER = null; // prefijo de categoría activo
+  const cart = [];   // {item, descripcion, cantidad, precio}
 
   document.getElementById('fecha').valueAsDate = new Date();
 
   function fmt(n){ return (n==null||n==='') ? '' : Number(n).toLocaleString('es-MX',{style:'currency',currency:'MXN'}); }
 
+  // ---------- Helpers de nombres bonitos ----------
+  function getCategoryOf(sku){
+    const keys = Object.keys(CAT_LABELS).sort((a,b)=>b.length-a.length);
+    for(const k of keys){ if(sku.startsWith(k)) return k; }
+    return "OTROS";
+  }
+  function skuToNice(sku){
+    const prefixes = [
+      "PALETA-AGUA-PREMIUM","PALETA-CREMA-PREMIUM","PALETA-SIN-AZUCAR",
+      "PALETA-AGUA","PALETA-CREMA","PALETA-MINI",
+      "HELADO-NIEVE","HELADO-CLASICO","HELADO-GOURMET","HELADO-SIN-AZUCAR",
+      "AGUA-FRESCA","MALTEADA","BEBIDA","POSTRE","BOTANA","EXTRA"
+    ];
+    let name = sku;
+    for(const p of prefixes){
+      if(name.startsWith(p+"-")) { name = name.slice(p.length+1); break; }
+    }
+    name = name.replace(/-/g," ").toLowerCase()
+               .replace(/\b\w/g, c=>c.toUpperCase())
+               .replace(/\bS\/?Azucar\b/gi,'Sin Azúcar');
+    return name.trim();
+  }
+  function niceLabel(prod){
+    const base = (prod.descripcion && prod.descripcion.trim()) ? prod.descripcion : skuToNice(prod.item);
+    const cat  = CAT_LABELS[getCategoryOf(prod.item)] || "";
+    const price = (prod.precio!==undefined && prod.precio!=="") ? ` ($${prod.precio})` : "";
+    return `${base}${price}${cat?` — ${cat}`:''}`;
+  }
+
+  // ---------- Carga menú ----------
   async function loadMenu(){
     const r = await fetch('menu.json?_='+Date.now());
-    MENU = r.ok ? await r.json() : [];
+    if(!r.ok){ alert("No encuentro el menú (menu.json). Ve a GitHub → Actions → 'Inventory Bot' → Run workflow para generarlo desde data/inventory.csv."); return; }
+    MENU = await r.json();
     buildCategories();
     renderOptions();
-    // Si venimos con ?item preseleccionado
+    // preselección por query ?item=SKU
     const q = new URLSearchParams(location.search);
     if(q.get('item')){
       document.getElementById('item').value = q.get('item');
       const prod = MENU.find(x=>x.item===q.get('item'));
       if(prod && prod.precio) document.getElementById('precio').value = prod.precio;
     }
-  }
-
-  function getCategoryOf(sku){
-    const keys = Object.keys(CAT_LABELS).sort((a,b)=>b.length-a.length);
-    for(const k of keys){ if(sku.startsWith(k)) return k; }
-    return "OTROS";
   }
 
   function buildCategories(){
@@ -141,13 +166,17 @@
     const sel = document.getElementById('item');
     let items = MENU.slice();
     if(FILTER) items = items.filter(x=>getCategoryOf(x.item)===FILTER);
-    sel.innerHTML = items.map(x=>`<option value="${x.item}" data-precio="${x.precio||''}">${x.item} — ${x.descripcion}${x.precio?(' ($'+x.precio+')'):''}</option>`).join('');
+    items.sort((a,b)=>niceLabel(a).localeCompare(niceLabel(b),'es'));
+    sel.innerHTML = items.map(x =>
+      `<option value="${x.item}" data-precio="${x.precio||''}">${niceLabel(x)}</option>`
+    ).join('');
     sel.onchange = ()=>{
       const p = sel.selectedOptions[0]?.dataset?.precio;
       if(p && !document.getElementById('precio').value) document.getElementById('precio').value = p;
     };
   }
 
+  // ---------- Carrito ----------
   function renderCart(){
     const tb = document.querySelector('#cartTbl tbody');
     tb.innerHTML = cart.map((c,i)=>{
@@ -171,12 +200,10 @@
     if(!sku || cantidad<=0) return alert("Selecciona producto y cantidad válida");
     const prod = MENU.find(x=>x.item===sku) || {descripcion:'',precio:''};
     const precio = document.getElementById('precio').value || prod.precio || '';
-    // Si ya existe en carrito, acumula
     const idx = cart.findIndex(c=>c.item===sku && String(c.precio||'')===String(precio||''));
     if(idx>=0) cart[idx].cantidad += cantidad;
-    else cart.push({item:sku, descripcion:prod.descripcion, cantidad, precio});
+    else cart.push({item:sku, descripcion:niceLabel(prod).split(' — ')[0], cantidad, precio});
     renderCart();
-    // limpia cantidad (y deja precio si vino del menú)
     document.getElementById('cantidad').value = 1;
   };
 
@@ -196,7 +223,6 @@
     if(cart.length===0) return alert("Agrega al menos un producto");
     const base = `https://github.com/${ORG}/${REPO}/issues/new`;
     const title = `Venta: ${cart.length} items @ ${fecha}`;
-    // Marcamos sección **Items** como tabla simple SKU|Cantidad|Precio
     let body = `**Fecha**: ${fecha}\n**Notas**: ${notas||''}\n\n**Items**\nSKU | Cantidad | Precio\n`;
     cart.forEach(c=>{ body += `${c.item} | ${c.cantidad} | ${c.precio||''}\n`; });
     const params = new URLSearchParams({ template:'sale.md', title, body });
