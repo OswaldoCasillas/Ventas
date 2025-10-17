@@ -10,3 +10,4 @@ labels: ["venta"]
 **Cantidad**: 
 **Precio unitario (opcional)**: 
 **Notas**:
+> También puedes usar la página de ventas (tiene carrito) y se llenará la sección **Items** automáticamente.
