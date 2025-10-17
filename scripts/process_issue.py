@@ -1,5 +1,5 @@
 import json, os, re, secrets, hashlib
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 import pandas as pd
 
@@ -21,6 +21,8 @@ SALES_DETAIL_CSV= DOCS / "ventas_detalle.csv"
 PROD_DETAIL_CSV = DOCS / "produccion_detalle.csv"
 REPORT_HTML     = DOCS / "reporte.html"
 
+# ====================== utilidades ======================
+
 def ensure_files():
     DATA.mkdir(parents=True, exist_ok=True)
     DOCS.mkdir(parents=True, exist_ok=True)
@@ -41,42 +43,59 @@ def load_event_issue():
     return evt.get("issue")
 
 def grab_field(body: str, key: str) -> str:
-    pat = rf"(?:\*\*\s*{re.escape(key)}\s*\*\*|{re.escape(key)})\s*:\s*(.+)"
-    m = re.search(pat, body, re.IGNORECASE)
-    return m.group(1).strip() if m else ""
+    """
+    Busca 'key' al INICIO de línea, con o sin **negritas**, y permite valor vacío.
+    Ej.: '**Fecha**: 2025-10-17'  o  'Fecha: 2025-10-17'
+    """
+    pat = rf"^\s*(?:\*\*\s*{re.escape(key)}\s*\*\*|{re.escape(key)})\s*:\s*(.*)$"
+    m = re.search(pat, body, re.IGNORECASE | re.MULTILINE)
+    return (m.group(1) if m else "").strip()
+
+def safe_parse_date(s: str, issue: dict) -> str:
+    """
+    Intenta varios formatos; si no hay fecha válida:
+    - usa created_at del issue; si no, usa hoy (UTC).
+    """
+    s = (s or "").strip()
+    for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%Y/%m/%d"):
+        try:
+            return datetime.strptime(s, fmt).date().isoformat()
+        except Exception:
+            pass
+    created = (issue or {}).get("created_at") or ""
+    if created:
+        # formato ISO de GitHub: 2025-10-17T05:12:34Z
+        return created[:10]
+    return datetime.now(timezone.utc).date().isoformat()
 
 def parse_items_table(body: str, has_price: bool):
     """
-    Lee una sección:
+    Sección:
       **Items**
-      SKU | Cantidad | Precio   (si has_price=True)
-      PALETA-AGUA-MANGO | 2 | 25
-    o:
-      SKU | Cantidad            (si has_price=False)
-      PALETA-AGUA-MANGO | 10
-    Devuelve lista de dicts.
+      SKU | Cantidad | Precio?  (si has_price=True)
+    Devuelve lista [{item, cantidad, precio_unit?}]
     """
-    if "**Items**" not in body:
+    if "**Items**" not in body and "**items**" not in body:
         return []
-    after = body.split("**Items**",1)[1].strip()
-    lines = [ln.strip() for ln in after.splitlines() if ln.strip()]
+    after = body.split("**Items**", 1)[-1] if "**Items**" in body else body.split("**items**",1)[-1]
+    lines = [ln.rstrip() for ln in after.splitlines() if ln.strip()]
     out = []
     for ln in lines:
-        if "|" not in ln:      # hasta que se acaben las filas tipo tabla
+        if "|" not in ln:  # terminó la “tabla”
             break
         parts = [p.strip() for p in ln.split("|")]
         if has_price and len(parts) >= 3:
             sku, qty, price = parts[0], parts[1], parts[2]
-            if not sku: continue
-            try: qty_i = int(qty)
-            except: continue
-            out.append({"item": sku, "cantidad": qty_i, "precio_unit": price})
+            try:
+                out.append({"item": sku, "cantidad": int(qty), "precio_unit": price})
+            except Exception:
+                continue
         elif not has_price and len(parts) >= 2:
             sku, qty = parts[0], parts[1]
-            if not sku: continue
-            try: qty_i = int(qty)
-            except: continue
-            out.append({"item": sku, "cantidad": qty_i})
+            try:
+                out.append({"item": sku, "cantidad": int(qty)})
+            except Exception:
+                continue
         else:
             continue
     return out
@@ -89,14 +108,16 @@ def new_txn_id(prefix: str) -> str:
     rand = secrets.token_hex(3).upper()
     return f"{prefix}-{now}-{rand}"
 
+# ====================== inventario / menú ======================
+
 def load_inventory():
-    if INVENTORY_CSV.exists() and INVENTORY_CSV.stat().st_size>0:
+    if INVENTORY_CSV.exists() and INVENTORY_CSV.stat().st_size > 0:
         inv = pd.read_csv(INVENTORY_CSV)
     else:
-        inv = pd.DataFrame(columns=["item","descripcion","stock","precio"])
+        inv = pd.DataFrame(columns=["item", "descripcion", "stock", "precio"])
     for col in ["descripcion","precio","stock"]:
         if col not in inv.columns:
-            inv[col] = "" if col!="stock" else 0
+            inv[col] = "" if col != "stock" else 0
     inv["precio"] = pd.to_numeric(inv["precio"], errors="coerce")
     inv["stock"]  = pd.to_numeric(inv["stock"], errors="coerce").fillna(0).astype(int)
     inv["item"]   = inv["item"].astype(str)
@@ -113,14 +134,11 @@ def write_inventory(inv: pd.DataFrame):
 def write_menu_json(inv: pd.DataFrame):
     cols = [c for c in ["product_id","item","descripcion","precio"] if c in inv.columns]
     MENU_JSON.write_text(json.dumps(inv[cols].fillna("").to_dict(orient="records"),
-                                    ensure_ascii=False, indent=2),
-                         encoding="utf-8")
+                                    ensure_ascii=False, indent=2), encoding="utf-8")
+
+# ====================== guardar movimientos ======================
 
 def append_sales_rows(inv: pd.DataFrame, fecha: str, items: list, issue_url: str, base_txn_id: str):
-    """
-    items: [{item, cantidad, precio_unit?}]
-    Crea filas en sales.csv (una por item), mismas txn_id (lote).
-    """
     df = pd.read_csv(SALES_CSV) if SALES_CSV.exists() and SALES_CSV.stat().st_size>0 else pd.DataFrame()
     for it in items:
         sku = it["item"]
@@ -171,6 +189,8 @@ def apply_stock(inv: pd.DataFrame, items: list, sign: int):
     write_inventory(inv)
     return inv
 
+# ====================== reportes ======================
+
 def build_reports(inv: pd.DataFrame):
     sales = pd.read_csv(SALES_CSV) if SALES_CSV.exists() else pd.DataFrame(
         columns=["txn_id","fecha","item","cantidad","precio_unit","importe","issue"])
@@ -188,7 +208,6 @@ def build_reports(inv: pd.DataFrame):
     sales_detail = sales.merge(inv_key, on="item", how="left")
     prod_detail  = prod.merge(inv_key, on="item", how="left")
 
-    # CSVs para imprimir
     inv_out = inv[["product_id","item","descripcion","precio","stock"]].sort_values("item")
     inv_out.to_csv(INV_OUT_CSV, index=False)
     sales_detail.to_csv(SALES_DETAIL_CSV, index=False)
@@ -201,7 +220,6 @@ def build_reports(inv: pd.DataFrame):
               .sum().sort_values("fecha"))
     by_day.to_csv(SALES_DAY_CSV, index=False)
 
-    # JSON
     low = inv[inv["stock"] <= 5].sort_values("stock")
     prod_by_day = prod.groupby("fecha", as_index=False)["cantidad"].sum().sort_values("fecha") if not prod.empty else pd.DataFrame(columns=["fecha","cantidad"])
     report = {
@@ -220,7 +238,6 @@ def build_reports(inv: pd.DataFrame):
     }
     REPORT_JSON.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    # HTML imprimible
     html = f"""<!doctype html><html lang="es"><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Reporte Inventario/Ventas</title>
@@ -248,48 +265,59 @@ def build_reports(inv: pd.DataFrame):
     </html>"""
     REPORT_HTML.write_text(html, encoding="utf-8")
 
-    # ---------- Reporte diario (un CSV por fecha) ----------
-    # Ventas detalle por fecha (según 'fecha' capturada en el issue)
+    # Reporte diario por fecha
     if not sales_detail.empty:
         for fecha, group in sales_detail.groupby("fecha"):
-            out = DIARIO_DIR / f"{fecha}-ventas.csv"
-            group.to_csv(out, index=False)
-    # Índice de días disponibles
+            (DIARIO_DIR / f"{fecha}-ventas.csv").write_text(group.to_csv(index=False), encoding="utf-8")
     dates = sorted({*sales_detail.get("fecha",[]).tolist(), *prod_detail.get("fecha",[]).tolist()})
     idx_html = "<!doctype html><meta charset='utf-8'><title>Reportes diarios</title><h1>Reportes diarios</h1><ul>"
     for d in dates:
         if not d: continue
-        links = []
-        if (DIARIO_DIR / f"{d}-ventas.csv").exists(): links.append(f"<a href='{d}-ventas.csv'>ventas</a>")
-        idx_html += f"<li>{d}: {' | '.join(links)}</li>"
+        link = (f"<a href='{d}-ventas.csv'>ventas</a>") if (DIARIO_DIR / f"{d}-ventas.csv").exists() else ""
+        idx_html += f"<li>{d}: {link}</li>"
     idx_html += "</ul>"
     (DIARIO_DIR/"index.html").write_text(idx_html, encoding="utf-8")
+
+# ====================== parseo del issue ======================
 
 def parse_issue(issue):
     body = (issue or {}).get("body","")
     labels = {l.get("name","").lower() for l in (issue or {}).get("labels", [])}
-    fecha = grab_field(body,"Fecha")
-    notas = grab_field(body,"Notas")
-    fecha_dt = datetime.strptime(fecha,"%Y-%m-%d").date()
-    base = {"fecha": str(fecha_dt), "issue_url": (issue or {}).get("html_url",""), "labels": labels, "notas": notas}
 
-    # ¿Viene tabla de items?
+    fecha_raw = grab_field(body, "Fecha")
+    notas = grab_field(body, "Notas")
+    fecha = safe_parse_date(fecha_raw, issue)
+    base = {"fecha": fecha, "issue_url": (issue or {}).get("html_url",""), "labels": labels, "notas": notas}
+
     if "venta" in labels:
         table_items = parse_items_table(body, has_price=True)
         if table_items:
             return {"type":"venta_multi", **base, "items": table_items}
-        # fallback a un solo item
-        item = grab_field(body,"Item"); cant = grab_field(body,"Cantidad"); precio = grab_field(body,"Precio unitario (opcional)")
-        return {"type":"venta_single", **base, "items":[{"item":item,"cantidad":int(cant),"precio_unit":precio}]}
+        # Fallback a formato simple
+        sku = grab_field(body, "Item")
+        cant = grab_field(body, "Cantidad")
+        precio = grab_field(body, "Precio unitario (opcional)")
+        try:
+            cant_i = int(cant)
+        except Exception:
+            cant_i = 1
+        return {"type":"venta_single", **base, "items":[{"item":sku,"cantidad":cant_i,"precio_unit":precio}]}
 
-    if "produccion" in labels:
+    if "produccion" in labels or "producción" in labels:
         table_items = parse_items_table(body, has_price=False)
         if table_items:
             return {"type":"prod_multi", **base, "items": table_items}
-        item = grab_field(body,"Item"); cant = grab_field(body,"Cantidad")
-        return {"type":"prod_single", **base, "items":[{"item":item,"cantidad":int(cant)}]}
+        sku = grab_field(body, "Item")
+        cant = grab_field(body, "Cantidad")
+        try:
+            cant_i = int(cant)
+        except Exception:
+            cant_i = 1
+        return {"type":"prod_single", **base, "items":[{"item":sku,"cantidad":cant_i}]}
 
     return {"type":"none", **base}
+
+# ====================== main ======================
 
 def main():
     ensure_files()
