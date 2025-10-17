@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agregar producción</title>
+<style>
+  body{font-family:system-ui;margin:16px;max-width:900px}
+  h1{font-size:32px;margin:0 0 12px}
+  label{display:block;margin:12px 0 6px}
+  input,select,button{font-size:16px;padding:10px;border:1px solid #ccc;border-radius:8px}
+  select,input{width:100%}
+  .row{display:flex;gap:8px}
+  .cats{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
+  .cat{border:1px solid #ccc;border-radius:999px;padding:6px 12px;background:#f5f5f5;cursor:pointer}
+  .cat.active{outline:2px solid #000;background:#fff}
+  table{border-collapse:collapse;width:100%;margin-top:12px}
+  th,td{border:1px solid #ddd;padding:6px;text-align:left}
+  th{background:#f7f7f7}
+  .right{text-align:right}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .primary{background:#111;color:#fff;border-color:#111}
+  .danger{background:#c62828;color:#fff;border-color:#c62828}
+  .muted{color:#666;font-size:12px}
+</style>
+</head>
+<body>
+<h1>Agregar producción</h1>
+<p class="muted">Agrega varios productos al carrito y confirma para sumar stock.</p>
+
+<label>Fecha</label>
+<input id="fecha" type="date">
+
+<label>Categoría</label>
+<div class="cats" id="cats"></div>
+
+<label>Producto</label>
+<select id="item"></select>
+
+<label>Cantidad</label>
+<input id="cantidad" type="number" min="1" value="10">
+
+<div class="actions">
+  <button id="add">Agregar al carrito</button>
+  <button id="clear" class="danger">Vaciar carrito</button>
+</div>
+
+<h3>Carrito</h3>
+<table id="cartTbl">
+  <thead><tr><th>SKU</th><th>Descripción</th><th class="right">Cantidad</th><th></th></tr></thead>
+  <tbody></tbody>
+</table>
+
+<label>Notas (opcional)</label>
+<input id="notas" type="text" placeholder="Lote, turno, etc.">
+
+<div class="actions">
+  <button id="confirm" class="primary">Confirmar producción</button>
+</div>
+
+<script>
+  const ORG  = "OswaldoCasillas";
+  const REPO = "Ventas";
+
+  const CAT_LABELS = {
+    "PALETA-AGUA": "Paleta de Agua",
+    "PALETA-AGUA-PREMIUM": "Paleta Agua Premium",
+    "PALETA-CREMA": "Paleta de Crema",
+    "PALETA-CREMA-PREMIUM": "Paleta Crema Premium",
+    "PALETA-SIN-AZUCAR": "Paleta Sin Azúcar/Keto",
+    "PALETA-MINI": "Paleta Mini",
+    "HELADO-NIEVE": "Helado Nieve",
+    "HELADO-CLASICO": "Helado Clásico",
+    "HELADO-GOURMET": "Helado Gourmet",
+    "HELADO-SIN-AZUCAR": "Helado Sin Azúcar",
+    "MALTEADA": "Malteada",
+    "AGUA-FRESCA": "Aguas Frescas",
+    "BEBIDA": "Bebidas",
+    "POSTRE": "Postres",
+    "BOTANA": "Botanas",
+    "EXTRA": "Extras"
+  };
+
+  let MENU = [];
+  let FILTER = null;
+  const cart = [];
+
+  document.getElementById('fecha').valueAsDate = new Date();
+
+  function getCategoryOf(sku){
+    const keys = Object.keys(CAT_LABELS).sort((a,b)=>b.length-a.length);
+    for(const k of keys){ if(sku.startsWith(k)) return k; }
+    return "OTROS";
+  }
+
+  async function loadMenu(){
+    const r = await fetch('menu.json?_='+Date.now());
+    MENU = r.ok ? await r.json() : [];
+    buildCategories();
+    renderOptions();
+  }
+
+  function buildCategories(){
+    const set = new Set(MENU.map(x=>getCategoryOf(x.item)).filter(k=>k!=="OTROS"));
+    const wrap = document.getElementById('cats');
+    wrap.innerHTML = `<span class="cat ${FILTER===null?'active':''}" data-k="">Todos</span>` +
+      [...set].map(k=>`<span class="cat ${FILTER===k?'active':''}" data-k="${k}">${CAT_LABELS[k]||k}</span>`).join('');
+    wrap.querySelectorAll('.cat').forEach(btn=>{
+      btn.onclick = ()=>{
+        FILTER = btn.dataset.k || null;
+        wrap.querySelectorAll('.cat').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        renderOptions();
+      };
+    });
+  }
+
+  function renderOptions(){
+    const sel = document.getElementById('item');
+    let items = MENU.slice();
+    if(FILTER) items = items.filter(x=>getCategoryOf(x.item)===FILTER);
+    sel.innerHTML = items.map(x=>`<option value="${x.item}">${x.item} — ${x.descripcion}</option>`).join('');
+  }
+
+  function renderCart(){
+    const tb = document.querySelector('#cartTbl tbody');
+    tb.innerHTML = cart.map((c,i)=>`<tr>
+      <td>${c.item}</td><td>${c.descripcion||''}</td>
+      <td class="right">${c.cantidad}</td>
+      <td><button data-i="${i}" class="rm">Quitar</button></td></tr>`).join('');
+    tb.querySelectorAll('.rm').forEach(b=>b.onclick=()=>{ cart.splice(Number(b.dataset.i),1); renderCart(); });
+  }
+
+  document.getElementById('add').onclick = ()=>{
+    const sku = document.getElementById('item').value;
+    const cantidad = Number(document.getElementById('cantidad').value||1);
+    if(!sku || cantidad<=0) return alert("Selecciona producto y cantidad válida");
+    const prod = MENU.find(x=>x.item===sku) || {descripcion:''};
+    const idx = cart.findIndex(c=>c.item===sku);
+    if(idx>=0) cart[idx].cantidad += cantidad;
+    else cart.push({item:sku, descripcion:prod.descripcion, cantidad});
+    renderCart();
+  };
+
+  document.getElementById('clear').onclick = ()=>{ cart.splice(0,cart.length); renderCart(); };
+
+  function buildIssueUrl(){
+    const fecha = document.getElementById('fecha').value;
+    const notas = document.getElementById('notas').value;
+    if(!fecha) return alert("Falta la fecha");
+    if(cart.length===0) return alert("Agrega al menos un producto");
+    const base = `https://github.com/${ORG}/${REPO}/issues/new`;
+    const title = `Producción: ${cart.length} items @ ${fecha}`;
+    let body = `**Fecha**: ${fecha}\n**Notas**: ${notas||''}\n\n**Items**\nSKU | Cantidad\n`;
+    cart.forEach(c=>{ body += `${c.item} | ${c.cantidad}\n`; });
+    const params = new URLSearchParams({ template:'produccion.md', title, body });
+    return `${base}?${params.toString()}`;
+  }
+
+  document.getElementById('confirm').onclick = ()=>{
+    location.href = buildIssueUrl();
+  };
+
+  loadMenu();
+</script>
+</body>
+</html>
