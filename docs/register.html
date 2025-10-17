@@ -21,12 +21,12 @@
   .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
   .primary{background:#111;color:#fff;border-color:#111}
   .danger{background:#c62828;color:#fff;border-color:#c62828}
-  .muted{color:#667;font-size:12px}
+  .muted{color:#666;font-size:12px}
 </style>
 </head>
 <body>
 <h1>Registrar venta</h1>
-<p class="muted">Selecciona productos por categoría, agrégalos al carrito y confirma. Al confirmar se abrirá GitHub con la venta prellenada.</p>
+<p class="muted">Selecciona productos por categoría, agrégalos al carrito y confirma. Si configuraste un backend, se registrará sin salir de la página.</p>
 
 <label>Fecha</label>
 <input id="fecha" type="date">
@@ -70,11 +70,13 @@
 <p class="muted">QR rápido por producto: <a id="qr-link" href="#">crear</a></p>
 
 <script>
-  // 👇 AJUSTA SI CAMBIA EL REPO
-  const ORG  = "OswaldoCasillas";
+  // ====== CONFIG ======
+  // Si montaste backend (Vercel/Worker), pon aquí su URL:
+  const API_URL = ""; // ej: "https://tu-proyecto.vercel.app/api/create-issue"
+  const ORG  = "OswaldoCasillas";  // (solo se usa si dejas el plan B de abrir issue manual)
   const REPO = "Ventas";
 
-  // Categorías por prefijo de SKU
+  // ====== CATEGORÍAS ======
   const CAT_LABELS = {
     "PALETA-AGUA": "Paleta de Agua",
     "PALETA-AGUA-PREMIUM": "Paleta Agua Premium",
@@ -94,15 +96,15 @@
     "EXTRA": "Extras"
   };
 
+  // ====== ESTADO ======
   let MENU = [];     // {product_id,item,descripcion,precio}
   let FILTER = null; // prefijo de categoría activo
   const cart = [];   // {item, descripcion, cantidad, precio}
 
   document.getElementById('fecha').valueAsDate = new Date();
-
   function fmt(n){ return (n==null||n==='') ? '' : Number(n).toLocaleString('es-MX',{style:'currency',currency:'MXN'}); }
 
-  // ---------- Helpers de nombres bonitos ----------
+  // ====== HELPERS NOMBRES BONITOS ======
   function getCategoryOf(sku){
     const keys = Object.keys(CAT_LABELS).sort((a,b)=>b.length-a.length);
     for(const k of keys){ if(sku.startsWith(k)) return k; }
@@ -131,19 +133,21 @@
     return `${base}${price}${cat?` — ${cat}`:''}`;
   }
 
-  // ---------- Carga menú ----------
+  // ====== MENU ======
   async function loadMenu(){
     const r = await fetch('menu.json?_='+Date.now());
     if(!r.ok){ alert("No encuentro el menú (menu.json). Ve a GitHub → Actions → 'Inventory Bot' → Run workflow para generarlo desde data/inventory.csv."); return; }
     MENU = await r.json();
     buildCategories();
     renderOptions();
-    // preselección por query ?item=SKU
+
+    // Si viene ?item= preselecciona y **SIEMPRE** fija su precio
     const q = new URLSearchParams(location.search);
-    if(q.get('item')){
-      document.getElementById('item').value = q.get('item');
-      const prod = MENU.find(x=>x.item===q.get('item'));
-      if(prod && prod.precio) document.getElementById('precio').value = prod.precio;
+    if (q.get('item')) {
+      const sku = q.get('item');
+      const sel = document.getElementById('item');
+      if ([...sel.options].some(o => o.value === sku)) sel.value = sku;
+      setPriceFromSelected(); // <-- siempre sobreescribe
     }
   }
 
@@ -157,26 +161,42 @@
         FILTER = btn.dataset.k || null;
         wrap.querySelectorAll('.cat').forEach(b=>b.classList.remove('active'));
         btn.classList.add('active');
-        renderOptions();
+        renderOptions();      // repobla opciones
+        setPriceFromSelected(); // y actualiza precio del primero/seleccionado
       };
     });
   }
 
+  // Setea SIEMPRE el precio del <select> actual
+  function setPriceFromSelected(){
+    const sel = document.getElementById('item');
+    if (!sel || !sel.options.length) { document.getElementById('precio').value = ""; return; }
+    const p = sel.selectedOptions[0]?.dataset?.precio ?? sel.options[0].dataset.precio;
+    document.getElementById('precio').value = p ? Number(p).toFixed(2) : "";
+  }
+
   function renderOptions(){
     const sel = document.getElementById('item');
+    const prev = sel.value; // intenta conservar selección anterior
     let items = MENU.slice();
-    if(FILTER) items = items.filter(x=>getCategoryOf(x.item)===FILTER);
+    if (FILTER) items = items.filter(x => getCategoryOf(x.item) === FILTER);
     items.sort((a,b)=>niceLabel(a).localeCompare(niceLabel(b),'es'));
+
     sel.innerHTML = items.map(x =>
       `<option value="${x.item}" data-precio="${x.precio||''}">${niceLabel(x)}</option>`
     ).join('');
-    sel.onchange = ()=>{
-      const p = sel.selectedOptions[0]?.dataset?.precio;
-      if(p && !document.getElementById('precio').value) document.getElementById('precio').value = p;
-    };
+
+    // restaura selección si todavía existe, si no queda el primero
+    if ([...sel.options].some(o=>o.value===prev)) sel.value = prev;
+
+    // SIEMPRE actualiza precio al renderizar
+    setPriceFromSelected();
+
+    // y SIEMPRE al cambiar de producto
+    sel.onchange = () => setPriceFromSelected();
   }
 
-  // ---------- Carrito ----------
+  // ====== CARRITO ======
   function renderCart(){
     const tb = document.querySelector('#cartTbl tbody');
     tb.innerHTML = cart.map((c,i)=>{
@@ -195,16 +215,21 @@
   }
 
   document.getElementById('add').onclick = ()=>{
-    const sku = document.getElementById('item').value;
+    const sel = document.getElementById('item');
+    const sku = sel.value;
     const cantidad = Number(document.getElementById('cantidad').value||1);
     if(!sku || cantidad<=0) return alert("Selecciona producto y cantidad válida");
+
     const prod = MENU.find(x=>x.item===sku) || {descripcion:'',precio:''};
     const precio = document.getElementById('precio').value || prod.precio || '';
     const idx = cart.findIndex(c=>c.item===sku && String(c.precio||'')===String(precio||''));
     if(idx>=0) cart[idx].cantidad += cantidad;
     else cart.push({item:sku, descripcion:niceLabel(prod).split(' — ')[0], cantidad, precio});
     renderCart();
+
+    // Limpia cantidad y re-aplica el precio del ítem seleccionado
     document.getElementById('cantidad').value = 1;
+    setPriceFromSelected();
   };
 
   document.getElementById('clear').onclick = ()=>{ cart.splice(0,cart.length); renderCart(); };
@@ -216,11 +241,11 @@
     prompt("Copia este enlace y conviértelo en QR:", u.toString());
   };
 
-  function buildIssueUrl(){
+  // ====== ENVIAR ======
+  function buildIssueUrlFallback(){
+    // plan B: abrir issue en GitHub si no hay API_URL
     const fecha = document.getElementById('fecha').value;
     const notas = document.getElementById('notas').value;
-    if(!fecha) return alert("Falta la fecha");
-    if(cart.length===0) return alert("Agrega al menos un producto");
     const base = `https://github.com/${ORG}/${REPO}/issues/new`;
     const title = `Venta: ${cart.length} items @ ${fecha}`;
     let body = `**Fecha**: ${fecha}\n**Notas**: ${notas||''}\n\n**Items**\nSKU | Cantidad | Precio\n`;
@@ -229,10 +254,41 @@
     return `${base}?${params.toString()}`;
   }
 
-  document.getElementById('confirm').onclick = ()=>{
-    location.href = buildIssueUrl();
-  };
+  async function crearVentaViaAPI(){
+    const fecha = document.getElementById('fecha').value;
+    const notas = document.getElementById('notas').value;
+    if(!fecha){ alert("Falta la fecha"); return; }
+    if(cart.length===0){ alert("Agrega al menos un producto"); return; }
 
+    if (!API_URL) {
+      // Sin backend: abre Issue en GitHub
+      location.href = buildIssueUrlFallback();
+      return;
+    }
+
+    try{
+      const items = cart.map(c => ({ item: c.item, cantidad: c.cantidad, precio: c.precio || "" }));
+      const resp = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "venta", fecha, notas, items })
+      });
+      if(!resp.ok){
+        const err = await resp.json().catch(()=>({}));
+        alert("Error creando la venta: " + (err.error || resp.statusText));
+        return;
+      }
+      const data = await resp.json();
+      alert(`Venta registrada ✅\nIssue #${data.number}`);
+      cart.splice(0, cart.length); renderCart();
+    }catch(e){
+      alert("No se pudo contactar el backend. Verifica API_URL o usa el plan B (issue directo).");
+    }
+  }
+
+  document.getElementById('confirm').onclick = ()=>{ crearVentaViaAPI(); };
+
+  // ====== INICIO ======
   loadMenu();
 </script>
 </body>
