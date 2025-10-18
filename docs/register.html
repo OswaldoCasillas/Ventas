@@ -80,12 +80,11 @@
   const ORG  = "OswaldoCasillas";
   const REPO = "Ventas";
 
-  // 👉 SOLO una definición:
-  // Pon aquí tu endpoint en Vercel (o déjalo vacío para usar el plan B que abre un issue):
+  // 👉 Endpoint Vercel para crear issues automáticamente
   const API_URL = "https://ventas-backend.vercel.app/api/create-issue";
 
-  // Dónde está el menú:
-  const MENU_LOCAL    = "menu.json"; // si subiste menu.json al mismo host
+  // Dónde está el menú (catálogo)
+  const MENU_LOCAL    = "menu.json"; // si convives con menu.json en el mismo host
   const MENU_FALLBACK = `https://${ORG.toLowerCase()}.github.io/${REPO}/menu.json`;
 
   // ========= CATEGORÍAS =========
@@ -102,7 +101,7 @@
   // ========= ESTADO =========
   let MENU = []; let FILTER = null; const cart = [];
   document.getElementById('fecha').valueAsDate = new Date();
-  function fmt(n){ return (n==null||n==='') ? '' : Number(n).toLocaleString('es-MX',{style:'currency',currency:'MXN'}); }
+  const fmt = n => (n==null||n==='') ? '' : Number(n).toLocaleString('es-MX',{style:'currency',currency:'MXN'});
 
   // ========= HELPERS NOMBRES =========
   function getCategoryOf(sku){const ks=Object.keys(CAT_LABELS).sort((a,b)=>b.length-a.length);for(const k of ks){if(sku.startsWith(k))return k}return"OTROS"}
@@ -227,7 +226,7 @@
     const title = `Venta: ${cart.length} items @ ${fecha}`;
     let body = `**Fecha**: ${fecha}\n**Notas**: ${notas||''}\n\n**Items**\nSKU | Cantidad | Precio\n`;
     cart.forEach(c=>{ body += `${c.item} | ${c.cantidad} | ${c.precio||''}\n`; });
-    const params = new URLSearchParams({ /*template:'sale.md',*/ title, body, labels: "venta" });
+    const params = new URLSearchParams({ title, body, labels: "venta" });
     return `${base}?${params.toString()}`;
   }
 
@@ -237,6 +236,7 @@
     if(!fecha){ alert("Falta la fecha"); return; }
     if(cart.length===0){ alert("Agrega al menos un producto"); return; }
 
+    // Si no hay backend, usa plan B
     if (!API_URL) { location.href = buildIssueUrlFallback(); return; }
 
     try{
