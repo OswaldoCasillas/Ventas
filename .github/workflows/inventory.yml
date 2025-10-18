@@ -1,18 +1,17 @@
 name: Inventory Bot
 
 on:
-  # Ejecutarlo manualmente desde Actions
   workflow_dispatch: {}
 
   # Procesa ventas / abastos / producción que llegan por Issues
   issues:
-    types: [opened, edited, labeled, reopened]
+    types: [opened, edited, reopened]  # quitamos "labeled" para reducir duplicados
 
   # Recalcula menú y reportes cuando cambian insumos/código/páginas
   push:
     paths:
-      - "data/**"                      # CSVs de inventario, catálogo, etc.
-      - "scripts/**"                   # lógica Python
+      - "data/**"
+      - "scripts/**"
       - "docs/register.html"
       - "docs/produccion.html"
       # Mercado
@@ -24,8 +23,8 @@ on:
       - "data/inventory_mercado.csv"
 
 permissions:
-  contents: write          # para commitear archivos generados
-  issues: write            # por si el script comenta/etiqueta/issues
+  contents: write
+  issues: write
 
 jobs:
   process:
@@ -59,31 +58,31 @@ jobs:
       - name: Run processor (genera menú, reportes y procesa issues)
         env:
           GITHUB_EVENT_PATH: ${{ github.event_path }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # necesario si el script usa la API
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python scripts/process_issue.py
 
       - name: Commit & push (rebase-safe)
         env:
-          BRANCH_NAME: ${{ github.ref_name }}   # normalmente "main"
+          BRANCH_NAME: ${{ github.ref_name }}
         run: |
+          set -e
           git config user.name  "inventory-bot"
           git config user.email "actions@users.noreply.github.com"
 
-          # Stage todo lo generado
+          branch="${BRANCH_NAME:-$(git rev-parse --abbrev-ref HEAD)}"
+
+          # Primero traemos la punta remota (con autostash por si ya hay cambios locales)
+          git fetch origin "$branch" --prune
+          git -c rebase.autoStash=true pull --rebase origin "$branch" || {
+            echo "⚠️ No se pudo rebasear (autostash). Se aborta push para evitar conflictos."
+            exit 0
+          }
+
+          # Stage/commit solo si hay cambios
           git add -A
           if git diff --cached --quiet; then
             echo "Sin cambios para commitear."
-            exit 0
-          fi
-
-          # Asegura que tenemos la historia completa y rebaseamos sobre la punta remota
-          branch="${BRANCH_NAME:-$(git rev-parse --abbrev-ref HEAD)}"
-          git fetch origin "$branch" --prune
-          # Rebase para evitar non-fast-forward
-          if ! git pull --rebase origin "$branch"; then
-            echo "⚠️ Conflictos durante rebase; se aborta push para no romper la rama."
-            git rebase --abort || true
             exit 0
           fi
 
