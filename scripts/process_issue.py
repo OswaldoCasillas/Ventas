@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import json, os, re, secrets, hashlib
 from datetime import datetime, timezone
 from pathlib import Path
@@ -66,6 +69,7 @@ def load_event_issue():
     return evt.get("issue")
 
 def grab_field(body: str, key: str) -> str:
+    # Acepta "**Fecha**: ..." o "Fecha: ..."
     pat = rf"^\s*(?:\*\*\s*{re.escape(key)}\s*\*\*|{re.escape(key)})\s*:\s*(.*)$"
     m = re.search(pat, body, re.IGNORECASE | re.MULTILINE)
     return (m.group(1) if m else "").strip()
@@ -82,24 +86,84 @@ def safe_parse_date(s: str, issue: dict) -> str:
         return created[:10]
     return datetime.now(timezone.utc).date().isoformat()
 
+# ---------- Validación/parseo robusto de Items ----------
+
+SKU_ALLOWED_PREFIX = (
+    "PALETA-AGUA", "PALETA-CREMA", "PALETA-SIN-AZUCAR", "PALETA-MINI",
+    "HELADO-NIEVE", "HELADO-CLASICO", "HELADO-GOURMET", "HELADO-SIN-AZUCAR",
+    "AGUA-FRESCA", "MALTEADA", "BEBIDA", "POSTRE", "BOTANA", "EXTRA"
+)
+
+def is_valid_sku(s: str) -> bool:
+    if not s or not isinstance(s, str):
+        return False
+    s = s.strip()
+    if s.startswith("**"):           # evita "**Cantidad**:" y similares
+        return False
+    if " " in s:                     # no espacios
+        return False
+    if not re.match(r"^[A-Z0-9\-:]{3,}$", s):
+        return False
+    # Permitimos SKUs que cumplan el patrón; preferimos los prefijos conocidos
+    return True
+
+def parse_items_section(body: str) -> str | None:
+    """
+    Encuentra el encabezado 'Items' (con o sin ** **) y devuelve el texto posterior.
+    """
+    lines = body.splitlines()
+    for i, ln in enumerate(lines):
+        if re.match(r"^\s*(\*\*\s*)?items(\s*\*\*)?\s*$", ln, re.IGNORECASE):
+            return "\n".join(lines[i+1:])
+    return None
+
 def parse_items_table(body: str, has_price: bool):
-    if "**Items**" not in body and "**items**" not in body:
+    """
+    Lee una tabla tipo:
+      SKU | Cantidad [| Precio]
+    Ignora encabezados y filas inválidas. Devuelve lista de dicts.
+    """
+    section = parse_items_section(body)
+    if not section:
         return []
-    after = body.split("**Items**", 1)[-1] if "**Items**" in body else body.split("**items**",1)[-1]
-    lines = [ln.rstrip() for ln in after.splitlines() if ln.strip()]
     out = []
-    for ln in lines:
-        if "|" not in ln:
-            break
+    for raw in section.splitlines():
+        ln = raw.strip()
+        if not ln or "|" not in ln:
+            if out:
+                break
+            else:
+                continue
         parts = [p.strip() for p in ln.split("|")]
-        if has_price and len(parts) >= 3:
-            sku, qty, price = parts[0], parts[1], parts[2]
-            try: out.append({"item": sku, "cantidad": int(qty), "precio_unit": price})
-            except: continue
-        elif not has_price and len(parts) >= 2:
-            sku, qty = parts[0], parts[1]
-            try: out.append({"item": sku, "cantidad": int(qty)})
-            except: continue
+
+        # ignora encabezados/separadores
+        head = "|".join(p.lower() for p in parts[:3])
+        if ("sku" in head and "cantidad" in head) or ln.startswith("---"):
+            continue
+
+        try:
+            if has_price:
+                if len(parts) < 3:
+                    continue
+                sku, qty, price = parts[0], parts[1], parts[2]
+                if not is_valid_sku(sku):
+                    continue
+                qty_i = int(str(qty).strip())
+                if qty_i <= 0:
+                    continue
+                out.append({"item": sku, "cantidad": qty_i, "precio_unit": str(price).strip()})
+            else:
+                if len(parts) < 2:
+                    continue
+                sku, qty = parts[0], parts[1]
+                if not is_valid_sku(sku):
+                    continue
+                qty_i = int(str(qty).strip())
+                if qty_i <= 0:
+                    continue
+                out.append({"item": sku, "cantidad": qty_i})
+        except Exception:
+            continue
     return out
 
 def short_id_from_sku(sku: str) -> str:
@@ -137,8 +201,10 @@ def write_inventory(path: Path, inv: pd.DataFrame):
     inv.to_csv(path, index=False)
 
 def write_menu_json(inv_general: pd.DataFrame):
-    cols = [c for c in ["product_id","item","descripcion","precio"] if c in inv_general.columns]
-    MENU_JSON.write_text(json.dumps(inv_general[cols].fillna("").to_dict(orient="records"),
+    # Filtra SKUs inválidos para no contaminar el menú
+    inv_ok = inv_general[inv_general["item"].apply(is_valid_sku)].copy()
+    cols = [c for c in ["product_id","item","descripcion","precio"] if c in inv_ok.columns]
+    MENU_JSON.write_text(json.dumps(inv_ok[cols].fillna("").to_dict(orient="records"),
                                     ensure_ascii=False, indent=2), encoding="utf-8")
 
 # ====================== guardar movimientos ======================
@@ -148,7 +214,28 @@ def _append_sales_csv(path: Path, rows: list):
     df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
     df.to_csv(path, index=False)
 
+def _clean_items(items, require_price: bool = False):
+    clean = []
+    for it in (items or []):
+        sku = str(it.get("item","")).strip()
+        if not is_valid_sku(sku):
+            continue
+        try:
+            qty = int(it.get("cantidad", 0))
+        except Exception:
+            qty = 0
+        if qty <= 0:
+            continue
+        rec = {"item": sku, "cantidad": qty}
+        if require_price:
+            rec["precio_unit"] = str(it.get("precio_unit","")).strip()
+        clean.append(rec)
+    return clean
+
 def append_sales_general(inv: pd.DataFrame, fecha: str, items: list, issue_url: str, txn_id: str):
+    items = _clean_items(items, require_price=True)
+    if not items:
+        return
     rows = []
     for it in items:
         sku = it["item"]; qty = int(it["cantidad"])
@@ -163,6 +250,9 @@ def append_sales_general(inv: pd.DataFrame, fecha: str, items: list, issue_url: 
     _append_sales_csv(SALES_CSV, rows)
 
 def append_sales_mkt(inv_mkt: pd.DataFrame, fecha: str, items: list, issue_url: str, txn_id: str):
+    items = _clean_items(items, require_price=True)
+    if not items:
+        return
     rows = []
     for it in items:
         sku = it["item"]; qty = int(it["cantidad"])
@@ -177,6 +267,9 @@ def append_sales_mkt(inv_mkt: pd.DataFrame, fecha: str, items: list, issue_url: 
     _append_sales_csv(SALES_MKT_CSV, rows)
 
 def append_production(fecha: str, items: list, issue_url: str, txn_id: str):
+    items = _clean_items(items, require_price=False)
+    if not items:
+        return
     df = pd.read_csv(PROD_CSV) if PROD_CSV.exists() and PROD_CSV.stat().st_size>0 else pd.DataFrame()
     for it in items:
         df = pd.concat([df, pd.DataFrame([{
@@ -185,6 +278,9 @@ def append_production(fecha: str, items: list, issue_url: str, txn_id: str):
     df.to_csv(PROD_CSV, index=False)
 
 def append_transfer_mkt(fecha: str, items: list, issue_url: str, txn_id: str):
+    items = _clean_items(items, require_price=False)
+    if not items:
+        return
     df = pd.read_csv(TRANSFER_MKT_CSV) if TRANSFER_MKT_CSV.exists() and TRANSFER_MKT_CSV.stat().st_size>0 else pd.DataFrame()
     for it in items:
         df = pd.concat([df, pd.DataFrame([{
@@ -193,6 +289,7 @@ def append_transfer_mkt(fecha: str, items: list, issue_url: str, txn_id: str):
     df.to_csv(TRANSFER_MKT_CSV, index=False)
 
 def apply_stock(inv: pd.DataFrame, items: list, sign: int, path: Path) -> pd.DataFrame:
+    items = _clean_items(items, require_price=False)
     for it in items:
         sku = it["item"]; delta = sign * int(it["cantidad"])
         mask = inv["item"] == sku
@@ -209,6 +306,12 @@ def apply_stock(inv: pd.DataFrame, items: list, sign: int, path: Path) -> pd.Dat
 # ====================== reportes ======================
 
 def build_reports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame):
+    # Sanea inventarios para no propagar filas corruptas
+    inv_gen = inv_gen[inv_gen["item"].apply(is_valid_sku)].copy()
+    inv_mkt = inv_mkt[inv_mkt["item"].apply(is_valid_sku)].copy()
+    inv_gen["stock"] = pd.to_numeric(inv_gen["stock"], errors="coerce").fillna(0).astype(int)
+    inv_mkt["stock"] = pd.to_numeric(inv_mkt["stock"], errors="coerce").fillna(0).astype(int)
+
     # ----- general -----
     sales = pd.read_csv(SALES_CSV) if SALES_CSV.exists() else pd.DataFrame(
         columns=["txn_id","fecha","item","cantidad","precio_unit","importe","issue"])
