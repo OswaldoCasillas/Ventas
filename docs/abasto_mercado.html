@@ -69,333 +69,37 @@
 </div>
 
 <script>
-/* ====== CONFIG ====== */
-const ORG = "OswaldoCasillas";
-const REPO = "Ventas";
+const ORG="OswaldoCasillas", REPO="Ventas";
+const API_URL=""; // si pones backend, úsalo; si no, abre issue prellenado
 
-/* 👉 Tu endpoint de Vercel */
-const API_URL = "https://ventas-backend-rose.vercel.app/api/create-issue";
+const CAT_LABELS={ "PALETA-AGUA":"Paleta de Agua","PALETA-AGUA-PREMIUM":"Paleta Agua Premium","PALETA-CREMA":"Paleta de Crema","PALETA-CREMA-PREMIUM":"Paleta Crema Premium","PALETA-SIN-AZUCAR":"Paleta Sin Azúcar/Keto","HELADO-NIEVE":"Helado Nieve","HELADO-CLASICO":"Helado Clásico","HELADO-GOURMET":"Helado Gourmet","HELADO-SIN-AZUCAR":"Helado Sin Azúcar","MALTEADA":"Malteada","AGUA-FRESCA":"Aguas Frescas","BEBIDA":"Bebidas","POSTRE":"Postres","BOTANA":"Botanas","EXTRA":"Extras","PALETA-MINI":"Paleta Mini" };
 
-/* Catálogo: local + fallback a GitHub Pages */
-const MENU_LOCAL    = "menu.json";
-const MENU_FALLBACK = `https://${ORG.toLowerCase()}.github.io/${REPO}/menu.json`;
-
-/* ====== CATEGORÍAS ====== */
-const CAT_LABELS = {
-  "PALETA-AGUA":"Paleta de Agua","PALETA-AGUA-PREMIUM":"Paleta Agua Premium",
-  "PALETA-CREMA":"Paleta de Crema","PALETA-CREMA-PREMIUM":"Paleta Crema Premium",
-  "PALETA-SIN-AZUCAR":"Paleta Sin Azúcar/Keto","HELADO-NIEVE":"Helado Nieve",
-  "HELADO-CLASICO":"Helado Clásico","HELADO-GOURMET":"Helado Gourmet",
-  "HELADO-SIN-AZUCAR":"Helado Sin Azúcar","MALTEADA":"Malteada",
-  "AGUA-FRESCA":"Aguas Frescas","BEBIDA":"Bebidas","POSTRE":"Postres",
-  "BOTANA":"Botanas","EXTRA":"Extras","PALETA-MINI":"Paleta Mini"
-};
-
-/* ====== ESTADO ====== */
-let MENU = [], FILTER = null, cart = [];
-document.getElementById('fecha').valueAsDate = new Date();
-
-/* ====== UTILS ====== */
+let MENU=[], FILTER=null, cart=[];
+document.getElementById('fecha').valueAsDate=new Date();
 function catOf(sku){const ks=Object.keys(CAT_LABELS).sort((a,b)=>b.length-a.length);for(const k of ks){if(sku.startsWith(k))return k}return"OTROS"}
 function skuToNice(s){const pref=["PALETA-AGUA-PREMIUM","PALETA-CREMA-PREMIUM","PALETA-SIN-AZUCAR","PALETA-AGUA","PALETA-CREMA","PALETA-MINI","HELADO-NIEVE","HELADO-CLASICO","HELADO-GOURMET","HELADO-SIN-AZUCAR","AGUA-FRESCA","MALTEADA","BEBIDA","POSTRE","BOTANA","EXTRA"];let n=s;for(const p of pref){if(n.startsWith(p+"-")){n=n.slice(p.length+1);break}}return n.replace(/-/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase())}
 function niceLabel(p){const base=(p.descripcion&&p.descripcion.trim())?p.descripcion:skuToNice(p.item);const cat=CAT_LABELS[catOf(p.item)]||"";return `${base}${cat?` — ${cat}`:''}`}
 
-/* ====== CARGAR MENÚ con fallback ====== */
-async function fetchJSON(url){const r = await fetch(url+"?_="+Date.now(),{cache:"no-store"}); if(!r.ok) throw new Error(r.status+" "+url); return r.json();}
-async function loadMenu(){
-  try { MENU = await fetchJSON(MENU_LOCAL); }
-  catch(e1){
-    console.warn("menu.json local no disponible, usando fallback…", e1);
-    try { MENU = await fetchJSON(MENU_FALLBACK); }
-    catch(e2){ alert("No pude cargar el catálogo.\nIntenté:\n• "+location.origin+"/"+MENU_LOCAL+"\n• "+MENU_FALLBACK); return; }
-  }
-  buildCats(); renderOptions();
-}
+async function loadMenu(){const r=await fetch('menu.json?_='+Date.now());if(!r.ok){alert("No encuentro menu.json");return}MENU=await r.json();buildCats();renderOptions()}
+function buildCats(){const set=new Set(MENU.map(x=>catOf(x.item)).filter(k=>k!=="OTROS"));const w=document.getElementById('cats');w.innerHTML=`<span class="cat ${FILTER===null?'active':''}" data-k="">Todos</span>`+[...set].map(k=>`<span class="cat ${FILTER===k?'active':''}" data-k="${k}">${CAT_LABELS[k]||k}</span>`).join('');w.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{FILTER=b.dataset.k||null;w.querySelectorAll('.cat').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderOptions()})}
+function renderOptions(){const sel=document.getElementById('item');let items=MENU.slice();if(FILTER)items=items.filter(x=>catOf(x.item)===FILTER);items.sort((a,b)=>niceLabel(a).localeCompare(niceLabel(b),'es'));sel.innerHTML=items.map(x=>`<option value="${x.item}">${niceLabel(x)}</option>`).join('')}
 
-/* ====== UI CATEGORÍAS/PRODUCTOS ====== */
-function buildCats(){
-  const set = new Set(MENU.map(x=>catOf(x.item)).filter(k=>k!=="OTROS"));
-  const w = document.getElementById('cats');
-  w.innerHTML = `<span class="cat ${FILTER===null?'active':''}" data-k="">Todos</span>` +
-    [...set].map(k=>`<span class="cat ${FILTER===k?'active':''}" data-k="${k}">${CAT_LABELS[k]||k}</span>`).join('');
-  w.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
-    FILTER = b.dataset.k || null;
-    w.querySelectorAll('.cat').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
-    renderOptions();
-  });
-}
-function renderOptions(){
-  const sel = document.getElementById('item');
-  let items = MENU.slice();
-  if (FILTER) items = items.filter(x=>catOf(x.item)===FILTER);
-  items.sort((a,b)=>niceLabel(a).localeCompare(niceLabel(b),'es'));
-  sel.innerHTML = items.map(x=>`<option value="${x.item}">${niceLabel(x)}</option>`).join('');
-}
+function renderCart(){const tb=document.querySelector('#cartTbl tbody');tb.innerHTML=cart.map((c,i)=>`<tr><td>${c.item}</td><td>${c.descripcion||''}</td><td class="right">${c.cantidad}</td><td><button data-i="${i}" class="rm">Quitar</button></td></tr>`).join('');tb.querySelectorAll('.rm').forEach(b=>b.onclick=()=>{cart.splice(Number(b.dataset.i),1);renderCart()})}
 
-/* ====== CARRITO ====== */
-function renderCart(){
-  const tb = document.querySelector('#cartTbl tbody');
-  tb.innerHTML = cart.map((c,i)=>`<tr>
-    <td>${c.item}</td><td>${c.descripcion||''}</td>
-    <td class="right">${c.cantidad}</td>
-    <td><button data-i="${i}" class="rm">Quitar</button></td>
-  </tr>`).join('');
-  tb.querySelectorAll('.rm').forEach(b=>b.onclick=()=>{ cart.splice(Number(b.dataset.i),1); renderCart(); });
-}
+function clampQty(){const inp=document.getElementById('cantidad');let v=parseInt(inp.value||'1',10);if(isNaN(v)||v<1)v=1;inp.value=v}
+document.getElementById('qtyMinus').onclick=()=>{const i=document.getElementById('cantidad');clampQty();i.value=Math.max(1,parseInt(i.value,10)-1)}
+document.getElementById('qtyPlus').onclick=()=>{const i=document.getElementById('cantidad');clampQty();i.value=parseInt(i.value,10)+1}
+document.getElementById('cantidad').addEventListener('input',clampQty)
 
-/* Botones ± */
-function clampQty(){const inp=document.getElementById('cantidad'); let v=parseInt(inp.value||'1',10); if(isNaN(v)||v<1)v=1; inp.value=v;}
-document.getElementById('qtyMinus').onclick=()=>{const i=document.getElementById('cantidad'); clampQty(); i.value=Math.max(1,parseInt(i.value,10)-1);}
-document.getElementById('qtyPlus').onclick =()=>{const i=document.getElementById('cantidad'); clampQty(); i.value=parseInt(i.value,10)+1;}
-document.getElementById('cantidad').addEventListener('input',clampQty);
+document.getElementById('add').onclick=()=>{const sku=document.getElementById('item').value;const cant=parseInt(document.getElementById('cantidad').value||'1',10);if(!sku||cant<=0)return alert("Selecciona producto y cantidad");const p=MENU.find(x=>x.item===sku)||{descripcion:''};const idx=cart.findIndex(c=>c.item===sku);if(idx>=0)cart[idx].cantidad+=cant;else cart.push({item:sku,descripcion:niceLabel(p),cantidad:cant});renderCart();document.getElementById('cantidad').value=1}
 
-/* Agregar al carrito */
-document.getElementById('add').onclick=()=>{
-  const sku = document.getElementById('item').value;
-  const cant = parseInt(document.getElementById('cantidad').value||'1',10);
-  if(!sku || cant<=0) return alert("Selecciona producto y cantidad");
-  const p = MENU.find(x=>x.item===sku) || {descripcion:''};
-  const idx = cart.findIndex(c=>c.item===sku);
-  if(idx>=0) cart[idx].cantidad += cant;
-  else cart.push({item: sku, descripcion: niceLabel(p), cantidad: cant});
-  renderCart(); document.getElementById('cantidad').value = 1;
-};
-document.getElementById('clear').onclick=()=>{ cart.splice(0,cart.length); renderCart(); };
+document.getElementById('clear').onclick=()=>{cart.splice(0,cart.length);renderCart()}
 
-/* ====== ENVÍO ====== */
-// Plan B: crear issue directo con etiquetas correctas
-function buildIssueUrl(){
-  const fecha = document.getElementById('fecha').value;
-  const notas = document.getElementById('notas').value;
-  const base  = `https://github.com/${ORG}/${REPO}/issues/new`;
-  const title = `Abasto Mercado: ${cart.length} items @ ${fecha}`;
-  let body = `**Fecha**: ${fecha}\n**Notas**: ${notas||''}\n\n**Items**\nSKU | Cantidad\n`;
-  cart.forEach(c => body += `${c.item} | ${c.cantidad}\n`);
-  // 🔧 Etiquetamos como "produccion" + "abasto-mercado"
-  const params = new URLSearchParams({ title, body, labels: "produccion,abasto-mercado" });
-  return `${base}?${params.toString()}`;
-}
+function buildIssueUrl(){const fecha=document.getElementById('fecha').value;const notas=document.getElementById('notas').value;const base=`https://github.com/${ORG}/${REPO}/issues/new`;const title=`Abasto Mercado: ${cart.length} items @ ${fecha}`;let body=`**Fecha**: ${fecha}\n**Notas**: ${notas||''}\n\n**Items**\nSKU | Cantidad\n`;cart.forEach(c=>body+=`${c.item} | ${c.cantidad}\n`);const params=new URLSearchParams({title,body,labels:"abasto-mercado"});return `${base}?${params.toString()}`}
 
-async function submit(){
-  if(cart.length===0) return alert("Carrito vacío");
-  const fecha = document.getElementById('fecha').value;
-  const notas = document.getElementById('notas').value;
-  if(!fecha) return alert("Falta fecha");
+async function submit(){if(cart.length===0)return alert("Carrito vacío");if(!document.getElementById('fecha').value)return alert("Falta fecha");if(!API_URL){location.href=buildIssueUrl();return}/* backend opcional */}
+document.getElementById('confirm').onclick=submit;
 
-  if(!API_URL){ location.href = buildIssueUrl(); return; }
-
-  try{
-    const items = cart.map(c => ({ item: c.item, cantidad: c.cantidad }));
-    const resp = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        type: "produccion",   // movimiento de inventario
-        fecha, notas, items,
-        mercado: true         // ✅ MUY IMPORTANTE: marcar que es Mercado
-      })
-    });
-    if(!resp.ok){
-      const t = await resp.text().catch(()=>resp.statusText);
-      console.warn("Backend error:", resp.status, t);
-      location.href = buildIssueUrl();     // Fallback
-      return;
-    }
-    alert("Abasto registrado ✅");
-    cart.splice(0,cart.length); renderCart();
-  }catch(e){
-    console.warn("No se pudo contactar backend:", e);
-    location.href = buildIssueUrl();       // Fallback
-  }
-}
-document.getElementById('confirm').onclick = submit;
-
-/* ====== INICIO ====== */
-loadMenu();
-</script>
-</body>
-</html>
-
-
-<label>Producto</label>
-<select id="item"></select>
-
-<div class="row">
-  <div>
-    <label>Cantidad</label>
-    <div class="qty-wrap">
-      <button type="button" class="qty-btn" id="qtyMinus">−</button>
-      <input id="cantidad" type="number" min="1" value="1" inputmode="numeric">
-      <button type="button" class="qty-btn" id="qtyPlus">+</button>
-    </div>
-  </div>
-  <div>
-    <label>Notas (opcional)</label>
-    <input id="notas" type="text" placeholder="Quién entrega/recibe, etc.">
-  </div>
-</div>
-
-<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
-  <button id="add">Agregar al carrito</button>
-  <button id="clear" class="danger">Vaciar carrito</button>
-</div>
-
-<h3>Carrito</h3>
-<table id="cartTbl">
-  <thead><tr><th>SKU</th><th>Descripción</th><th class="right">Cantidad</th><th></th></tr></thead>
-  <tbody></tbody>
-</table>
-
-<div style="margin-top:12px">
-  <button id="confirm" class="primary">Confirmar abasto</button>
-</div>
-
-<script>
-/* ====== CONFIG ====== */
-const ORG = "OswaldoCasillas";
-const REPO = "Ventas";
-
-/* 👉 AQUÍ va tu endpoint de Vercel */
-const API_URL = "https://ventas-backend-rose.vercel.app/api/create-issue";
-
-/* Catálogo: local + fallback a GitHub Pages */
-const MENU_LOCAL    = "menu.json";
-const MENU_FALLBACK = `https://${ORG.toLowerCase()}.github.io/${REPO}/menu.json`;
-
-/* ====== CATEGORÍAS ====== */
-const CAT_LABELS = {
-  "PALETA-AGUA":"Paleta de Agua","PALETA-AGUA-PREMIUM":"Paleta Agua Premium",
-  "PALETA-CREMA":"Paleta de Crema","PALETA-CREMA-PREMIUM":"Paleta Crema Premium",
-  "PALETA-SIN-AZUCAR":"Paleta Sin Azúcar/Keto","HELADO-NIEVE":"Helado Nieve",
-  "HELADO-CLASICO":"Helado Clásico","HELADO-GOURMET":"Helado Gourmet",
-  "HELADO-SIN-AZUCAR":"Helado Sin Azúcar","MALTEADA":"Malteada",
-  "AGUA-FRESCA":"Aguas Frescas","BEBIDA":"Bebidas","POSTRE":"Postres",
-  "BOTANA":"Botanas","EXTRA":"Extras","PALETA-MINI":"Paleta Mini"
-};
-
-/* ====== ESTADO ====== */
-let MENU = [], FILTER = null, cart = [];
-document.getElementById('fecha').valueAsDate = new Date();
-
-/* ====== UTILS ====== */
-function catOf(sku){const ks=Object.keys(CAT_LABELS).sort((a,b)=>b.length-a.length);for(const k of ks){if(sku.startsWith(k))return k}return"OTROS"}
-function skuToNice(s){const pref=["PALETA-AGUA-PREMIUM","PALETA-CREMA-PREMIUM","PALETA-SIN-AZUCAR","PALETA-AGUA","PALETA-CREMA","PALETA-MINI","HELADO-NIEVE","HELADO-CLASICO","HELADO-GOURMET","HELADO-SIN-AZUCAR","AGUA-FRESCA","MALTEADA","BEBIDA","POSTRE","BOTANA","EXTRA"];let n=s;for(const p of pref){if(n.startsWith(p+"-")){n=n.slice(p.length+1);break}}return n.replace(/-/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase())}
-function niceLabel(p){const base=(p.descripcion&&p.descripcion.trim())?p.descripcion:skuToNice(p.item);const cat=CAT_LABELS[catOf(p.item)]||"";return `${base}${cat?` — ${cat}`:''}`}
-
-/* ====== CARGAR MENÚ con fallback ====== */
-async function fetchJSON(url){const r = await fetch(url+"?_="+Date.now(),{cache:"no-store"}); if(!r.ok) throw new Error(r.status+" "+url); return r.json();}
-async function loadMenu(){
-  try { MENU = await fetchJSON(MENU_LOCAL); }
-  catch(e1){
-    console.warn("menu.json local no disponible, usando fallback…", e1);
-    try { MENU = await fetchJSON(MENU_FALLBACK); }
-    catch(e2){ alert("No pude cargar el catálogo.\nIntenté:\n• "+location.origin+"/"+MENU_LOCAL+"\n• "+MENU_FALLBACK); return; }
-  }
-  buildCats(); renderOptions();
-}
-
-/* ====== UI CATEGORÍAS/PRODUCTOS ====== */
-function buildCats(){
-  const set = new Set(MENU.map(x=>catOf(x.item)).filter(k=>k!=="OTROS"));
-  const w = document.getElementById('cats');
-  w.innerHTML = `<span class="cat ${FILTER===null?'active':''}" data-k="">Todos</span>` +
-    [...set].map(k=>`<span class="cat ${FILTER===k?'active':''}" data-k="${k}">${CAT_LABELS[k]||k}</span>`).join('');
-  w.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
-    FILTER = b.dataset.k || null;
-    w.querySelectorAll('.cat').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
-    renderOptions();
-  });
-}
-function renderOptions(){
-  const sel = document.getElementById('item');
-  let items = MENU.slice();
-  if (FILTER) items = items.filter(x=>catOf(x.item)===FILTER);
-  items.sort((a,b)=>niceLabel(a).localeCompare(niceLabel(b),'es'));
-  sel.innerHTML = items.map(x=>`<option value="${x.item}">${niceLabel(x)}</option>`).join('');
-}
-
-/* ====== CARRITO ====== */
-function renderCart(){
-  const tb = document.querySelector('#cartTbl tbody');
-  tb.innerHTML = cart.map((c,i)=>`<tr>
-    <td>${c.item}</td><td>${c.descripcion||''}</td>
-    <td class="right">${c.cantidad}</td>
-    <td><button data-i="${i}" class="rm">Quitar</button></td>
-  </tr>`).join('');
-  tb.querySelectorAll('.rm').forEach(b=>b.onclick=()=>{ cart.splice(Number(b.dataset.i),1); renderCart(); });
-}
-
-/* Botones ± */
-function clampQty(){const inp=document.getElementById('cantidad'); let v=parseInt(inp.value||'1',10); if(isNaN(v)||v<1)v=1; inp.value=v;}
-document.getElementById('qtyMinus').onclick=()=>{const i=document.getElementById('cantidad'); clampQty(); i.value=Math.max(1,parseInt(i.value,10)-1);}
-document.getElementById('qtyPlus').onclick =()=>{const i=document.getElementById('cantidad'); clampQty(); i.value=parseInt(i.value,10)+1;}
-document.getElementById('cantidad').addEventListener('input',clampQty);
-
-/* Agregar al carrito */
-document.getElementById('add').onclick=()=>{
-  const sku = document.getElementById('item').value;
-  const cant = parseInt(document.getElementById('cantidad').value||'1',10);
-  if(!sku || cant<=0) return alert("Selecciona producto y cantidad");
-  const p = MENU.find(x=>x.item===sku) || {descripcion:''};
-  const idx = cart.findIndex(c=>c.item===sku);
-  if(idx>=0) cart[idx].cantidad += cant;
-  else cart.push({item: sku, descripcion: niceLabel(p), cantidad: cant});
-  renderCart(); document.getElementById('cantidad').value = 1;
-};
-document.getElementById('clear').onclick=()=>{ cart.splice(0,cart.length); renderCart(); };
-
-/* ====== ENVÍO ====== */
-function buildIssueUrl(){
-  const fecha = document.getElementById('fecha').value;
-  const notas = document.getElementById('notas').value;
-  const base  = `https://github.com/${ORG}/${REPO}/issues/new`;
-  const title = `Abasto Mercado: ${cart.length} items @ ${fecha}`;
-  let body = `**Fecha**: ${fecha}\n**Notas**: ${notas||''}\n\n**Items**\nSKU | Cantidad\n`;
-  cart.forEach(c => body += `${c.item} | ${c.cantidad}\n`);
-  const params = new URLSearchParams({ title, body, labels: "abasto-mercado" });
-  return `${base}?${params.toString()}`;
-}
-
-async function submit(){
-  if(cart.length===0) return alert("Carrito vacío");
-  const fecha = document.getElementById('fecha').value;
-  const notas = document.getElementById('notas').value;
-  if(!fecha) return alert("Falta fecha");
-
-  // Si no hay backend → plan B
-  if(!API_URL){ location.href = buildIssueUrl(); return; }
-
-  // Backend (usa label "produccion")
-  try{
-    const items = cart.map(c => ({ item: c.item, cantidad: c.cantidad }));
-    const resp = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        type: "produccion",           // el backend lo mapea a label "produccion"
-        fecha, notas, items,
-        // opcional: podrías incluir un campo 'context' si luego quieres diferenciar en el workflow
-      })
-    });
-    if(!resp.ok){
-      const t = await resp.text().catch(()=>resp.statusText);
-      console.warn("Backend error:", resp.status, t);
-      // Fallback automático
-      location.href = buildIssueUrl();
-      return;
-    }
-    alert("Abasto registrado ✅");
-    cart.splice(0,cart.length); renderCart();
-  }catch(e){
-    console.warn("No se pudo contactar backend:", e);
-    location.href = buildIssueUrl(); // fallback
-  }
-}
-document.getElementById('confirm').onclick = submit;
-
-/* ====== INICIO ====== */
 loadMenu();
 </script>
 </body>
