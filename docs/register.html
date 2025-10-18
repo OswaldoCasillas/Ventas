@@ -24,9 +24,21 @@
   .muted{color:#666;font-size:12px}
   .qty-wrap{display:flex;gap:6px;align-items:center}
   .qty-btn{width:48px;min-width:48px;padding:10px;border-radius:10px}
+
+  /* ====== Botón volver al menú ====== */
+  .topbar{display:flex;justify-content:flex-start;margin-bottom:12px}
+  .btn-link{border:1px solid #ccc;border-radius:8px;padding:8px 12px;text-decoration:none;color:inherit;display:inline-block}
+  .btn-link:hover{background:#f5f5f5}
+  @media print{.no-print{display:none}}
 </style>
 </head>
 <body>
+
+<!-- Barra superior con botón de regreso -->
+<div class="topbar no-print">
+  <a class="btn-link" href="./index.html">← Menú principal</a>
+</div>
+
 <h1>Registrar venta</h1>
 <p class="muted">Selecciona productos por categoría, agrégalos al carrito y confirma. Si configuraste un backend, se registrará sin salir de la página.</p>
 
@@ -90,13 +102,23 @@
 
   // ========= CATEGORÍAS =========
   const CAT_LABELS = {
-    "PALETA-AGUA":"Paleta de Agua","PALETA-AGUA-PREMIUM":"Paleta Agua Premium",
-    "PALETA-CREMA":"Paleta de Crema","PALETA-CREMA-PREMIUM":"Paleta Crema Premium",
-    "PALETA-SIN-AZUCAR":"Paleta Sin Azúcar/Keto","PALETA-MINI":"Paleta Mini",
-    "HELADO-NIEVE":"Helado Nieve","HELADO-CLASICO":"Helado Clásico",
-    "HELADO-GOURMET":"Helado Gourmet","HELADO-SIN-AZUCAR":"Helado Sin Azúcar",
-    "MALTEADA":"Malteada","AGUA-FRESCA":"Aguas Frescas","BEBIDA":"Bebidas",
-    "POSTRE":"Postres","BOTANA":"Botanas","EXTRA":"Extras"
+    "PALETA-AGUA": "Paleta de Agua",
+    "PALETA-AGUA-PREMIUM": "Paleta Agua Premium",
+    "PALETA-CREMA": "Paleta de Crema",
+    "PALETA-CREMA-PREMIUM": "Paleta Crema Premium",
+    "PALETA-SIN-AZUCAR": "Paleta Sin Azúcar/Keto",
+    "PALETA-ALCOHOL": "Paleta con Alcohol",          // ✅ NUEVA
+    "PALETA-MINI": "Paleta Mini",
+    "HELADO-NIEVE": "Helado Nieve",
+    "HELADO-CLASICO": "Helado Clásico",
+    "HELADO-GOURMET": "Helado Gourmet",
+    "HELADO-SIN-AZUCAR": "Helado Sin Azúcar",
+    "MALTEADA": "Malteada",
+    "AGUA-FRESCA": "Aguas Frescas",
+    "BEBIDA": "Bebidas",
+    "POSTRE": "Postres",
+    "BOTANA": "Botanas",
+    "EXTRA": "Extras"
   };
 
   // ========= ESTADO =========
@@ -263,9 +285,6 @@
 
   // ========= INICIO =========
   document.addEventListener("DOMContentLoaded", loadMenu);
-</script> <!-- ✅ cerramos el script principal -->
-
-<!-- Botón universal "Volver al menú" -->
-<script src="back-button.js?v=1" defer></script>
+</script>
 </body>
 </html>
