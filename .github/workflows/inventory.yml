@@ -1,26 +1,39 @@
 name: Inventory Bot
 
 on:
+  # Ejecutarlo manualmente desde Actions
   workflow_dispatch: {}
+
+  # Procesa ventas / abastos / producción que llegan por Issues
   issues:
     types: [opened, edited, labeled, reopened]
+
+  # Recalcula menú y reportes cuando cambian insumos/código/páginas
   push:
     paths:
-      - "data/**"
-      - "scripts/**"
+      - "data/**"                      # CSVs de inventario, catálogo, etc.
+      - "scripts/**"                   # lógica Python
       - "docs/register.html"
+      - "docs/produccion.html"
+      # Mercado
       - "docs/register_mercado.html"
-      - "docs/ventas.html"
+      - "docs/abasto_mercado.html"
+      - "docs/inventario_mercado.html"
       - "docs/ventas_mercado.html"
-      - "docs/config.js"
+      - "docs/reportes_mercado.html"
+      - "data/inventory_mercado.csv"
 
 permissions:
-  contents: write
-  issues: read
+  contents: write          # para commitear archivos generados
+  issues: write            # por si el script comenta/etiqueta/issues
 
 jobs:
   process:
     runs-on: ubuntu-latest
+    concurrency:
+      group: inventory-bot-${{ github.ref }}
+      cancel-in-progress: false
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,25 +44,48 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          cache: "pip"
+          cache: pip
 
       - name: Install deps
-        run: pip install pandas
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas
 
-      - name: Ejecutar script (procesa issues → CSV diarios)
+      - name: Prepare output folders
+        run: |
+          mkdir -p docs/diario
+          mkdir -p docs/mercado/diario
+
+      - name: Run processor (genera menú, reportes y procesa issues)
         env:
           GITHUB_EVENT_PATH: ${{ github.event_path }}
-        run: python scripts/process_issue.py
-
-      - name: Commit y push de cambios
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # necesario si el script usa la API
         run: |
-          git config user.name "inventory-bot"
+          python scripts/process_issue.py
+
+      - name: Commit & push (rebase-safe)
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}   # normalmente "main"
+        run: |
+          git config user.name  "inventory-bot"
           git config user.email "actions@users.noreply.github.com"
-          git pull --rebase
-          git add data/*.csv docs/*.json docs/*.csv docs/diario/* docs/mercado/diario/* || true
+
+          # Stage todo lo generado
+          git add -A
           if git diff --cached --quiet; then
-            echo "Sin cambios."
-          else
-            git commit -m "chore(inventory): actualizar datos y reportes"
-            git push
+            echo "Sin cambios para commitear."
+            exit 0
           fi
+
+          # Asegura que tenemos la historia completa y rebaseamos sobre la punta remota
+          branch="${BRANCH_NAME:-$(git rev-parse --abbrev-ref HEAD)}"
+          git fetch origin "$branch" --prune
+          # Rebase para evitar non-fast-forward
+          if ! git pull --rebase origin "$branch"; then
+            echo "⚠️ Conflictos durante rebase; se aborta push para no romper la rama."
+            git rebase --abort || true
+            exit 0
+          fi
+
+          git commit -m "chore(inventory): actualizar datos, menú y reportes"
+          git push origin HEAD:"$branch"
