@@ -22,7 +22,6 @@
   .primary{background:#111;color:#fff;border-color:#111}
   .danger{background:#c62828;color:#fff;border-color:#c62828}
   .muted{color:#666;font-size:12px}
-  /* Botonera de cantidad */
   .qty-wrap{display:flex;gap:6px;align-items:center}
   .qty-btn{width:48px;min-width:48px;padding:10px;border-radius:10px}
 </style>
@@ -77,12 +76,19 @@
 <p class="muted">QR rápido por producto: <a id="qr-link" href="#">crear</a></p>
 
 <script>
-  // ====== CONFIG ======
-  const API_URL = ""; // ej: "https://tu-proyecto.vercel.app/api/create-issue"
+  // ========= CONFIG =========
   const ORG  = "OswaldoCasillas";
   const REPO = "Ventas";
 
-  // ====== CATEGORÍAS ======
+  // 👉 SOLO una definición:
+  // Pon aquí tu endpoint en Vercel (o déjalo vacío para usar el plan B que abre un issue):
+  const API_URL = "https://ventas-backend.vercel.app/api/create-issue";
+
+  // Dónde está el menú:
+  const MENU_LOCAL    = "menu.json"; // si subiste menu.json al mismo host
+  const MENU_FALLBACK = `https://${ORG.toLowerCase()}.github.io/${REPO}/menu.json`;
+
+  // ========= CATEGORÍAS =========
   const CAT_LABELS = {
     "PALETA-AGUA":"Paleta de Agua","PALETA-AGUA-PREMIUM":"Paleta Agua Premium",
     "PALETA-CREMA":"Paleta de Crema","PALETA-CREMA-PREMIUM":"Paleta Crema Premium",
@@ -93,21 +99,34 @@
     "POSTRE":"Postres","BOTANA":"Botanas","EXTRA":"Extras"
   };
 
-  // ====== ESTADO ======
+  // ========= ESTADO =========
   let MENU = []; let FILTER = null; const cart = [];
   document.getElementById('fecha').valueAsDate = new Date();
   function fmt(n){ return (n==null||n==='') ? '' : Number(n).toLocaleString('es-MX',{style:'currency',currency:'MXN'}); }
 
-  // ====== HELPERS NOMBRES ======
+  // ========= HELPERS NOMBRES =========
   function getCategoryOf(sku){const ks=Object.keys(CAT_LABELS).sort((a,b)=>b.length-a.length);for(const k of ks){if(sku.startsWith(k))return k}return"OTROS"}
   function skuToNice(s){const pref=["PALETA-AGUA-PREMIUM","PALETA-CREMA-PREMIUM","PALETA-SIN-AZUCAR","PALETA-AGUA","PALETA-CREMA","PALETA-MINI","HELADO-NIEVE","HELADO-CLASICO","HELADO-GOURMET","HELADO-SIN-AZUCAR","AGUA-FRESCA","MALTEADA","BEBIDA","POSTRE","BOTANA","EXTRA"];let n=s;for(const p of pref){if(n.startsWith(p+"-")){n=n.slice(p.length+1);break}}return n.replace(/-/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase()).replace(/\bS\/?Azucar\b/gi,'Sin Azúcar')}
   function niceLabel(p){const base=(p.descripcion&&p.descripcion.trim())?p.descripcion:skuToNice(p.item);const cat=CAT_LABELS[getCategoryOf(p.item)]||"";const price=(p.precio!==undefined&&p.precio!=="")?` ($${p.precio})`:"";return `${base}${price}${cat?` — ${cat}`:''}`}
 
-  // ====== MENU ======
+  // ========= MENÚ (con fallback) =========
+  async function fetchJSON(url){
+    const r = await fetch(url + "?_=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) throw new Error(`${r.status} ${url}`);
+    return r.json();
+  }
   async function loadMenu(){
-    const r = await fetch('menu.json?_='+Date.now());
-    if(!r.ok){ alert("No encuentro el menú (menu.json). Corre el workflow para generarlo."); return; }
-    MENU = await r.json();
+    try {
+      MENU = await fetchJSON(MENU_LOCAL);
+    } catch(e1){
+      console.warn("menu.json local no disponible, usando fallback…", e1);
+      try { MENU = await fetchJSON(MENU_FALLBACK); }
+      catch(e2){
+        console.error("No se pudo cargar el catálogo.", e2);
+        alert("No pude cargar el catálogo (menu.json).\nIntenté:\n• " + location.origin + "/" + MENU_LOCAL + "\n• " + MENU_FALLBACK);
+        return;
+      }
+    }
     buildCategories(); renderOptions();
     const q = new URLSearchParams(location.search);
     if (q.get('item')) {
@@ -152,13 +171,13 @@
     sel.onchange = () => setPriceFromSelected();
   }
 
-  // ====== BOTONES ± CANTIDAD ======
+  // ========= BOTONES ± =========
   function clampQty(){ const inp=document.getElementById('cantidad'); let v=parseInt(inp.value||'1',10); if(isNaN(v)||v<1)v=1; inp.value=v; }
   document.getElementById('qtyMinus').onclick = ()=>{ const inp=document.getElementById('cantidad'); clampQty(); inp.value = Math.max(1, parseInt(inp.value,10)-1); };
   document.getElementById('qtyPlus').onclick  = ()=>{ const inp=document.getElementById('cantidad'); clampQty(); inp.value = parseInt(inp.value,10)+1; };
   document.getElementById('cantidad').addEventListener('input', clampQty);
 
-  // ====== CARRITO ======
+  // ========= CARRITO =========
   function renderCart(){
     const tb = document.querySelector('#cartTbl tbody');
     tb.innerHTML = cart.map((c,i)=>{
@@ -200,7 +219,7 @@
     prompt("Copia este enlace y conviértelo en QR:", u.toString());
   };
 
-  // ====== ENVIAR ======
+  // ========= ENVIAR =========
   function buildIssueUrlFallback(){
     const fecha = document.getElementById('fecha').value;
     const notas = document.getElementById('notas').value;
@@ -208,31 +227,42 @@
     const title = `Venta: ${cart.length} items @ ${fecha}`;
     let body = `**Fecha**: ${fecha}\n**Notas**: ${notas||''}\n\n**Items**\nSKU | Cantidad | Precio\n`;
     cart.forEach(c=>{ body += `${c.item} | ${c.cantidad} | ${c.precio||''}\n`; });
-    const params = new URLSearchParams({ template:'sale.md', title, body });
+    const params = new URLSearchParams({ /*template:'sale.md',*/ title, body, labels: "venta" });
     return `${base}?${params.toString()}`;
   }
-  
-  const API_URL = "https://ventas-backend.vercel.app/api/create-issue";
 
   async function crearVentaViaAPI(){
     const fecha = document.getElementById('fecha').value;
     const notas = document.getElementById('notas').value;
     if(!fecha){ alert("Falta la fecha"); return; }
     if(cart.length===0){ alert("Agrega al menos un producto"); return; }
+
     if (!API_URL) { location.href = buildIssueUrlFallback(); return; }
+
     try{
       const items = cart.map(c => ({ item: c.item, cantidad: c.cantidad, precio: c.precio || "" }));
-      const resp = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "venta", fecha, notas, items }) });
-      if(!resp.ok){ const err = await resp.json().catch(()=>({})); alert("Error creando la venta: " + (err.error || resp.statusText)); return; }
-      const data = await resp.json();
-      alert(`Venta registrada ✅\nIssue #${data.number}`);
+      const resp = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "venta", fecha, notas, items })
+      });
+      if(!resp.ok){
+        let errText = "";
+        try{ const err = await resp.json(); errText = err.error || JSON.stringify(err); }catch(_){}
+        alert("Error creando la venta: " + (errText || resp.statusText));
+        return;
+      }
+      const data = await resp.json().catch(()=>({}));
+      alert(`Venta registrada ✅${data.number?` (issue #${data.number})`:''}`);
       cart.splice(0, cart.length); renderCart();
-    }catch(e){ alert("No se pudo contactar el backend. Verifica API_URL o usa el plan B (issue directo)."); }
+    }catch(e){
+      alert("No se pudo contactar el backend. Verifica API_URL o usa el plan B (issue directo).");
+    }
   }
-  document.getElementById('confirm').onclick = ()=>{ crearVentaViaAPI(); };
+  document.getElementById('confirm').onclick = crearVentaViaAPI;
 
-  // ====== INICIO ======
-  loadMenu();
+  // ========= INICIO =========
+  document.addEventListener("DOMContentLoaded", loadMenu);
 </script>
 </body>
 </html>
