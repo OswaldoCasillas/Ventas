@@ -22,30 +22,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0    # necesitamos historial para poder pull --rebase
+          fetch-depth: 0  # necesario para poder rebasear
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          cache: pip
 
-      - name: Install deps
-        run: pip install pandas
-
-      - name: Ejecutar script (procesa issue y genera reportes)
+      - name: Ejecutar script (procesa issue y genera CSVs)
         env:
           GITHUB_EVENT_PATH: ${{ github.event_path }}
         run: python scripts/process_issue.py
 
       - name: Commit y push de cambios
         run: |
+          set -e
           git config user.name "inventory-bot"
           git config user.email "actions@users.noreply.github.com"
-          # Asegura que estamos sobre la punta remota
+
+          # Trae la punta remota para evitar non-fast-forward
           git pull --rebase
-          # Añade TODO lo que pueda generar el bot
+
+          # Añade TODO lo que puede generar el bot (general + mercado)
           git add data/*.csv docs/*.json docs/*.csv docs/diario/* docs/mercado/diario/* || true
+
           if git diff --cached --quiet; then
             echo "Sin cambios."
           else
