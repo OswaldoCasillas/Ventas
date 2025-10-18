@@ -1,10 +1,10 @@
-<script>
-// back-button.js — Botón flotante "Volver al menú"
+// docs/back-button.js  ✅ SOLO JS, sin <script>...</script>
 (() => {
   const link = document.createElement('a');
-  link.href = './index.html';
+  link.href = './index.html';            // para páginas en /docs
   link.textContent = '⬅ Volver al menú';
   link.setAttribute('aria-label', 'Volver al menú principal');
+
   Object.assign(link.style, {
     position: 'fixed',
     top: '16px',
@@ -22,10 +22,11 @@
     boxShadow: '0 2px 10px rgba(0,0,0,.15)',
     opacity: '0.92'
   });
+
   link.addEventListener('mouseenter', () => link.style.opacity = '1');
   link.addEventListener('mouseleave', () => link.style.opacity = '0.92');
 
-  // Evita taparlo si el sitio ya tiene header fijo alto
+  // Si hay un header/nav sticky alto, baja el botón un poco
   const headerLike = document.querySelector('header, nav');
   if (headerLike) link.style.top = '64px';
 
@@ -33,4 +34,3 @@
     document.body.appendChild(link);
   });
 })();
-</script>
