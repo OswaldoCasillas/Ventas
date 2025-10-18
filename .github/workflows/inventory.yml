@@ -1,39 +1,76 @@
 name: Inventory Bot
+
 on:
-  workflow_dispatch: {}          # <-- botón "Run workflow"
+  # Ejecutarlo manualmente desde Actions
+  workflow_dispatch: {}
+
+  # Procesa ventas / abastos / producción que llegan por Issues
   issues:
-    types: [opened, edited]      # ventas/producción
+    types: [opened, edited, labeled, reopened]
+
+  # Recalcula menú y reportes cuando cambian insumos/código/páginas
   push:
     paths:
-      - "data/**"                # catálogo o datos cambian
-      - "scripts/**"             # lógica cambia
-      - "docs/register.html"     # por si tocas la página
+      - "data/**"                      # CSVs de inventario, catálogo, etc.
+      - "scripts/**"                   # lógica Python
+      - "docs/register.html"
       - "docs/produccion.html"
+      # Mercado
+      - "docs/register_mercado.html"
+      - "docs/abasto_mercado.html"
+      - "docs/inventario_mercado.html"
+      - "docs/ventas_mercado.html"
+      - "docs/reportes_mercado.html"
+      - "data/inventory_mercado.csv"
 
 permissions:
-  contents: write
-  issues: read
+  contents: write          # para commitear archivos generados
+  issues: write            # por si el script comenta/etiqueta/issues
 
 jobs:
   process:
     runs-on: ubuntu-latest
+    concurrency:
+      group: inventory-bot-${{ github.ref }}
+      cancel-in-progress: false
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.11", cache: pip }
-      - run: pip install pandas
-      - name: Ejecutar script (genera menu.json, reportes, procesa issues si aplica)
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas
+
+      - name: Prepare output folders
+        run: |
+          mkdir -p docs/diario
+          mkdir -p docs/mercado/diario
+
+      - name: Run processor (genera menú, reportes y procesa issues)
         env:
           GITHUB_EVENT_PATH: ${{ github.event_path }}
-        run: python scripts/process_issue.py
-      - name: Commit de cambios
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # necesario si el script usa la API
+        run: |
+          python scripts/process_issue.py
+
+      - name: Commit changes
         run: |
           git config user.name "inventory-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/*.csv docs/*.json docs/*.csv docs/*.html docs/diario/* || true
+          git add -A
           if git diff --cached --quiet; then
-            echo "Sin cambios."
+            echo "Sin cambios para commitear."
           else
-            git commit -m "chore(inventory): actualizar datos y reportes"
+            git commit -m "chore(inventory): actualizar datos, menú y reportes"
             git push
           fi
