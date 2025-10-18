@@ -62,6 +62,10 @@ jobs:
         run: |
           python scripts/process_issue.py
 
+      - name: Generar reportes (Efectivo vs Tarjeta)
+        run: python scripts/build_reports.py
+
+
       - name: Commit & push (rebase-safe)
         env:
           BRANCH_NAME: ${{ github.ref_name }}
