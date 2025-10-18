@@ -1,27 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
-Procesa issues de ventas/producción y genera CSVs diarios para las páginas.
+Lee eventos de Issues (ventas/producción) y escribe CSV por día.
+General  → docs/diario/YYYY-MM-DD.csv
+Mercado → docs/mercado/diario/YYYY-MM-DD.csv
 
-Formato del cuerpo del Issue aceptado (ambos):
-  Fecha: YYYY-MM-DD
-  Notas: ...
-  Items
-  SKU | Cantidad | Precio
-  PALETA-AGUA-FRESA | 2 | 25.00
+Formato soportado en el body del Issue:
+Fecha: YYYY-MM-DD
+Notas:
+Items
+SKU | Cantidad | Precio
+PALETA-AGUA-FRESA | 2 | 25.00
 
-o con negritas:
-  **Fecha**: YYYY-MM-DD
-
-Si no encuentra la fecha en el cuerpo, la toma del título:
-  Venta: N items @ YYYY-MM-DD
+También acepta **Fecha**: ... y toma la fecha del título ("... @ YYYY-MM-DD") si falta.
 """
 
-import os
-import re
-import csv
-import json
+import os, re, csv, json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -29,203 +23,105 @@ DOCS = ROOT / "docs"
 
 def log(*a): print("[inventory]", *a)
 
-# ===================== Catálogo (menu.json) =====================
+# ---------- catálogo (para completar descripción/precio si faltan) ----------
 def load_menu():
-    """Cargar docs/menu.json (o menu.json en raíz) → dict por SKU"""
-    for p in [DOCS / "menu.json", ROOT / "menu.json"]:
+    for p in [DOCS/"menu.json", ROOT/"menu.json"]:
         if p.exists():
             try:
-                with p.open("r", encoding="utf-8") as f:
-                    data = json.load(f)
-                return {row["item"]: row for row in data if "item" in row}
+                return {r["item"]: r for r in json.loads(p.read_text(encoding="utf-8")) if "item" in r}
             except Exception as e:
-                log(f"no pude leer {p}: {e}")
-    log("⚠️  no encontré menu.json; descripciones/precios pueden quedar vacíos.")
+                log("no pude leer", p, e)
+    log("⚠️  sin menu.json (descripciones/precios pueden ir vacíos)")
     return {}
-
 MENU = load_menu()
+def desc_for(sku): r = MENU.get(sku); return (r.get("descripcion") if r else None) or sku
+def price_for(sku): r = MENU.get(sku); return (r.get("precio") if r else "")
 
-def desc_for(sku: str) -> str:
-    row = MENU.get(sku)
-    if not row:
-        return sku
-    return (row.get("descripcion") or row.get("item") or sku)
-
-def price_for(sku: str):
-    row = MENU.get(sku)
-    if not row:
-        return ""
-    return row.get("precio", "")
-
-# ===================== Parseo de Issue =====================
-DATE_RX_BODY = re.compile(
-    r"^\s*\*{0,2}\s*fecha\s*\*{0,2}\s*[:：]\s*([0-9]{4}-[0-9]{2}-[0-9]{2})\s*$",
-    re.IGNORECASE | re.MULTILINE,
-)
+# ---------- parseo del issue ----------
+DATE_RX_BODY  = re.compile(r"^\s*\*{0,2}fecha\*{0,2}\s*:\s*(\d{4}-\d{2}-\d{2})\s*$", re.I|re.M)
 DATE_RX_TITLE = re.compile(r"@?\s*(\d{4}-\d{2}-\d{2})\s*$")
-ITEMS_HEADER_RX = re.compile(r"^\s*items\s*$", re.IGNORECASE)
+ITEMS_RX      = re.compile(r"^\s*items\s*$", re.I)
 
-def parse_issue_payload(issue: dict):
-    """
-    Devuelve: {
-      'fecha': 'YYYY-MM-DD',
-      'items': [{'item': sku, 'cantidad': int, 'precio': str}],
-      'labels': set([...]),
-      'title': str,
-      'body': str
-    }
-    """
+def parse_issue(issue: dict):
     title  = issue.get("title") or ""
     body   = issue.get("body")  or ""
-    labels = {lbl.get("name","").lower() for lbl in issue.get("labels", [])}
+    labels = { (l.get("name") or "").lower() for l in issue.get("labels", []) }
 
-    # 1) fecha en el cuerpo (Fecha: ... o **Fecha**: ...)
-    m = DATE_RX_BODY.search(body)
-    fecha = m.group(1) if m else None
-    # 2) fallback: fecha al final del título “... @ YYYY-MM-DD”
+    m = DATE_RX_BODY.search(body); fecha = m.group(1) if m else None
     if not fecha:
-        mt = DATE_RX_TITLE.search(title)
-        if mt:
-            fecha = mt.group(1)
+        mt = DATE_RX_TITLE.search(title); fecha = mt.group(1) if mt else None
 
-    # 3) localizar bloque Items
     lines = body.splitlines()
-    start_idx = None
+    start = 0
     for i, ln in enumerate(lines):
-        if ITEMS_HEADER_RX.match(ln.strip()):
-            start_idx = i + 1
-            break
-    if start_idx is None:
-        start_idx = 0  # buscar cualquier línea con pipes
+        if ITEMS_RX.match(ln.strip()): start = i+1; break
 
-    items = []
-    for ln in lines[start_idx:]:
-        if "|" not in ln:
-            continue
+    items=[]
+    for ln in lines[start:]:
+        if "|" not in ln: continue
         row = [c.strip() for c in ln.split("|")]
-        if len(row) < 2:
-            continue
+        if len(row)<2: continue
 
-        # —— filtros para NO capturar encabezados/separadores/etiquetas ——
-        joined_lower = " ".join(row).lower()
+        # filtros para no tragar encabezados / separadores
+        jl = " ".join(row).lower()
+        if ("sku" in jl and "cantidad" in jl) or ("precio" in jl and "sku" in jl): continue
+        if set("".join(row)) <= {"-"," ",":"}: continue
+        if re.match(r"^\**\s*cantidad\s*\**\s*:?\s*$", row[0], re.I): continue
 
-        # encabezado típico "sku | cantidad | precio"
-        if ("sku" in joined_lower and "cantidad" in joined_lower) or ("precio" in joined_lower and "sku" in joined_lower):
-            continue
-
-        # separadores "----|----"
-        if set("".join(row)) <= {"-", " ", ":"}:
-            continue
-
-        # líneas tipo "**Cantidad**:"
-        if re.match(r"^\**\s*cantidad\s*\**\s*:?\s*$", row[0], flags=re.I):
-            continue
-
-        # —— Parseo esperado: SKU | Cantidad | Precio? ——
-        sku = row[0]
-        if not sku or sku.lower() == "sku":
-            continue
-
+        sku=row[0]
+        if not sku or sku.lower()=="sku": continue
         try:
-            cantidad = int(row[1])
+            cant=int(row[1])
         except Exception:
             continue
+        precio = row[2] if len(row)>=3 and row[2] else ""
 
-        precio = ""
-        if len(row) >= 3 and row[2]:
-            precio = row[2]
+        items.append({"item":sku, "cantidad":cant, "precio":precio})
 
-        items.append({"item": sku, "cantidad": cantidad, "precio": precio})
+    return {"fecha":fecha, "items":items, "labels":labels}
 
-    return {
-        "fecha": fecha,
-        "items": items,
-        "labels": labels,
-        "title": title,
-        "body": body,
-    }
+def ensure_dir(p:Path): p.mkdir(parents=True, exist_ok=True)
 
-# ===================== Escritura de CSV =====================
-def ensure_dir(p: Path):
-    p.mkdir(parents=True, exist_ok=True)
-
-def write_daily_csv(base_dir: Path, fecha: str, rows: list):
-    """
-    rows: [{'fecha','sku','descripcion','cantidad','precio','importe'}]
-    Escribe/append en base_dir/YYYY-MM-DD.csv
-    """
-    ensure_dir(base_dir)
-    out = base_dir / f"{fecha}.csv"
-    new_file = not out.exists()
+def write_daily(fecha:str, rows:list, mercado:bool):
+    base = DOCS/("mercado/diario" if mercado else "diario")
+    ensure_dir(base)
+    out = base/f"{fecha}.csv"
+    new = not out.exists()
     with out.open("a", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
-        if new_file:
-            w.writerow(["fecha", "sku", "descripcion", "cantidad", "precio", "importe"])
+        if new: w.writerow(["fecha","sku","descripcion","cantidad","precio","importe"])
         for r in rows:
             w.writerow([r["fecha"], r["sku"], r["descripcion"], r["cantidad"], r["precio"], r["importe"]])
-    log(f"✓ actualizado {out.relative_to(ROOT)}")
-
-# ===================== Flujo principal =====================
-def process_issue_event(event_path: Path):
-    with event_path.open("r", encoding="utf-8") as f:
-        event = json.load(f)
-
-    issue = event.get("issue") or {}
-    if not issue:
-        log("no es evento de issue; nada que hacer")
-        return
-
-    parsed = parse_issue_payload(issue)
-    fecha  = parsed["fecha"]
-    items  = parsed["items"]
-    labels = parsed["labels"]
-
-    if not fecha:
-        log("⚠️  issue sin fecha; título:", issue.get("title"))
-        return
-    if not items:
-        log("⚠️  issue sin items; body:\n", (issue.get("body") or "")[:400])
-        return
-
-    # ¿Es mercado? (si alguna etiqueta contiene “mercado”)
-    is_mercado = any("mercado" in lbl for lbl in labels)
-    base_dir = DOCS / ("mercado/diario" if is_mercado else "diario")
-
-    # Normalizar filas para CSV
-    rows = []
-    for it in items:
-        sku  = it["item"]
-        cant = int(it.get("cantidad") or 0)
-
-        # precio unitario: usa el del item; si no viene, el del menú
-        p_unit = it.get("precio")
-        if p_unit in (None, "", "0", 0):
-            p_unit = price_for(sku)
-
-        try:
-            p_float = float(str(p_unit).replace("$", "").replace(",", "")) if p_unit not in ("", None) else 0.0
-        except Exception:
-            p_float = 0.0
-
-        importe = round(cant * p_float, 2)
-
-        rows.append({
-            "fecha": fecha,
-            "sku": sku,
-            "descripcion": desc_for(sku),
-            "cantidad": cant,
-            "precio": f"{p_float:.2f}" if p_unit not in ("", None) else "",
-            "importe": f"{importe:.2f}",
-        })
-
-    write_daily_csv(base_dir, fecha, rows)
+    log("✓ actualizado", out.relative_to(ROOT))
 
 def main():
     event_path = os.environ.get("GITHUB_EVENT_PATH")
-    if event_path and Path(event_path).exists():
-        process_issue_event(Path(event_path))
-    else:
-        log("sin GITHUB_EVENT_PATH; nada que procesar")
+    if not event_path or not Path(event_path).exists():
+        log("sin GITHUB_EVENT_PATH; nada que hacer"); return
+    event = json.loads(Path(event_path).read_text(encoding="utf-8"))
+    issue = event.get("issue") or {}
+    parsed = parse_issue(issue)
+    fecha, items, labels = parsed["fecha"], parsed["items"], parsed["labels"]
 
-if __name__ == "__main__":
-    main()
+    if not fecha: log("⚠️ sin fecha"); return
+    if not items: log("⚠️ sin items"); return
+
+    mercado = any("mercado" in l for l in labels)
+    rows=[]
+    for it in items:
+        sku  = it["item"]
+        cant = int(it["cantidad"])
+        p_u  = it.get("precio") or price_for(sku) or ""
+        try: p = float(str(p_u).replace("$","").replace(",","")) if p_u!="" else 0.0
+        except: p = 0.0
+        rows.append({
+            "fecha":fecha,
+            "sku":sku,
+            "descripcion":desc_for(sku),
+            "cantidad":cant,
+            "precio": (f"{p:.2f}" if p_u!="" else ""),
+            "importe": f"{cant*p:.2f}"
+        })
+    write_daily(fecha, rows, mercado)
+
+if __name__=="__main__": main()
