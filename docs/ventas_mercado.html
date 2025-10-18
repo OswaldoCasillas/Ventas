@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ventas detalle (Mercado)</title>
+<style>
+  body{font-family:system-ui;margin:16px;max-width:800px}
+  h1{font-size:28px;margin:0 0 12px}
+  label{display:block;margin:12px 0 6px}
+  input,button{font-size:16px;padding:10px;border:1px solid #ccc;border-radius:8px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .row>*{flex:1 1 240px}
+  a.btn,button{background:#111;color:#fff;text-decoration:none;display:inline-block}
+</style>
+</head>
+<body>
+<h1>Ventas detalle (Mercado)</h1>
+
+<div class="row">
+  <div>
+    <label>Fecha</label>
+    <input id="fecha" type="date">
+  </div>
+  <div>
+    <label>&nbsp;</label>
+    <button id="ver">Abrir en GitHub</button>
+  </div>
+</div>
+
+<p>Este botón abre los issues con etiqueta <code>venta-mercado</code> y la fecha en el título.</p>
+
+<script>
+const ORG="OswaldoCasillas", REPO="Ventas";
+document.getElementById('fecha').valueAsDate=new Date();
+document.getElementById('ver').onclick=()=>{
+  const f=document.getElementById('fecha').value;
+  if(!f){alert("Selecciona fecha");return}
+  const query = encodeURIComponent(`repo:${ORG}/${REPO} label:"venta-mercado" "${f}" in:title is:issue`);
+  const url = `https://github.com/search?q=${query}&type=issues`;
+  location.href = url;
+};
+</script>
+</body>
+</html>
