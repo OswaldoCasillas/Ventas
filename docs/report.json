@@ -1,9 +1,9 @@
 {
-  "generated_at": "2025-10-18T00:40:06.203419Z",
+  "generated_at": "2025-10-18T04:57:47.789339Z",
   "summary": {
     "items_distintos": 97,
     "items_low_stock": 1,
-    "total_ventas": 2,
+    "total_ventas": 3,
     "total_importe": 35.0,
     "total_producido": 0
   },
@@ -11,8 +11,8 @@
     {
       "product_id": "65C9EDE4",
       "item": "**Cantidad**:",
-      "descripcion": "",
-      "stock": -1
+      "descripcion": NaN,
+      "stock": -2
     }
   ],
   "ventas_por_dia": [
@@ -23,20 +23,20 @@
     },
     {
       "fecha": "2025-10-18",
-      "cantidad": 1,
+      "cantidad": 2,
       "importe": 0.0
     }
   ],
   "ventas_por_item": [
     {
+      "item": "**Cantidad**:",
+      "cantidad": 2,
+      "importe": 0.0
+    },
+    {
       "item": "PALETA-CREMA-FRESA-CON-CREMA",
       "cantidad": 1,
       "importe": 35.0
-    },
-    {
-      "item": "**Cantidad**:",
-      "cantidad": 1,
-      "importe": 0.0
     }
   ],
   "produccion_por_dia": []
