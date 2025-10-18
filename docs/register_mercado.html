@@ -2,34 +2,28 @@
 <html lang="es">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Registrar venta (Mercado)</title>
+<title>Venta – Mercado</title>
 <style>
- body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:16px;max-width:900px}
- h1{font-size:40px;margin:0 0 12px}
- label{display:block;margin:12px 0 6px}
- input,select,button{font-size:16px;padding:10px;border:1px solid #ccc;border-radius:8px}
- select,input{width:100%}
- .row{display:flex;gap:8px;flex-wrap:wrap}
- .row>div{flex:1 1 260px}
- .cats{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
- .cat{border:1px solid #ccc;border-radius:999px;padding:6px 12px;background:#f5f5f5;cursor:pointer}
- .cat.active{outline:2px solid #000;background:#fff}
- table{border-collapse:collapse;width:100%;margin-top:12px}
- th,td{border:1px solid #ddd;padding:6px;text-align:left}
- th{background:#f7f7f7}
- .right{text-align:right}
- .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
- .primary{background:#111;color:#fff;border-color:#111}
- .danger{background:#c62828;color:#fff;border-color:#c62828}
- .muted{color:#666;font-size:12px}
- .qty-wrap{display:flex;gap:6px;align-items:center}
- .qty-btn{width:44px;min-width:44px;padding:10px;border-radius:10px}
+  body{font-family:system-ui;margin:16px;max-width:900px}
+  h1{font-size:32px;margin:0 0 12px}
+  label{display:block;margin:12px 0 6px}
+  input,select,button{font-size:16px;padding:10px;border:1px solid #ccc;border-radius:8px}
+  select,input{width:100%}
+  .cats{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
+  .cat{border:1px solid #ccc;border-radius:999px;padding:6px 12px;background:#f5f5f5;cursor:pointer}
+  .cat.active{outline:2px solid #000;background:#fff}
+  table{border-collapse:collapse;width:100%;margin-top:12px}
+  th,td{border:1px solid #ddd;padding:6px;text-align:left}
+  th{background:#f7f7f7}
+  .right{text-align:right}
+  .primary{background:#111;color:#fff;border-color:#111}
+  /* Botonera de cantidad */
+  .qty-wrap{display:flex;gap:6px;align-items:center}
+  .qty-btn{width:48px;min-width:48px;padding:10px;border-radius:10px}
 </style>
-<script src="config.js"></script>
 </head>
 <body>
-<h1>Registrar venta</h1>
-<p class="muted">Selecciona productos por categoría, agrégalos al carrito y confirma. Se registrará vía tu backend en Vercel.</p>
+<h1>Registrar venta (Mercado)</h1>
 
 <label>Fecha</label>
 <input id="fecha" type="date">
@@ -40,8 +34,8 @@
 <label>Producto</label>
 <select id="item"></select>
 
-<div class="row">
-  <div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+  <div style="flex:1 1 200px">
     <label>Cantidad</label>
     <div class="qty-wrap">
       <button type="button" class="qty-btn" id="qtyMinus">−</button>
@@ -49,15 +43,15 @@
       <button type="button" class="qty-btn" id="qtyPlus">+</button>
     </div>
   </div>
-  <div>
+  <div style="flex:1 1 200px">
     <label>Precio unitario (opcional)</label>
     <input id="precio" type="number" step="0.01" placeholder="0.00" inputmode="decimal">
   </div>
 </div>
 
-<div class="actions">
+<div style="margin-top:12px">
   <button id="add">Agregar al carrito</button>
-  <button id="clear" class="danger">Vaciar carrito</button>
+  <button id="clear" style="background:#c62828;color:#fff;border-color:#c62828">Vaciar carrito</button>
 </div>
 
 <h3>Carrito</h3>
@@ -68,90 +62,44 @@
 </table>
 
 <label>Notas (opcional)</label>
-<input id="notas" type="text" placeholder="Cliente, canal, etc.">
+<input id="notas" type="text">
 
-<div class="actions">
-  <button id="confirm" class="primary">Confirmar venta</button>
+<div style="margin-top:12px">
+  <button id="confirm" class="primary">Confirmar venta (Mercado)</button>
 </div>
 
 <script>
-const {ORG,REPO,API_URL}=window.APP_CONFIG;
+const ORG="OswaldoCasillas", REPO="Ventas"; // plan B
+const API_URL=""; // si usas Vercel/Worker, pon aquí tu URL
 
-const CAT_LABELS={
- "PALETA-AGUA":"Paleta de Agua","PALETA-AGUA-PREMIUM":"Paleta Agua Premium",
- "PALETA-CREMA":"Paleta de Crema","PALETA-CREMA-PREMIUM":"Paleta Crema Premium",
- "PALETA-SIN-AZUCAR":"Paleta Sin Azúcar/Keto","PALETA-MINI":"Paleta Mini",
- "HELADO-NIEVE":"Helado Nieve","HELADO-CLASICO":"Helado Clásico",
- "HELADO-GOURMET":"Helado Gourmet","HELADO-SIN-AZUCAR":"Helado Sin Azúcar",
- "MALTEADA":"Malteada","AGUA-FRESCA":"Aguas Frescas","BEBIDA":"Bebidas",
- "POSTRE":"Postres","BOTANA":"Botanas","EXTRA":"Extras"
-};
-const PREFS = Object.keys(CAT_LABELS).sort((a,b)=>b.length-a.length);
-let MENU=[], FILTER=null; const cart=[];
+const CAT_LABELS={ "PALETA-AGUA":"Paleta de Agua","PALETA-AGUA-PREMIUM":"Paleta Agua Premium","PALETA-CREMA":"Paleta de Crema","PALETA-CREMA-PREMIUM":"Paleta Crema Premium","PALETA-SIN-AZUCAR":"Paleta Sin Azúcar/Keto","PALETA-MINI":"Paleta Mini","HELADO-NIEVE":"Helado Nieve","HELADO-CLASICO":"Helado Clásico","HELADO-GOURMET":"Helado Gourmet","HELADO-SIN-AZUCAR":"Helado Sin Azúcar","MALTEADA":"Malteada","AGUA-FRESCA":"Aguas Frescas","BEBIDA":"Bebidas","POSTRE":"Postres","BOTANA":"Botanas","EXTRA":"Extras" };
+
+let MENU=[], FILTER=null, cart=[];
 document.getElementById('fecha').valueAsDate=new Date();
-function fmt(n){return Number(n||0).toLocaleString('es-MX',{style:'currency',currency:'MXN'});}
-function catOf(sku){for(const p of PREFS){if(sku.startsWith(p))return p}return"OTROS";}
-function nice(s){let n=s;for(const p of PREFS){if(n.startsWith(p+"-")){n=n.slice(p.length+1);break}}return n.replace(/-/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());}
-function label(p){const base=p.descripcion?.trim()||nice(p.item);const price=p.precio?` ($${p.precio})`:"";const cat=CAT_LABELS[catOf(p.item)]||"";return `${base}${price}${cat?` — ${cat}`:""}`}
+function fmt(n){return (n==null||n==='')?'':Number(n).toLocaleString('es-MX',{style:'currency',currency:'MXN'})}
+function getCategoryOf(sku){const k=Object.keys(CAT_LABELS).sort((a,b)=>b.length-a.length);for(const p of k){if(sku.startsWith(p))return p}return"OTROS"}
+function skuToNice(s){const pref=["PALETA-AGUA-PREMIUM","PALETA-CREMA-PREMIUM","PALETA-SIN-AZUCAR","PALETA-AGUA","PALETA-CREMA","PALETA-MINI","HELADO-NIEVE","HELADO-CLASICO","HELADO-GOURMET","HELADO-SIN-AZUCAR","AGUA-FRESCA","MALTEADA","BEBIDA","POSTRE","BOTANA","EXTRA"];let n=s;for(const p of pref){if(n.startsWith(p+"-")){n=n.slice(p.length+1);break}}return n.replace(/-/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase())}
+function niceLabel(p){const base=(p.descripcion&&p.descripcion.trim())?p.descripcion:skuToNice(p.item);const cat=CAT_LABELS[getCategoryOf(p.item)]||"";const price=(p.precio!==undefined&&p.precio!=="")?` ($${p.precio})`:"";return `${base}${price}${cat?` — ${cat}`:''}`}
 
-async function loadMenu(){
-  const r=await fetch('menu.json?_='+Date.now()); if(!r.ok){alert('Falta menu.json');return;}
-  MENU=await r.json(); buildCats(); renderOptions();
-}
-function buildCats(){
-  const set=new Set(MENU.map(x=>catOf(x.item)).filter(k=>k!=="OTROS"));
-  const wrap=document.getElementById('cats');
-  wrap.innerHTML=`<span class="cat ${FILTER===null?'active':''}" data-k="">Todos</span>`+
-    [...set].map(k=>`<span class="cat ${FILTER===k?'active':''}" data-k="${k}">${CAT_LABELS[k]||k}</span>`).join('');
-  wrap.querySelectorAll('.cat').forEach(btn=>{
-    btn.onclick=()=>{FILTER=btn.dataset.k||null;wrap.querySelectorAll('.cat').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderOptions();setPrice();}
-  });
-}
-function renderOptions(){
-  const sel=document.getElementById('item');const prev=sel.value; let items=MENU.slice();
-  if(FILTER) items=items.filter(x=>catOf(x.item)===FILTER);
-  items.sort((a,b)=>label(a).localeCompare(label(b),'es'));
-  sel.innerHTML=items.map(x=>`<option value="${x.item}" data-precio="${x.precio||''}">${label(x)}</option>`).join('');
-  if([...sel.options].some(o=>o.value===prev)) sel.value=prev; setPrice(); sel.onchange=setPrice;
-}
-function setPrice(){const sel=document.getElementById('item');const p=sel.selectedOptions[0]?.dataset?.precio||'';document.getElementById('precio').value=p?Number(p).toFixed(2):"";}
-function clampQty(){const i=document.getElementById('cantidad');let v=parseInt(i.value||'1',10);if(isNaN(v)||v<1)v=1;i.value=v;}
-document.getElementById('qtyMinus').onclick=()=>{clampQty();cantidad.value=Math.max(1,parseInt(cantidad.value,10)-1)}
-document.getElementById('qtyPlus').onclick =()=>{clampQty();cantidad.value=parseInt(cantidad.value,10)+1}
-document.getElementById('cantidad').addEventListener('input',clampQty);
+async function loadMenu(){const r=await fetch('menu.json?_='+Date.now());if(!r.ok){alert("No encuentro menu.json");return}MENU=await r.json();buildCats();renderOptions();setPriceFromSelected()}
+function buildCats(){const set=new Set(MENU.map(x=>getCategoryOf(x.item)).filter(k=>k!=="OTROS"));const c=document.getElementById('cats');c.innerHTML=`<span class="cat ${FILTER===null?'active':''}" data-k="">Todos</span>`+[...set].map(k=>`<span class="cat ${FILTER===k?'active':''}" data-k="${k}">${CAT_LABELS[k]||k}</span>`).join('');c.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{FILTER=b.dataset.k||null;c.querySelectorAll('.cat').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderOptions();setPriceFromSelected()})}
+function renderOptions(){const sel=document.getElementById('item');let items=MENU.slice();if(FILTER)items=items.filter(x=>getCategoryOf(x.item)===FILTER);items.sort((a,b)=>niceLabel(a).localeCompare(niceLabel(b),'es'));sel.innerHTML=items.map(x=>`<option value="${x.item}" data-precio="${x.precio||''}">${niceLabel(x)}</option>`).join('')}
+function setPriceFromSelected(){const sel=document.getElementById('item');if(!sel||!sel.options.length){document.getElementById('precio').value="";return}const p=sel.selectedOptions[0]?.dataset?.precio ?? sel.options[0].dataset.precio;document.getElementById('precio').value=p?Number(p).toFixed(2):""}
+document.getElementById('item').onchange=setPriceFromSelected;
 
-function renderCart(){
-  const tb=document.querySelector('#cartTbl tbody');
-  tb.innerHTML=cart.map((c,i)=>{const imp=Number(c.precio||0)*Number(c.cantidad||0);
-    return `<tr><td>${c.item}</td><td>${c.descripcion||''}</td><td class="right">${c.cantidad}</td><td class="right">${fmt(c.precio)}</td><td class="right">${fmt(imp)}</td><td><button data-i="${i}" class="rm">Quitar</button></td></tr>`}).join('');
-  tb.querySelectorAll('.rm').forEach(b=>b.onclick=()=>{cart.splice(Number(b.dataset.i),1);renderCart();});
-  const total=cart.reduce((s,c)=>s+(Number(c.precio||0)*Number(c.cantidad||0)),0);
-  document.getElementById('totalCell').textContent=fmt(total);
-}
-document.getElementById('add').onclick=()=>{
-  const sel=document.getElementById('item'); const sku=sel.value; const cant=parseInt(cantidad.value||'1',10);
-  if(!sku||cant<=0) return alert("Selecciona producto y cantidad válida");
-  const prod=MENU.find(x=>x.item===sku)||{descripcion:'',precio:''};
-  const precio=document.getElementById('precio').value||prod.precio||'';
-  const i=cart.findIndex(c=>c.item===sku && String(c.precio||'')===String(precio||'')); if(i>=0) cart[i].cantidad+=cant;
-  else cart.push({item:sku, descripcion:label(prod).split(' — ')[0], cantidad:cant, precio});
-  renderCart(); cantidad.value=1; setPrice();
-};
-document.getElementById('clear').onclick=()=>{cart.splice(0,cart.length);renderCart();};
+// ====== BOTONES ± CANTIDAD ======
+function clampQty(){ const inp=document.getElementById('cantidad'); let v=parseInt(inp.value||'1',10); if(isNaN(v)||v<1)v=1; inp.value=v; }
+document.getElementById('qtyMinus').onclick = ()=>{ const inp=document.getElementById('cantidad'); clampQty(); inp.value = Math.max(1, parseInt(inp.value,10)-1); };
+document.getElementById('qtyPlus').onclick  = ()=>{ const inp=document.getElementById('cantidad'); clampQty(); inp.value = parseInt(inp.value,10)+1; };
+document.getElementById('cantidad').addEventListener('input', clampQty);
 
-async function crearVenta(mercado=false){
-  const fecha=document.getElementById('fecha').value, notas=document.getElementById('notas').value;
-  if(!fecha) return alert("Falta la fecha"); if(cart.length===0) return alert("Agrega productos");
-  try{
-    const items=cart.map(c=>({item:c.item,cantidad:c.cantidad,precio:c.precio||""}));
-    const resp=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({type:"venta",fecha,notas,items,mercado})});
-    const txt=await resp.text(); if(!resp.ok){throw new Error(txt)}
-    const data=JSON.parse(txt); alert(`Venta registrada ✅ (issue #${data.number})`);
-    cart.splice(0,cart.length); renderCart();
-  }catch(e){ alert("Error creando la venta: "+e.message); }
-}
-document.getElementById('confirm').onclick=()=>crearVenta(true);
+function renderCart(){const tb=document.querySelector('#cartTbl tbody');tb.innerHTML=cart.map((c,i)=>{const imp=(Number(c.precio||0)*Number(c.cantidad||0));return `<tr><td>${c.item}</td><td>${c.descripcion||''}</td><td class="right">${c.cantidad}</td><td class="right">${fmt(c.precio)}</td><td class="right">${fmt(imp)}</td><td><button data-i="${i}" class="rm">Quitar</button></td></tr>`}).join('');tb.querySelectorAll('.rm').forEach(b=>b.onclick=()=>{cart.splice(Number(b.dataset.i),1);renderCart()});document.getElementById('totalCell').textContent=fmt(cart.reduce((s,c)=>s+(Number(c.precio||0)*Number(c.cantidad||0)),0))}
+document.getElementById('add').onclick=()=>{const sel=document.getElementById('item');const sku=sel.value;const cant=parseInt(document.getElementById('cantidad').value||'1',10);if(!sku||cant<=0)return alert("Selecciona producto y cantidad");const p=MENU.find(x=>x.item===sku)||{descripcion:'',precio:''};const prec=document.getElementById('precio').value||p.precio||'';const idx=cart.findIndex(c=>c.item===sku&&String(c.precio||'')===String(prec||''));if(idx>=0)cart[idx].cantidad+=cant;else cart.push({item:sku,descripcion:niceLabel(p).split(' — ')[0],cantidad:cant,precio:prec});renderCart();document.getElementById('cantidad').value=1;setPriceFromSelected()}
+document.getElementById('clear').onclick=()=>{cart.splice(0,cart.length);renderCart()}
+
+function buildIssueUrl(){const fecha=document.getElementById('fecha').value;const notas=document.getElementById('notas').value;const base=`https://github.com/${ORG}/${REPO}/issues/new`;const title=`Venta Mercado: ${cart.length} items @ ${fecha}`;let body=`**Fecha**: ${fecha}\n**Notas**: ${notas||''}\n\n**Items**\nSKU | Cantidad | Precio\n`;cart.forEach(c=>body+=`${c.item} | ${c.cantidad} | ${c.precio||''}\n`);const params=new URLSearchParams({template:'sale_mercado.md',title,body,labels:'venta-mercado'});return `${base}?${params.toString()}`}
+async function submit(){const fecha=document.getElementById('fecha').value;if(!fecha)return alert("Falta fecha");if(cart.length===0)return alert("Agrega productos");if(!API_URL){location.href=buildIssueUrl();return}const notas=document.getElementById('notas').value;const items=cart.map(c=>({item:c.item,cantidad:c.cantidad,precio:c.precio||""}));const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'venta-mercado',fecha,notas,items})});if(!r.ok){const e=await r.json().catch(()=>({}));alert("Error: "+(e.error||r.statusText));return}alert("Venta Mercado registrada ✅");cart.splice(0,cart.length);renderCart()}
+document.getElementById('confirm').onclick=submit;
 
 loadMenu();
 </script>
