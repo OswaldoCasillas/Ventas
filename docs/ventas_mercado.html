@@ -4,20 +4,13 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ventas detalle (Mercado)</title>
 <style>
-  body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:16px;max-width:1100px}
+  body{font-family:system-ui;margin:16px;max-width:800px}
   h1{font-size:28px;margin:0 0 12px}
   label{display:block;margin:12px 0 6px}
   input,button{font-size:16px;padding:10px;border:1px solid #ccc;border-radius:8px}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .row>*{flex:1 1 240px}
   a.btn,button{background:#111;color:#fff;text-decoration:none;display:inline-block}
-  .muted{color:#666}
-  table{border-collapse:collapse;width:100%;margin-top:12px}
-  th,td{border:1px solid #e6e6e6;padding:8px;text-align:left}
-  th{background:#fafafa}
-  .right{text-align:right}
-  .tag{display:inline-block;border:1px solid #ddd;border-radius:999px;padding:2px 8px;margin-left:8px;font-size:12px;color:#666;background:#fafafa}
-  .stat{background:#f7f7f7;border:1px solid #e4e4e4;border-radius:10px;padding:10px 14px;margin:8px 0}
 </style>
 </head>
 <body>
@@ -32,28 +25,12 @@
     <label>&nbsp;</label>
     <button id="ver">Abrir en GitHub</button>
   </div>
-  <div>
-    <label>&nbsp;</label>
-    <button id="cargar">Ver detalle aquí</button>
-  </div>
 </div>
 
-<p class="muted">El botón de GitHub busca issues con la etiqueta <code>venta-mercado</code> y esa fecha en el título. “Ver detalle aquí” lee el CSV generado por el bot en <code>docs/mercado/diario/YYYY-MM-DD.csv</code>.</p>
-
-<div id="stats" style="display:none">
-  <div class="stat"><b>Total de unidades</b>: <span id="uTot">0</span></div>
-  <div class="stat"><b>Importe total</b>: <span id="mTot">$0.00</span></div>
-</div>
-
-<div id="panel"></div>
+<p>Este botón abre los issues con etiqueta <code>venta-mercado</code> y la fecha en el título.</p>
 
 <script>
-/* ===== Config ===== */
 const ORG="OswaldoCasillas", REPO="Ventas";
-/* Tu backend en Vercel (se deja por consistencia; esta página no lo usa directamente) */
-const API_URL = "https://ventas-backend-rose.vercel.app/api/create-issue";
-
-/* ===== Helpers ===== */
 document.getElementById('fecha').valueAsDate=new Date();
 document.getElementById('ver').onclick=()=>{
   const f=document.getElementById('fecha').value;
@@ -61,86 +38,6 @@ document.getElementById('ver').onclick=()=>{
   const query = encodeURIComponent(`repo:${ORG}/${REPO} label:"venta-mercado" "${f}" in:title is:issue`);
   const url = `https://github.com/search?q=${query}&type=issues`;
   location.href = url;
-};
-
-const fmtMoney = n => Number(n||0).toLocaleString('es-MX',{style:'currency',currency:'MXN'});
-
-async function fetchCSV(path){
-  const r = await fetch(path + "?_=" + Date.now(), {cache:"no-store"});
-  if(!r.ok) throw new Error(r.status+" "+path);
-  return r.text();
-}
-function parseCSV(text){
-  // Espera: fecha,sku,descripcion,cantidad,precio,importe (con o sin encabezado)
-  const rows = [];
-  const lines = text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n").filter(x=>x.trim().length);
-  for(let i=0;i<lines.length;i++){
-    const l = lines[i];
-    if (i===0 && /fecha\s*,\s*sku\s*,\s*descripcion/i.test(l)) continue; // omite encabezado
-    const parts = l.split(",").map(s=>s.trim());
-    if (parts.length < 6) continue;
-    const [fecha, sku, descripcion, cantidad, precio, importe] = parts;
-    const toNum = v => parseFloat(String(v).replace(/[$,]/g,"")) || 0;
-    rows.push({
-      fecha, sku, descripcion,
-      cantidad: parseInt(cantidad,10) || 0,
-      precio: toNum(precio),
-      importe: toNum(importe)
-    });
-  }
-  return rows;
-}
-function renderTable(rows){
-  const panel = document.getElementById('panel');
-  if(!rows.length){
-    document.getElementById('stats').style.display='none';
-    panel.innerHTML = '<p class="muted">No encontré ventas para esa fecha.</p>';
-    return;
-  }
-  const uTot = rows.reduce((s,r)=>s+r.cantidad,0);
-  const mTot = rows.reduce((s,r)=>s+r.importe,0);
-  document.getElementById('stats').style.display='';
-  document.getElementById('uTot').textContent = uTot.toLocaleString('es-MX');
-  document.getElementById('mTot').textContent = fmtMoney(mTot);
-
-  // Ordena por descripcion
-  const list = rows.slice().sort((a,b)=> (a.descripcion||a.sku).localeCompare(b.descripcion||b.sku,'es'));
-  panel.innerHTML = `
-    <table>
-      <thead>
-        <tr><th>Producto</th><th>SKU</th><th class="right">Cantidad</th><th class="right">Precio</th><th class="right">Importe</th></tr>
-      </thead>
-      <tbody>
-        ${list.map(r=>`
-          <tr>
-            <td>${r.descripcion || r.sku}</td>
-            <td>${r.sku}</td>
-            <td class="right">${r.cantidad.toLocaleString('es-MX')}</td>
-            <td class="right">${r.precio ? fmtMoney(r.precio) : ''}</td>
-            <td class="right">${fmtMoney(r.importe)}</td>
-          </tr>
-        `).join("")}
-      </tbody>
-      <tfoot>
-        <tr><th colspan="2" class="right">Total</th><th class="right">${uTot.toLocaleString('es-MX')}</th><th></th><th class="right">${fmtMoney(mTot)}</th></tr>
-      </tfoot>
-    </table>
-  `;
-}
-
-/* ===== Cargar CSV diario del Mercado ===== */
-document.getElementById('cargar').onclick = async () => {
-  const f=document.getElementById('fecha').value;
-  if(!f){alert("Selecciona fecha");return}
-  const path = `mercado/diario/${f}.csv`; // relativo a /docs/
-  try{
-    const text = await fetchCSV(path);
-    const rows = parseCSV(text);
-    renderTable(rows);
-  }catch(e){
-    console.warn("No se pudo leer", path, e);
-    renderTable([]);
-  }
 };
 </script>
 </body>
