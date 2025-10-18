@@ -24,21 +24,13 @@
   .muted{color:#666;font-size:12px}
   .qty-wrap{display:flex;gap:6px;align-items:center}
   .qty-btn{width:48px;min-width:48px;padding:10px;border-radius:10px}
-
-  /* ====== Botón volver al menú ====== */
-  .topbar{display:flex;justify-content:flex-start;margin-bottom:12px}
-  .btn-link{border:1px solid #ccc;border-radius:8px;padding:8px 12px;text-decoration:none;color:inherit;display:inline-block}
-  .btn-link:hover{background:#f5f5f5}
-  @media print{.no-print{display:none}}
+  /* Método de pago */
+  .pay-wrap{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+  .pill{border:1px solid #ccc;border-radius:999px;padding:8px 14px;background:#f5f5f5;cursor:pointer;user-select:none}
+  .pill.active{outline:2px solid #000;background:#fff}
 </style>
 </head>
 <body>
-
-<!-- Barra superior con botón de regreso -->
-<div class="topbar no-print">
-  <a class="btn-link" href="./index.html">← Menú principal</a>
-</div>
-
 <h1>Registrar venta</h1>
 <p class="muted">Selecciona productos por categoría, agrégalos al carrito y confirma. Si configuraste un backend, se registrará sin salir de la página.</p>
 
@@ -78,6 +70,13 @@
   <tfoot><tr><th colspan="4" class="right">Total</th><th class="right" id="totalCell">$0.00</th><th></th></tr></tfoot>
 </table>
 
+<!-- Método de pago -->
+<div class="pay-wrap">
+  <strong>Método de pago:</strong>
+  <span id="payCash"   class="pill active" data-metodo="efectivo">Efectivo</span>
+  <span id="payCard"   class="pill"        data-metodo="tarjeta">Tarjeta</span>
+</div>
+
 <label>Notas (opcional)</label>
 <input id="notas" type="text" placeholder="Cliente, canal, etc.">
 
@@ -91,38 +90,26 @@
   // ========= CONFIG =========
   const ORG  = "OswaldoCasillas";
   const REPO = "Ventas";
-
-  // 👉 SOLO una definición:
-  // Pon aquí tu endpoint en Vercel (o déjalo vacío para usar el plan B que abre un issue):
   const API_URL = "https://ventas-backend-rose.vercel.app/api/create-issue";
 
   // Dónde está el menú:
-  const MENU_LOCAL    = "menu.json"; // si subiste menu.json al mismo host
+  const MENU_LOCAL    = "menu.json";
   const MENU_FALLBACK = `https://${ORG.toLowerCase()}.github.io/${REPO}/menu.json`;
 
   // ========= CATEGORÍAS =========
   const CAT_LABELS = {
-    "PALETA-AGUA": "Paleta de Agua",
-    "PALETA-AGUA-PREMIUM": "Paleta Agua Premium",
-    "PALETA-CREMA": "Paleta de Crema",
-    "PALETA-CREMA-PREMIUM": "Paleta Crema Premium",
-    "PALETA-SIN-AZUCAR": "Paleta Sin Azúcar/Keto",
-    "PALETA-ALCOHOL": "Paleta con Alcohol",          // ✅ NUEVA
-    "PALETA-MINI": "Paleta Mini",
-    "HELADO-NIEVE": "Helado Nieve",
-    "HELADO-CLASICO": "Helado Clásico",
-    "HELADO-GOURMET": "Helado Gourmet",
-    "HELADO-SIN-AZUCAR": "Helado Sin Azúcar",
-    "MALTEADA": "Malteada",
-    "AGUA-FRESCA": "Aguas Frescas",
-    "BEBIDA": "Bebidas",
-    "POSTRE": "Postres",
-    "BOTANA": "Botanas",
-    "EXTRA": "Extras"
+    "PALETA-AGUA":"Paleta de Agua","PALETA-AGUA-PREMIUM":"Paleta Agua Premium",
+    "PALETA-CREMA":"Paleta de Crema","PALETA-CREMA-PREMIUM":"Paleta Crema Premium",
+    "PALETA-SIN-AZUCAR":"Paleta Sin Azúcar/Keto","PALETA-MINI":"Paleta Mini",
+    "HELADO-NIEVE":"Helado Nieve","HELADO-CLASICO":"Helado Clásico",
+    "HELADO-GOURMET":"Helado Gourmet","HELADO-SIN-AZUCAR":"Helado Sin Azúcar",
+    "MALTEADA":"Malteada","AGUA-FRESCA":"Aguas Frescas","BEBIDA":"Bebidas",
+    "POSTRE":"Postres","BOTANA":"Botanas","EXTRA":"Extras"
   };
 
   // ========= ESTADO =========
   let MENU = []; let FILTER = null; const cart = [];
+  let metodoPago = "efectivo"; // <-- por defecto
   document.getElementById('fecha').valueAsDate = new Date();
   function fmt(n){ return (n==null||n==='') ? '' : Number(n).toLocaleString('es-MX',{style:'currency',currency:'MXN'}); }
 
@@ -138,14 +125,13 @@
     return r.json();
   }
   async function loadMenu(){
-    try {
-      MENU = await fetchJSON(MENU_LOCAL);
-    } catch(e1){
+    try { MENU = await fetchJSON(MENU_LOCAL); }
+    catch(e1){
       console.warn("menu.json local no disponible, usando fallback…", e1);
       try { MENU = await fetchJSON(MENU_FALLBACK); }
       catch(e2){
         console.error("No se pudo cargar el catálogo.", e2);
-        alert("No pude cargar el catálogo (menu.json).\nIntenté:\n• " + location.origin + "/" + MENU_LOCAL + "\n• " + MENU_FALLBACK);
+        alert("No pude cargar el catálogo (menu.json).");
         return;
       }
     }
@@ -241,15 +227,25 @@
     prompt("Copia este enlace y conviértelo en QR:", u.toString());
   };
 
+  // ========= MÉTODO DE PAGO UI =========
+  function setMetodoPago(m){
+    metodoPago = m;
+    document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+    (m==='tarjeta' ? document.getElementById('payCard') : document.getElementById('payCash')).classList.add('active');
+  }
+  document.getElementById('payCash').onclick = ()=>setMetodoPago('efectivo');
+  document.getElementById('payCard').onclick = ()=>setMetodoPago('tarjeta');
+
   // ========= ENVIAR =========
   function buildIssueUrlFallback(){
     const fecha = document.getElementById('fecha').value;
     const notas = document.getElementById('notas').value;
     const base = `https://github.com/${ORG}/${REPO}/issues/new`;
-    const title = `Venta: ${cart.length} items @ ${fecha}`;
-    let body = `**Fecha**: ${fecha}\n**Notas**: ${notas||''}\n\n**Items**\nSKU | Cantidad | Precio\n`;
+    const prefix = (metodoPago==='tarjeta') ? "[TARJETA] " : "";
+    const title = `${prefix}Venta: ${cart.length} items @ ${fecha}`;
+    let body = `**Fecha**: ${fecha}\n**Método de pago**: ${metodoPago}\n**Notas**: ${notas||''}\n\n**Items**\nSKU | Cantidad | Precio\n`;
     cart.forEach(c=>{ body += `${c.item} | ${c.cantidad} | ${c.precio||''}\n`; });
-    const params = new URLSearchParams({ /*template:'sale.md',*/ title, body, labels: "venta" });
+    const params = new URLSearchParams({ title, body, labels: "venta" });
     return `${base}?${params.toString()}`;
   }
 
@@ -266,7 +262,7 @@
       const resp = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "venta", fecha, notas, items })
+        body: JSON.stringify({ type: "venta", fecha, notas, items, metodo_pago: metodoPago })
       });
       if(!resp.ok){
         let errText = "";
@@ -277,6 +273,7 @@
       const data = await resp.json().catch(()=>({}));
       alert(`Venta registrada ✅${data.number?` (issue #${data.number})`:''}`);
       cart.splice(0, cart.length); renderCart();
+      setMetodoPago('efectivo');
     }catch(e){
       alert("No se pudo contactar el backend. Verifica API_URL o usa el plan B (issue directo).");
     }
@@ -284,7 +281,10 @@
   document.getElementById('confirm').onclick = crearVentaViaAPI;
 
   // ========= INICIO =========
-  document.addEventListener("DOMContentLoaded", loadMenu);
-</script>
+  document.addEventListener("DOMContentLoaded", ()=>{ loadMenu(); setMetodoPago('efectivo'); });
+</script> <!-- ✅ cerramos el script principal -->
+
+<!-- Botón universal "Volver al menú" -->
+<script src="back-button.js?v=1" defer></script>
 </body>
 </html>
