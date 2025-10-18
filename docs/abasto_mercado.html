@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Abasto Mercado (Traspaso)</title>
+<style>
+  body{font-family:system-ui;margin:16px;max-width:900px}
+  h1{font-size:28px;margin:0 0 12px}
+  label{display:block;margin:12px 0 6px}
+  input,select,button{font-size:16px;padding:10px;border:1px solid #ccc;border-radius:8px}
+  select,input{width:100%}
+  .cats{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
+  .cat{border:1px solid #ccc;border-radius:999px;padding:6px 12px;background:#f5f5f5;cursor:pointer}
+  .cat.active{outline:2px solid #000;background:#fff}
+  table{border-collapse:collapse;width:100%;margin-top:12px}
+  th,td{border:1px solid #ddd;padding:6px;text-align:left}
+  th{background:#f7f7f7}
+  .right{text-align:right}
+  .primary{background:#111;color:#fff;border-color:#111}
+</style>
+</head>
+<body>
+<h1>Abasto para Mercado (traspaso desde inventario general)</h1>
+
+<label>Fecha</label>
+<input id="fecha" type="date">
+
+<label>Categoría</label>
+<div class="cats" id="cats"></div>
+
+<label>Producto</label>
+<select id="item"></select>
+
+<label>Cantidad</label>
+<input id="cantidad" type="number" min="1" value="10">
+
+<div style="margin-top:12px">
+  <button id="add">Agregar al traspaso</button>
+  <button id="clear" style="background:#c62828;color:#fff;border-color:#c62828">Vaciar</button>
+</div>
+
+<h3>Traspaso</h3>
+<table id="cartTbl">
+  <thead><tr><th>SKU</th><th>Descripción</th><th class="right">Cantidad</th><th></th></tr></thead>
+  <tbody></tbody>
+</table>
+
+<label>Notas (opcional)</label>
+<input id="notas" type="text">
+
+<div style="margin-top:12px">
+  <button id="confirm" class="primary">Confirmar abasto</button>
+</div>
+
+<script>
+const ORG="OswaldoCasillas", REPO="Ventas";
+const API_URL=""; // backend opcional
+const CAT_LABELS={ "PALETA-AGUA":"Paleta de Agua","PALETA-AGUA-PREMIUM":"Paleta Agua Premium","PALETA-CREMA":"Paleta de Crema","PALETA-CREMA-PREMIUM":"Paleta Crema Premium","PALETA-SIN-AZUCAR":"Paleta Sin Azúcar/Keto","PALETA-MINI":"Paleta Mini","HELADO-NIEVE":"Helado Nieve","HELADO-CLASICO":"Helado Clásico","HELADO-GOURMET":"Helado Gourmet","HELADO-SIN-AZUCAR":"Helado Sin Azúcar","MALTEADA":"Malteada","AGUA-FRESCA":"Aguas Frescas","BEBIDA":"Bebidas","POSTRE":"Postres","BOTANA":"Botanas","EXTRA":"Extras" };
+
+let MENU=[], FILTER=null, cart=[];
+document.getElementById('fecha').valueAsDate=new Date();
+function getCategoryOf(sku){const k=Object.keys(CAT_LABELS).sort((a,b)=>b.length-a.length);for(const p of k){if(sku.startsWith(p))return p}return"OTROS"}
+function skuToNice(s){const pref=["PALETA-AGUA-PREMIUM","PALETA-CREMA-PREMIUM","PALETA-SIN-AZUCAR","PALETA-AGUA","PALETA-CREMA","PALETA-MINI","HELADO-NIEVE","HELADO-CLASICO","HELADO-GOURMET","HELADO-SIN-AZUCAR","AGUA-FRESCA","MALTEADA","BEBIDA","POSTRE","BOTANA","EXTRA"];let n=s;for(const p of pref){if(n.startsWith(p+"-")){n=n.slice(p.length+1);break}}return n.replace(/-/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase())}
+function niceLabel(p){const base=(p.descripcion&&p.descripcion.trim())?p.descripcion:skuToNice(p.item);const cat=CAT_LABELS[getCategoryOf(p.item)]||"";return `${base}${cat?` — ${cat}`:''}`}
+
+async function loadMenu(){const r=await fetch('menu.json?_='+Date.now());if(!r.ok){alert("No encuentro menu.json");return}MENU=await r.json();buildCats();renderOptions()}
+function buildCats(){const set=new Set(MENU.map(x=>getCategoryOf(x.item)).filter(k=>k!=="OTROS"));const c=document.getElementById('cats');c.innerHTML=`<span class="cat ${FILTER===null?'active':''}" data-k="">Todos</span>`+[...set].map(k=>`<span class="cat ${FILTER===k?'active':''}" data-k="${k}">${CAT_LABELS[k]||k}</span>`).join('');c.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{FILTER=b.dataset.k||null;c.querySelectorAll('.cat').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderOptions()})}
+function renderOptions(){const sel=document.getElementById('item');let items=MENU.slice();if(FILTER)items=items.filter(x=>getCategoryOf(x.item)===FILTER);items.sort((a,b)=>niceLabel(a).localeCompare(niceLabel(b),'es'));sel.innerHTML=items.map(x=>`<option value="${x.item}">${niceLabel(x)}</option>`).join('')}
+
+function renderCart(){const tb=document.querySelector('#cartTbl tbody');tb.innerHTML=cart.map((c,i)=>`<tr><td>${c.item}</td><td>${c.descripcion||''}</td><td class="right">${c.cantidad}</td><td><button data-i="${i}" class="rm">Quitar</button></td></tr>`).join('');tb.querySelectorAll('.rm').forEach(b=>b.onclick=()=>{cart.splice(Number(b.dataset.i),1);renderCart()})}
+document.getElementById('add').onclick=()=>{const sku=document.getElementById('item').value;const cant=Number(document.getElementById('cantidad').value||1);if(!sku||cant<=0)return alert("Selecciona producto y cantidad");const p=MENU.find(x=>x.item===sku)||{descripcion:''};const idx=cart.findIndex(c=>c.item===sku);if(idx>=0)cart[idx].cantidad+=cant;else cart.push({item:sku,descripcion:niceLabel(p).split(' — ')[0],cantidad:cant});renderCart()}
+document.getElementById('clear').onclick=()=>{cart.splice(0,cart.length);renderCart()}
+
+function buildIssueUrl(){const fecha=document.getElementById('fecha').value;const notas=document.getElementById('notas').value;const base=`https://github.com/${ORG}/${REPO}/issues/new`;const title=`Abasto Mercado: ${cart.length} items @ ${fecha}`;let body=`**Fecha**: ${fecha}\n**Notas**: ${notas||''}\n\n**Items**\nSKU | Cantidad\n`;cart.forEach(c=>body+=`${c.item} | ${c.cantidad}\n`);const params=new URLSearchParams({template:'abasto_mercado.md',title,body,labels:'abasto-mercado'});return `${base}?${params.toString()}`}
+async function submit(){const fecha=document.getElementById('fecha').value;if(!fecha)return alert("Falta fecha");if(cart.length===0)return alert("Agrega productos");if(!API_URL){location.href=buildIssueUrl();return}const notas=document.getElementById('notas').value;const items=cart.map(c=>({item:c.item,cantidad:c.cantidad}));const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'abasto-mercado',fecha,notas,items})});if(!r.ok){const e=await r.json().catch(()=>({}));alert("Error: "+(e.error||r.statusText));return}alert("Abasto registrado ✅");cart.splice(0,cart.length);renderCart()}
+document.getElementById('confirm').onclick=submit;
+
+loadMenu();
+</script>
+</body>
+</html>
