@@ -1,10 +1,1 @@
 txn_id,fecha,item,cantidad,precio_unit,importe,issue
-S-20251018-194722-A79308,2025-10-18,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/19
-S-20251018-194722-A79308,2025-10-18,PALETA-CREMA-BESO-DE-ANGEL,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/19
-S-20251018-201507-37B28D,2025-10-18,HELADO-CLASICO-SENCILLO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/20
-S-20251018-201507-37B28D,2025-10-18,HELADO-SIN-AZUCAR-SENCILLO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/20
-S-20251018-201507-37B28D,2025-10-18,HELADO-NIEVE-DOBLE,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/20
-S-20251018-201649-32371B,2025-10-18,PALETA-AGUA-FRESA,2,25.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/21
-S-20251018-201649-32371B,2025-10-18,PALETA-AGUA-GROSSELLA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/21
-S-20251018-201822-8E58A5,2025-10-18,PALETA-AGUA-GROSSELLA,2,25.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/22
-S-20251018-201902-B0D609,2025-10-18,PALETA-CREMA-PREMIUM-QUESO-CON-ZARZAMORA,1,45.00,45.00,https://github.com/OswaldoCasillas/Ventas/issues/23
