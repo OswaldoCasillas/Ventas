@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reportes diarios (Mercado)</title>
+<style>
+  body{font-family:system-ui;margin:16px;max-width:900px}
+  h1{font-size:28px;margin:0 0 12px}
+  label{display:block;margin:12px 0 6px}
+  input,button{font-size:16px;padding:10px;border:1px solid #ccc;border-radius:8px}
+  table{border-collapse:collapse;width:100%;margin-top:12px}
+  th,td{border:1px solid #ddd;padding:6px}
+  th{background:#f7f7f7}
+  .muted{color:#666}
+</style>
+</head>
+<body>
+<h1>Reportes diarios (Mercado)</h1>
+
+<label>Fecha</label>
+<input id="fecha" type="date">
+<button id="cargar">Cargar</button>
+
+<div id="panel" class="muted" style="margin-top:12px">Selecciona fecha y presiona “Cargar”.</div>
+
+<script>
+const ORG="OswaldoCasillas", REPO="Ventas";
+document.getElementById('fecha').valueAsDate=new Date();
+
+function renderCSV(text){
+  const rows = text.trim().split(/\r?\n/).map(r=>r.split(","));
+  const thead = `<thead><tr>${rows[0].map(h=>`<th>${h}</th>`).join("")}</tr></thead>`;
+  const tbody = `<tbody>${rows.slice(1).map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</tbody>`;
+  return `<table>${thead}${tbody}</table>`;
+}
+
+document.getElementById('cargar').onclick=async()=>{
+  const f=document.getElementById('fecha').value;
+  if(!f){alert("Selecciona fecha");return}
+  const url = `mercado/diario/${f}.csv?_=${Date.now()}`;
+  const panel = document.getElementById('panel');
+  panel.textContent = "Buscando reporte...";
+  try{
+    const r = await fetch(url);
+    if(!r.ok) throw new Error("404");
+    const text = await r.text();
+    panel.innerHTML = renderCSV(text);
+  }catch(e){
+    const q = encodeURIComponent(`repo:${ORG}/${REPO} label:"venta-mercado" "${f}" in:title is:issue`);
+    panel.innerHTML = `
+      <p class="muted">No existe <code>${url}</code> aún.</p>
+      <p><a href="https://github.com/search?q=${q}&type=issues">Abrir ventas del ${f} en GitHub</a></p>
+    `;
+  }
+};
+</script>
+</body>
+</html>
