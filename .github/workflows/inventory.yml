@@ -63,14 +63,29 @@ jobs:
         run: |
           python scripts/process_issue.py
 
-      - name: Commit changes
+      - name: Commit & push (rebase-safe)
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}   # normalmente "main"
         run: |
-          git config user.name "inventory-bot"
+          git config user.name  "inventory-bot"
           git config user.email "actions@users.noreply.github.com"
+
+          # Stage todo lo generado
           git add -A
           if git diff --cached --quiet; then
             echo "Sin cambios para commitear."
-          else
-            git commit -m "chore(inventory): actualizar datos, menú y reportes"
-            git push
+            exit 0
           fi
+
+          # Asegura que tenemos la historia completa y rebaseamos sobre la punta remota
+          branch="${BRANCH_NAME:-$(git rev-parse --abbrev-ref HEAD)}"
+          git fetch origin "$branch" --prune
+          # Rebase para evitar non-fast-forward
+          if ! git pull --rebase origin "$branch"; then
+            echo "⚠️ Conflictos durante rebase; se aborta push para no romper la rama."
+            git rebase --abort || true
+            exit 0
+          fi
+
+          git commit -m "chore(inventory): actualizar datos, menú y reportes"
+          git push origin HEAD:"$branch"
