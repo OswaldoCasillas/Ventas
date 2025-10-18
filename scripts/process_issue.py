@@ -1,397 +1,220 @@
-import json, os, re, secrets, hashlib
-from datetime import datetime, timezone
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+Procesa issues de ventas/producción y genera CSVs diarios para las páginas.
+Soporta cuerpo de issue con formato:
+  Fecha: YYYY-MM-DD
+  Notas: ...
+  Items
+  SKU | Cantidad | Precio
+  PALETA-AGUA-FRESA | 2 | 25.00
+
+También soporta el formato con negritas:
+  **Fecha**: YYYY-MM-DD
+y, si no encuentra la fecha en el cuerpo, la toma del título:
+  Venta: N items @ YYYY-MM-DD
+"""
+
+import os
+import re
+import csv
+import json
 from pathlib import Path
-import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / "data"
 DOCS = ROOT / "docs"
-DIARIO_DIR = DOCS / "diario"
-MKT_DIR = DOCS / "mercado"
-MKT_DIARIO_DIR = MKT_DIR / "diario"
 
-# --- archivos (general) ---
-INVENTORY_CSV = DATA / "inventory.csv"
-SALES_CSV     = DATA / "sales.csv"
-PROD_CSV      = DATA / "production.csv"
+def log(*a): print("[inventory]", *a)
 
-# --- archivos (mercado) ---
-INVENTORY_MKT_CSV = DATA / "inventory_mercado.csv"
-SALES_MKT_CSV     = DATA / "sales_mercado.csv"
-TRANSFER_MKT_CSV  = DATA / "transfer_mercado.csv"
+# ----------- utilidades de catálogo ----------
+def load_menu():
+    """
+    Carga menu.json para mapear SKU -> descripción y precio por defecto.
+    Busca primero docs/menu.json (GitHub Pages), luego menu.json raíz.
+    """
+    for p in [DOCS / "menu.json", ROOT / "menu.json"]:
+        if p.exists():
+            try:
+                with p.open("r", encoding="utf-8") as f:
+                    data = json.load(f)
+                # normaliza a dict por item
+                return {row["item"]: row for row in data if "item" in row}
+            except Exception as e:
+                log(f"no pude leer {p}: {e}")
+    log("⚠️  no encontré menu.json; descripciones saldrán con el SKU")
+    return {}
 
-# --- outputs (general) ---
-MENU_JSON        = DOCS / "menu.json"
-REPORT_JSON      = DOCS / "report.json"
-INV_OUT_CSV      = DOCS / "inventario_actual.csv"
-SALES_ITEM_CSV   = DOCS / "ventas_por_item.csv"
-SALES_DAY_CSV    = DOCS / "ventas_por_dia.csv"
-SALES_DETAIL_CSV = DOCS / "ventas_detalle.csv"
-PROD_DETAIL_CSV  = DOCS / "produccion_detalle.csv"
-REPORT_HTML      = DOCS / "reporte.html"
+MENU = load_menu()
 
-# --- outputs (mercado) ---
-INV_MKT_OUT_CSV      = MKT_DIR / "inventario_actual.csv"
-SALES_MKT_DETAIL_CSV = MKT_DIR / "ventas_detalle.csv"
+def desc_for(sku):
+    row = MENU.get(sku)
+    if not row:
+        return sku
+    # si el registro ya trae 'descripcion' úsala; si no, intenta derivar
+    return (row.get("descripcion") or row.get("item") or sku)
 
-# ====================== utilidades ======================
+def price_for(sku):
+    row = MENU.get(sku)
+    if not row:
+        return ""
+    return row.get("precio", "")
 
-def ensure_files():
-    DATA.mkdir(parents=True, exist_ok=True)
-    DOCS.mkdir(parents=True, exist_ok=True)
-    DIARIO_DIR.mkdir(parents=True, exist_ok=True)
-    MKT_DIR.mkdir(parents=True, exist_ok=True)
-    MKT_DIARIO_DIR.mkdir(parents=True, exist_ok=True)
+# ---------- parseo robusto del issue ----------
+DATE_RX_BODY = re.compile(
+    r"^\s*\*{0,2}\s*fecha\s*\*{0,2}\s*[:：]\s*([0-9]{4}-[0-9]{2}-[0-9]{2})\s*$",
+    re.IGNORECASE | re.MULTILINE,
+)
+DATE_RX_TITLE = re.compile(r"@?\s*(\d{4}-\d{2}-\d{2})\s*$")
+ITEMS_HEADER_RX = re.compile(r"^\s*items\s*$", re.IGNORECASE)
 
-    if not INVENTORY_CSV.exists():
-        INVENTORY_CSV.write_text("item,descripcion,stock,precio\n", encoding="utf-8")
-    if not SALES_CSV.exists():
-        SALES_CSV.write_text("txn_id,fecha,item,cantidad,precio_unit,importe,issue\n", encoding="utf-8")
-    if not PROD_CSV.exists():
-        PROD_CSV.write_text("txn_id,fecha,item,cantidad,issue\n", encoding="utf-8")
+def parse_issue_payload(issue: dict):
+    """
+    Devuelve dict con:
+      fecha: 'YYYY-MM-DD'
+      items: [{'item': sku, 'cantidad': int, 'precio': str}]
+      labels: set([...])
+      title, body
+    """
+    title = issue.get("title") or ""
+    body  = issue.get("body")  or ""
+    labels = {lbl.get("name","").lower() for lbl in issue.get("labels", [])}
 
-    if not INVENTORY_MKT_CSV.exists():
-        INVENTORY_MKT_CSV.write_text("item,descripcion,stock,precio\n", encoding="utf-8")
-    if not SALES_MKT_CSV.exists():
-        SALES_MKT_CSV.write_text("txn_id,fecha,item,cantidad,precio_unit,importe,issue\n", encoding="utf-8")
-    if not TRANSFER_MKT_CSV.exists():
-        TRANSFER_MKT_CSV.write_text("txn_id,fecha,item,cantidad,issue\n", encoding="utf-8")
+    # Fecha: intenta en cuerpo (con y sin ** **)
+    m = DATE_RX_BODY.search(body or "")
+    fecha = m.group(1) if m else None
+    # Fallback al título (… @ YYYY-MM-DD)
+    if not fecha:
+        m2 = DATE_RX_TITLE.search(title)
+        if m2:
+            fecha = m2.group(1)
 
-def load_event_issue():
-    path = os.environ.get("GITHUB_EVENT_PATH")
-    if not path or not os.path.exists(path):
-        return None
-    with open(path, "r", encoding="utf-8") as fh:
-        evt = json.load(fh)
-    return evt.get("issue")
-
-def grab_field(body: str, key: str) -> str:
-    pat = rf"^\s*(?:\*\*\s*{re.escape(key)}\s*\*\*|{re.escape(key)})\s*:\s*(.*)$"
-    m = re.search(pat, body, re.IGNORECASE | re.MULTILINE)
-    return (m.group(1) if m else "").strip()
-
-def safe_parse_date(s: str, issue: dict) -> str:
-    s = (s or "").strip()
-    for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%Y/%m/%d"):
-        try:
-            return datetime.strptime(s, fmt).date().isoformat()
-        except Exception:
-            pass
-    created = (issue or {}).get("created_at") or ""
-    if created:
-        return created[:10]
-    return datetime.now(timezone.utc).date().isoformat()
-
-def parse_items_table(body: str, has_price: bool):
-    if "**Items**" not in body and "**items**" not in body:
-        return []
-    after = body.split("**Items**", 1)[-1] if "**Items**" in body else body.split("**items**",1)[-1]
-    lines = [ln.rstrip() for ln in after.splitlines() if ln.strip()]
-    out = []
-    for ln in lines:
-        if "|" not in ln:
+    # Localiza sección Items
+    lines = (body or "").splitlines()
+    items = []
+    start_idx = None
+    for i, ln in enumerate(lines):
+        if ITEMS_HEADER_RX.match(ln.strip()):
+            start_idx = i + 1
             break
-        parts = [p.strip() for p in ln.split("|")]
-        if has_price and len(parts) >= 3:
-            sku, qty, price = parts[0], parts[1], parts[2]
-            try: out.append({"item": sku, "cantidad": int(qty), "precio_unit": price})
-            except: continue
-        elif not has_price and len(parts) >= 2:
-            sku, qty = parts[0], parts[1]
-            try: out.append({"item": sku, "cantidad": int(qty)})
-            except: continue
-    return out
+    if start_idx is None:
+        # a veces no ponen la línea "Items"; intenta leer cualquier línea con pipes
+        start_idx = 0
 
-def short_id_from_sku(sku: str) -> str:
-    return hashlib.sha1(sku.encode("utf-8")).hexdigest()[:8].upper()
+    for ln in lines[start_idx:]:
+        if "|" not in ln:
+            continue
+        row = [c.strip() for c in ln.split("|")]
+        if len(row) < 2:
+            continue
 
-def new_txn_id(prefix: str) -> str:
-    now = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
-    rand = secrets.token_hex(3).upper()
-    return f"{prefix}-{now}-{rand}"
+        # salta encabezados/separadores
+        joined = " ".join(row).lower()
+        if "sku" in joined and "cantidad" in joined:
+            continue
+        if set("".join(row)) <= {"-", " "}:
+            continue
 
-# ====================== inventario / menú ======================
+        # columnas esperadas: SKU | Cantidad | Precio?
+        sku = row[0]
+        if not sku or sku.lower() in ("sku",):
+            continue
+        try:
+            cantidad = int(row[1])
+        except Exception:
+            # si viene vacío o no numérico, ignora esa línea
+            continue
 
-def _load_inventory_file(path: Path) -> pd.DataFrame:
-    if path.exists() and path.stat().st_size > 0:
-        inv = pd.read_csv(path)
-    else:
-        inv = pd.DataFrame(columns=["item","descripcion","stock","precio"])
-    for col in ["descripcion","precio","stock"]:
-        if col not in inv.columns:
-            inv[col] = "" if col != "stock" else 0
-    inv["precio"] = pd.to_numeric(inv["precio"], errors="coerce")
-    inv["stock"]  = pd.to_numeric(inv["stock"], errors="coerce").fillna(0).astype(int)
-    inv["item"]   = inv["item"].astype(str)
-    if "product_id" not in inv.columns:
-        inv["product_id"] = inv["item"].apply(short_id_from_sku)
-    else:
-        inv["product_id"] = inv["product_id"].astype(str)
-        inv.loc[inv["product_id"].isna() | (inv["product_id"]==""), "product_id"] = inv["item"].apply(short_id_from_sku)
-    return inv
+        precio = ""
+        if len(row) >= 3 and row[2]:
+            precio = row[2]
+        items.append({"item": sku, "cantidad": cantidad, "precio": precio})
 
-def load_inventory_general():  return _load_inventory_file(INVENTORY_CSV)
-def load_inventory_mkt():      return _load_inventory_file(INVENTORY_MKT_CSV)
-
-def write_inventory(path: Path, inv: pd.DataFrame):
-    inv.to_csv(path, index=False)
-
-def write_menu_json(inv_general: pd.DataFrame):
-    cols = [c for c in ["product_id","item","descripcion","precio"] if c in inv_general.columns]
-    MENU_JSON.write_text(json.dumps(inv_general[cols].fillna("").to_dict(orient="records"),
-                                    ensure_ascii=False, indent=2), encoding="utf-8")
-
-# ====================== guardar movimientos ======================
-
-def _append_sales_csv(path: Path, rows: list):
-    df = pd.read_csv(path) if path.exists() and path.stat().st_size>0 else pd.DataFrame()
-    df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
-    df.to_csv(path, index=False)
-
-def append_sales_general(inv: pd.DataFrame, fecha: str, items: list, issue_url: str, txn_id: str):
-    rows = []
-    for it in items:
-        sku = it["item"]; qty = int(it["cantidad"])
-        precio_s = it.get("precio_unit","")
-        precio = pd.to_numeric(precio_s, errors="coerce")
-        if pd.isna(precio):
-            row = inv.loc[inv["item"]==sku]
-            precio = float(row["precio"].iloc[0]) if not row.empty and pd.notna(row["precio"].iloc[0]) else 0.0
-        importe = float(qty) * float(precio)
-        rows.append({"txn_id": txn_id, "fecha": fecha, "item": sku, "cantidad": qty,
-                     "precio_unit": f"{precio:.2f}", "importe": f"{importe:.2f}", "issue": issue_url})
-    _append_sales_csv(SALES_CSV, rows)
-
-def append_sales_mkt(inv_mkt: pd.DataFrame, fecha: str, items: list, issue_url: str, txn_id: str):
-    rows = []
-    for it in items:
-        sku = it["item"]; qty = int(it["cantidad"])
-        precio_s = it.get("precio_unit","")
-        precio = pd.to_numeric(precio_s, errors="coerce")
-        if pd.isna(precio):
-            row = inv_mkt.loc[inv_mkt["item"]==sku]
-            precio = float(row["precio"].iloc[0]) if not row.empty and pd.notna(row["precio"].iloc[0]) else 0.0
-        importe = float(qty) * float(precio)
-        rows.append({"txn_id": txn_id, "fecha": fecha, "item": sku, "cantidad": qty,
-                     "precio_unit": f"{precio:.2f}", "importe": f"{importe:.2f}", "issue": issue_url})
-    _append_sales_csv(SALES_MKT_CSV, rows)
-
-def append_production(fecha: str, items: list, issue_url: str, txn_id: str):
-    df = pd.read_csv(PROD_CSV) if PROD_CSV.exists() and PROD_CSV.stat().st_size>0 else pd.DataFrame()
-    for it in items:
-        df = pd.concat([df, pd.DataFrame([{
-            "txn_id": txn_id, "fecha": fecha, "item": it["item"], "cantidad": int(it["cantidad"]), "issue": issue_url
-        }])], ignore_index=True)
-    df.to_csv(PROD_CSV, index=False)
-
-def append_transfer_mkt(fecha: str, items: list, issue_url: str, txn_id: str):
-    df = pd.read_csv(TRANSFER_MKT_CSV) if TRANSFER_MKT_CSV.exists() and TRANSFER_MKT_CSV.stat().st_size>0 else pd.DataFrame()
-    for it in items:
-        df = pd.concat([df, pd.DataFrame([{
-            "txn_id": txn_id, "fecha": fecha, "item": it["item"], "cantidad": int(it["cantidad"]), "issue": issue_url
-        }])], ignore_index=True)
-    df.to_csv(TRANSFER_MKT_CSV, index=False)
-
-def apply_stock(inv: pd.DataFrame, items: list, sign: int, path: Path) -> pd.DataFrame:
-    for it in items:
-        sku = it["item"]; delta = sign * int(it["cantidad"])
-        mask = inv["item"] == sku
-        if not mask.any():
-            inv = pd.concat([inv, pd.DataFrame([{
-                "item": sku, "descripcion":"", "stock":0, "precio":"", "product_id": short_id_from_sku(sku)
-            }])], ignore_index=True)
-            mask = inv["item"] == sku
-        inv.loc[mask, "stock"] = inv.loc[mask, "stock"].fillna(0).astype(int) + delta
-    inv["stock"] = inv["stock"].astype(int)
-    write_inventory(path, inv)
-    return inv
-
-# ====================== reportes ======================
-
-def build_reports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame):
-    # ----- general -----
-    sales = pd.read_csv(SALES_CSV) if SALES_CSV.exists() else pd.DataFrame(
-        columns=["txn_id","fecha","item","cantidad","precio_unit","importe","issue"])
-    if not sales.empty:
-        sales["cantidad"] = pd.to_numeric(sales["cantidad"], errors="coerce").fillna(0).astype(int)
-        sales["precio_unit"] = pd.to_numeric(sales["precio_unit"], errors="coerce").fillna(0.0)
-        sales["importe"] = pd.to_numeric(sales["importe"], errors="coerce").fillna(0.0)
-
-    prod = pd.read_csv(PROD_CSV) if PROD_CSV.exists() else pd.DataFrame(
-        columns=["txn_id","fecha","item","cantidad","issue"])
-    if not prod.empty:
-        prod["cantidad"] = pd.to_numeric(prod["cantidad"], errors="coerce").fillna(0).astype(int)
-
-    inv_key = inv_gen[["item","product_id","descripcion"]]
-    sales_detail = sales.merge(inv_key, on="item", how="left")
-    prod_detail  = prod.merge(inv_key, on="item", how="left")
-
-    inv_out = inv_gen[["product_id","item","descripcion","precio","stock"]].sort_values("item")
-    inv_out.to_csv(INV_OUT_CSV, index=False)
-    sales_detail.to_csv(SALES_DETAIL_CSV, index=False)
-    prod_detail.to_csv(PROD_DETAIL_CSV, index=False)
-
-    by_item = (sales.groupby("item", as_index=False)[["cantidad","importe"]]
-               .sum().sort_values(["cantidad","importe"], ascending=False))
-    by_item.to_csv(SALES_ITEM_CSV, index=False)
-    by_day = (sales.groupby("fecha", as_index=False)[["cantidad","importe"]]
-              .sum().sort_values("fecha"))
-    by_day.to_csv(SALES_DAY_CSV, index=False)
-
-    low = inv_gen[inv_gen["stock"] <= 5].sort_values("stock")
-    prod_by_day = prod.groupby("fecha", as_index=False)["cantidad"].sum().sort_values("fecha") if not prod.empty else pd.DataFrame(columns=["fecha","cantidad"])
-    report = {
-        "generated_at": datetime.utcnow().isoformat()+"Z",
-        "summary": {
-            "items_distintos": int(inv_gen["item"].nunique()) if not inv_gen.empty else 0,
-            "items_low_stock": int((inv_gen["stock"]<=5).sum()) if not inv_gen.empty else 0,
-            "total_ventas": int(sales["cantidad"].sum()) if not sales.empty else 0,
-            "total_importe": float(sales["importe"].sum()) if not sales.empty else 0.0,
-            "total_producido": int(prod["cantidad"].sum()) if not prod.empty else 0
-        }
+    return {
+        "fecha": fecha,
+        "items": items,
+        "labels": labels,
+        "title": title,
+        "body": body,
     }
-    REPORT_JSON.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    html = f"""<!doctype html><html lang="es"><meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Reporte Inventario/Ventas</title>
-    <style>body{{font-family:system-ui;margin:20px}} table{{border-collapse:collapse;width:100%}}
-    th,td{{border:1px solid #ddd;padding:6px;text-align:left}} th{{background:#f7f7f7}} .kpi{{margin:0 0 6px}}</style>
-    <h1>Reporte (General)</h1>
-    <p class="kpi">Generado: {report['generated_at']}</p>
-    <h2>Inventario actual</h2>
-    {inv_out.to_html(index=False)}
-    <h2>Ventas (detalle)</h2>
-    {sales_detail[["txn_id","fecha","product_id","item","descripcion","cantidad","precio_unit","importe","issue"]].to_html(index=False)}
-    <h2>Producción (detalle)</h2>
-    {prod_detail[["txn_id","fecha","product_id","item","descripcion","cantidad","issue"]].to_html(index=False)}
-    <h2>Ventas por día</h2>
-    {by_day.to_html(index=False)}
-    <h2>Ventas por item</h2>
-    {by_item.to_html(index=False)}
-    </html>"""
-    REPORT_HTML.write_text(html, encoding="utf-8")
+# ---------- escritura de CSV diario ----------
+def ensure_dir(p: Path):
+    p.mkdir(parents=True, exist_ok=True)
 
-    # diarios general
-    if not sales_detail.empty:
-        for fecha, group in sales_detail.groupby("fecha"):
-            (DIARIO_DIR / f"{fecha}-ventas.csv").write_text(group.to_csv(index=False), encoding="utf-8")
-    dates = sorted({*sales_detail.get("fecha",[]).tolist(), *prod_detail.get("fecha",[]).tolist()})
-    idx_html = "<!doctype html><meta charset='utf-8'><title>Reportes diarios</title><h1>Reportes diarios</h1><ul>"
-    for d in dates:
-        if not d: continue
-        link = (f"<a href='{d}-ventas.csv'>ventas</a>") if (DIARIO_DIR / f"{d}-ventas.csv").exists() else ""
-        idx_html += f"<li>{d}: {link}</li>"
-    idx_html += "</ul>"
-    (DIARIO_DIR/"index.html").write_text(idx_html, encoding="utf-8")
+def write_daily_csv(base_dir: Path, fecha: str, rows: list):
+    """
+    rows: lista de dicts con claves:
+      fecha, sku, descripcion, cantidad, precio, importe
+    """
+    ensure_dir(base_dir)
+    out = base_dir / f"{fecha}.csv"
+    new_file = not out.exists()
+    with out.open("a", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        if new_file:
+            w.writerow(["fecha", "sku", "descripcion", "cantidad", "precio", "importe"])
+        for r in rows:
+            w.writerow([r["fecha"], r["sku"], r["descripcion"], r["cantidad"], r["precio"], r["importe"]])
+    log(f"✓ actualizado {out.relative_to(ROOT)}")
 
-    # ----- mercado -----
-    inv_mkt_out = inv_mkt[["product_id","item","descripcion","precio","stock"]].sort_values("item")
-    inv_mkt_out.to_csv(INV_MKT_OUT_CSV, index=False)
+# ---------- flujo principal ----------
+def process_issue_event(event_path: Path):
+    with event_path.open("r", encoding="utf-8") as f:
+        event = json.load(f)
 
-    sales_mkt = pd.read_csv(SALES_MKT_CSV) if SALES_MKT_CSV.exists() else pd.DataFrame(
-        columns=["txn_id","fecha","item","cantidad","precio_unit","importe","issue"])
-    if not sales_mkt.empty:
-        sales_mkt["cantidad"] = pd.to_numeric(sales_mkt["cantidad"], errors="coerce").fillna(0).astype(int)
-        sales_mkt["precio_unit"] = pd.to_numeric(sales_mkt["precio_unit"], errors="coerce").fillna(0.0)
-        sales_mkt["importe"] = pd.to_numeric(sales_mkt["importe"], errors="coerce").fillna(0.0)
-
-    sales_mkt_detail = sales_mkt.merge(inv_mkt[["item","product_id","descripcion"]], on="item", how="left")
-    sales_mkt_detail.to_csv(SALES_MKT_DETAIL_CSV, index=False)
-
-    # diarios mercado
-    if not sales_mkt_detail.empty:
-        for fecha, group in sales_mkt_detail.groupby("fecha"):
-            (MKT_DIARIO_DIR / f"{fecha}-ventas.csv").write_text(group.to_csv(index=False), encoding="utf-8")
-
-# ====================== parseo del issue ======================
-
-def parse_issue(issue):
-    body = (issue or {}).get("body","")
-    labels = {l.get("name","").lower() for l in (issue or {}).get("labels", [])}
-
-    fecha_raw = grab_field(body, "Fecha")
-    notas = grab_field(body, "Notas")
-    fecha = safe_parse_date(fecha_raw, issue)
-    base = {"fecha": fecha, "issue_url": (issue or {}).get("html_url",""), "labels": labels, "notas": notas}
-
-    if "venta" in labels and "mercado" not in labels:
-        table_items = parse_items_table(body, has_price=True)
-        if table_items: return {"type":"venta_multi", **base, "items": table_items}
-        sku = grab_field(body, "Item"); cant = grab_field(body, "Cantidad"); precio = grab_field(body, "Precio unitario (opcional)")
-        try: cant_i = int(cant)
-        except: cant_i = 1
-        return {"type":"venta_single", **base, "items":[{"item":sku,"cantidad":cant_i,"precio_unit":precio}]}
-
-    if "produccion" in labels or "producción" in labels:
-        table_items = parse_items_table(body, has_price=False)
-        if table_items: return {"type":"prod_multi", **base, "items": table_items}
-        sku = grab_field(body, "Item"); cant = grab_field(body, "Cantidad")
-        try: cant_i = int(cant)
-        except: cant_i = 1
-        return {"type":"prod_single", **base, "items":[{"item":sku,"cantidad":cant_i}]}
-
-    if "venta-mercado" in labels:
-        table_items = parse_items_table(body, has_price=True)
-        if table_items: return {"type":"venta_mkt_multi", **base, "items": table_items}
-        sku = grab_field(body, "Item"); cant = grab_field(body, "Cantidad"); precio = grab_field(body, "Precio unitario (opcional)")
-        try: cant_i = int(cant)
-        except: cant_i = 1
-        return {"type":"venta_mkt_single", **base, "items":[{"item":sku,"cantidad":cant_i,"precio_unit":precio}]}
-
-    if "abasto-mercado" in labels or "traspaso-mercado" in labels:
-        table_items = parse_items_table(body, has_price=False)
-        if table_items: return {"type":"abasto_mkt_multi", **base, "items": table_items}
-        sku = grab_field(body, "Item"); cant = grab_field(body, "Cantidad")
-        try: cant_i = int(cant)
-        except: cant_i = 1
-        return {"type":"abasto_mkt_single", **base, "items":[{"item":sku,"cantidad":cant_i}]}
-
-    return {"type":"none", **base}
-
-# ====================== main ======================
-
-def main():
-    ensure_files()
-    inv_gen = load_inventory_general()
-    inv_mkt = load_inventory_mkt()
-    write_menu_json(inv_gen)  # menú siempre desde inventario general
-
-    issue = load_event_issue()
-    if issue is None:
-        build_reports(inv_gen, inv_mkt)
+    issue = event.get("issue") or {}
+    if not issue:
+        log("no es evento de issue; nada que hacer")
         return
 
-    data = parse_issue(issue)
-    t = data["type"]
+    parsed = parse_issue_payload(issue)
+    fecha = parsed["fecha"]
+    items = parsed["items"]
+    labels = parsed["labels"]
 
-    if t.startswith("venta_mkt"):
-        txn = new_txn_id("SM")  # Sales Mercado
-        append_sales_mkt(inv_mkt, data["fecha"], data["items"], data["issue_url"], txn)
-        inv_mkt = apply_stock(inv_mkt, data["items"], sign=-1, path=INVENTORY_MKT_CSV)
-        build_reports(inv_gen, inv_mkt); return
+    if not fecha:
+        log("⚠️  issue sin fecha, titulo:", issue.get("title"))
+        return
+    if not items:
+        log("⚠️  issue sin items; body:\n", issue.get("body"))
+        return
 
-    if t.startswith("abasto_mkt"):
-        txn = new_txn_id("TM")  # Transfer Mercado
-        # resta en general, suma en mercado
-        inv_gen = apply_stock(inv_gen, data["items"], sign=-1, path=INVENTORY_CSV)
-        inv_mkt = apply_stock(inv_mkt, data["items"], sign=+1, path=INVENTORY_MKT_CSV)
-        append_transfer_mkt(data["fecha"], data["items"], data["issue_url"], txn)
-        build_reports(inv_gen, inv_mkt); return
+    # ¿Es mercado?
+    is_mercado = any("mercado" in lbl for lbl in labels)
+    base_dir = DOCS / ("mercado/diario" if is_mercado else "diario")
 
-    if t.startswith("venta"):
-        txn = new_txn_id("S")
-        append_sales_general(inv_gen, data["fecha"], data["items"], data["issue_url"], txn)
-        inv_gen = apply_stock(inv_gen, data["items"], sign=-1, path=INVENTORY_CSV)
-        build_reports(inv_gen, inv_mkt); return
+    # Normaliza filas para CSV
+    rows = []
+    for it in items:
+        sku = it["item"]
+        cant = int(it.get("cantidad") or 0)
+        # precio: usa el del item; si no viene, intenta del menú
+        p_unit = it.get("precio")
+        if p_unit in (None, "", "0", 0):
+            p_unit = price_for(sku)
+        try:
+            p_float = float(str(p_unit).replace("$", "").replace(",", "")) if p_unit not in ("", None) else 0.0
+        except Exception:
+            p_float = 0.0
+        importe = round(cant * p_float, 2)
+        rows.append({
+            "fecha": fecha,
+            "sku": sku,
+            "descripcion": desc_for(sku),
+            "cantidad": cant,
+            "precio": f"{p_float:.2f}" if p_unit not in ("", None) else "",
+            "importe": f"{importe:.2f}",
+        })
 
-    if t.startswith("prod"):
-        txn = new_txn_id("P")
-        append_production(data["fecha"], data["items"], data["issue_url"], txn)
-        inv_gen = apply_stock(inv_gen, data["items"], sign=+1, path=INVENTORY_CSV)
-        build_reports(inv_gen, inv_mkt); return
+    write_daily_csv(base_dir, fecha, rows)
 
-    build_reports(inv_gen, inv_mkt)
+def main():
+    event_path = os.environ.get("GITHUB_EVENT_PATH")
+    if event_path and Path(event_path).exists():
+        process_issue_event(Path(event_path))
+    else:
+        log("sin GITHUB_EVENT_PATH; nada que procesar")
 
 if __name__ == "__main__":
     main()
