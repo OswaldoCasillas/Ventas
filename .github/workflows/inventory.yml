@@ -1,6 +1,66 @@
 name: Inventory Bot
 
 on:
+  workflow_dispatch: {}              # botón "Run workflow"
+  issues:
+    types: [opened, edited]          # procesa ventas/producción desde issues
+  push:
+    paths:
+      - "data/**"                    # catálogo o datos cambian
+      - "scripts/**"                 # lógica cambia
+      - "docs/register.html"
+      - "docs/produccion.html"
+      # Mercado
+      - "docs/register_mercado.html"
+      - "docs/abasto_mercado.html"
+      - "docs/inventario_mercado.html"
+      - "docs/ventas_mercado.html"
+      - "docs/reportes_mercado.html"
+      - "data/inventory_mercado.csv"
+
+permissions:
+  contents: write
+  issues: read
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas
+      - name: Preparar carpetas de salida
+        run: |
+          mkdir -p docs/diario
+          mkdir -p docs/mercado/diario
+      - name: Ejecutar script (genera menu.json, reportes, procesa issues si aplica)
+        env:
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+          # Descomenta si tu script llama a la API:
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/process_issue.py
+      - name: Commit de cambios
+        run: |
+          git config user.name "inventory-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Sin cambios."
+          else
+            git commit -m "chore(inventory): actualizar datos, menú y reportes"
+            git push
+          fi
+name: Inventory Bot
+
+on:
   workflow_dispatch: {}
   issues:
     types: [opened, edited, labeled, reopened]
@@ -52,3 +112,4 @@ jobs:
             git commit -m "chore(inventory): actualizar datos y reportes"
             git push
           fi
+
