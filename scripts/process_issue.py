@@ -88,12 +88,6 @@ def safe_parse_date(s: str, issue: dict) -> str:
 
 # ---------- Validación/parseo robusto de Items ----------
 
-SKU_ALLOWED_PREFIX = (
-    "PALETA-AGUA", "PALETA-CREMA", "PALETA-SIN-AZUCAR", "PALETA-MINI",
-    "HELADO-NIEVE", "HELADO-CLASICO", "HELADO-GOURMET", "HELADO-SIN-AZUCAR",
-    "AGUA-FRESCA", "MALTEADA", "BEBIDA", "POSTRE", "BOTANA", "EXTRA"
-)
-
 def is_valid_sku(s: str) -> bool:
     if not s or not isinstance(s, str):
         return False
@@ -104,7 +98,6 @@ def is_valid_sku(s: str) -> bool:
         return False
     if not re.match(r"^[A-Z0-9\-:]{3,}$", s):
         return False
-    # Permitimos SKUs que cumplan el patrón; preferimos los prefijos conocidos
     return True
 
 def parse_items_section(body: str) -> str | None:
@@ -174,6 +167,26 @@ def new_txn_id(prefix: str) -> str:
     rand = secrets.token_hex(3).upper()
     return f"{prefix}-{now}-{rand}"
 
+# --- NUEVO: helper para evitar doble-procesamiento del mismo issue
+def _csv_has_issue(path: Path, issue_url: str) -> bool:
+    if not issue_url:
+        return False
+    if not path.exists() or path.stat().st_size == 0:
+        return False
+    try:
+        df = pd.read_csv(path, usecols=["issue"])
+    except Exception:
+        return False
+    return df["issue"].astype(str).eq(issue_url).any()
+
+def already_processed(issue_url: str) -> bool:
+    return (
+        _csv_has_issue(SALES_CSV, issue_url) or
+        _csv_has_issue(SALES_MKT_CSV, issue_url) or
+        _csv_has_issue(PROD_CSV, issue_url) or
+        _csv_has_issue(TRANSFER_MKT_CSV, issue_url)
+    )
+
 # ====================== inventario / menú ======================
 
 def _load_inventory_file(path: Path) -> pd.DataFrame:
@@ -228,7 +241,7 @@ def _clean_items(items, require_price: bool = False):
             continue
         rec = {"item": sku, "cantidad": qty}
         if require_price:
-            rec["precio_unit"] = str(it.get("precio_unit","")).strip()
+            rec["precio_unit"] = str(it.get("precio_unit","") or it.get("precio","")).strip()
         clean.append(rec)
     return clean
 
@@ -462,6 +475,12 @@ def main():
 
     issue = load_event_issue()
     if issue is None:
+        build_reports(inv_gen, inv_mkt)
+        return
+
+    # Idempotencia: si este issue ya fue aplicado, solo reconstruye reportes y sal
+    issue_url = (issue or {}).get("html_url", "")
+    if already_processed(issue_url):
         build_reports(inv_gen, inv_mkt)
         return
 
