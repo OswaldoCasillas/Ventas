@@ -28,7 +28,7 @@
 </head>
 <body>
 <h1>Ventas por día</h1>
-<p class="muted">Elige una fecha para ver el detalle. Se agrupa por secciones (categorías).</p>
+<p class="muted">Elige una fecha para ver el detalle. Se agrupa por secciones (categorías) y se separa por método de pago.</p>
 
 <div class="row no-print">
   <div>
@@ -106,7 +106,7 @@ function parseCSV(text){
   const lines = text.trim().split(/\r?\n/);
   const headers = lines.shift().split(",").map(h=>h.trim());
   return lines.map(line=>{
-    const parts = []; // soporta comas simples (sin comillas escapadas complejas)
+    const parts = [];
     let current = "", inQuotes = false;
     for(let i=0;i<line.length;i++){
       const ch = line[i];
@@ -137,7 +137,7 @@ async function loadForDate(fecha){
   if(!rows){
     // Fallback: ventas_detalle.csv y filtramos por fecha
     const r2 = await fetch(`ventas_detalle.csv?_=${Date.now()}`);
-    if(!r2.ok){ 
+    if(!r2.ok){
       msg.innerHTML = `<div class="warn">No encontré ventas para esa fecha ni el detalle general. ¿Ya corrió el workflow después de registrar ventas?</div>`;
       render([], fecha);
       return;
@@ -149,7 +149,7 @@ async function loadForDate(fecha){
   msg.textContent = "";
 }
 
-// ---------- Render ----------
+// ---------- Render con Efectivo/Tarjeta ----------
 function render(rows, fecha){
   const cont = document.getElementById('contenedor');
   const res  = document.getElementById('resumen');
@@ -160,39 +160,62 @@ function render(rows, fecha){
     return;
   }
 
-  // Normaliza numéricos
+  // Normaliza numéricos + método de pago
   rows.forEach(r=>{
     r.cantidad = Number(r.cantidad||0);
     r.precio_unit = Number(r.precio_unit||0);
     r.importe = Number(r.importe|| (r.cantidad*r.precio_unit));
+    // metodo_pago si existe, si no, inferimos por texto
+    if (!r.metodo_pago){
+      const t = `${r.issue||""} ${r.descripcion||""} ${r.title||""}`; // por si vienen del parser
+      r.metodo_pago = /\(TARJETA\)|\[\s*TARJETA\s*\]|Método de pago.*Tarjeta/i.test(t) ? "tarjeta" : "efectivo";
+    }
   });
 
-  // Agrupa por sección -> item
+  // Resumen por método
+  const ef = rows.filter(r=>r.metodo_pago==="efectivo");
+  const tj = rows.filter(r=>r.metodo_pago==="tarjeta");
+  const totUds = rows.reduce((s,r)=>s+r.cantidad,0);
+  const totImp = rows.reduce((s,r)=>s+r.importe,0);
+  const efUds  = ef.reduce((s,r)=>s+r.cantidad,0);
+  const efImp  = ef.reduce((s,r)=>s+r.importe,0);
+  const tjUds  = tj.reduce((s,r)=>s+r.cantidad,0);
+  const tjImp  = tj.reduce((s,r)=>s+r.importe,0);
+
+  // Agrupa por sección -> (item, método)
   const bySec = {};
   for(const r of rows){
     const sec = getCategoryOf(r.item);
     if(!bySec[sec]) bySec[sec] = {};
-    const key = r.item;
-    if(!bySec[sec][key]) bySec[sec][key] = { sku:r.item, nombre: r.descripcion || skuToNice(r.item), cantidad:0, importe:0, precio:r.precio_unit };
+    const key = r.item + "|" + (r.metodo_pago||"efectivo");
+    if(!bySec[sec][key]) bySec[sec][key] = {
+      sku:r.item,
+      nombre: r.descripcion || skuToNice(r.item),
+      metodo: r.metodo_pago || "efectivo",
+      cantidad:0, importe:0, precio:r.precio_unit
+    };
     bySec[sec][key].cantidad += r.cantidad;
     bySec[sec][key].importe  += r.importe;
     if(!bySec[sec][key].precio && r.precio_unit) bySec[sec][key].precio = r.precio_unit;
   }
 
-  // Totales y orden de secciones
-  let granTotal = 0, granUnidades = 0;
+  // Render secciones (se separa por método en la fila)
   const sections = Object.keys(bySec).sort((a,b)=>SECTION_ORDER.indexOf(a)-SECTION_ORDER.indexOf(b));
   for(const sec of sections){
     const items = Object.values(bySec[sec]).sort((a,b)=>b.cantidad-a.cantidad || a.nombre.localeCompare(b.nombre,'es'));
     const totalSec = items.reduce((s,x)=>s+x.importe,0);
     const udsSec   = items.reduce((s,x)=>s+x.cantidad,0);
-    granTotal += totalSec; granUnidades += udsSec;
 
     const html = `
       <div class="section">
-        <div class="sec-title">${CAT_LABELS[sec]||sec} — <span class="muted">${udsSec} u • ${fmtMx(totalSec)}</span></div>
+        <div class="sec-title">${CAT_LABELS[sec]||sec} —
+          <span class="muted">${udsSec} u • ${fmtMx(totalSec)}</span>
+        </div>
         <table>
-          <thead><tr><th>Producto</th><th>SKU</th><th class="right">Cantidad</th><th class="right">Precio</th><th class="right">Importe</th></tr></thead>
+          <thead><tr>
+            <th>Producto</th><th>SKU</th><th class="right">Cantidad</th>
+            <th class="right">Precio</th><th class="right">Importe</th><th>Método</th>
+          </tr></thead>
           <tbody>
             ${items.map(x=>`<tr>
               <td>${x.nombre}</td>
@@ -200,9 +223,10 @@ function render(rows, fecha){
               <td class="right">${x.cantidad}</td>
               <td class="right">${x.precio?fmtMx(x.precio):""}</td>
               <td class="right">${fmtMx(x.importe)}</td>
+              <td>${x.metodo==="tarjeta"?"Tarjeta":"Efectivo"}</td>
             </tr>`).join("")}
           </tbody>
-          <tfoot><tr><th colspan="4" class="right tot">Total sección</th><th class="right tot">${fmtMx(totalSec)}</th></tr></tfoot>
+          <tfoot><tr><th colspan="4" class="right tot">Total sección</th><th class="right tot">${fmtMx(totalSec)}</th><th></th></tr></tfoot>
         </table>
       </div>`;
     cont.insertAdjacentHTML('beforeend', html);
@@ -213,8 +237,12 @@ function render(rows, fecha){
       <h2>Resumen del día ${fecha}</h2>
       <table>
         <tbody>
-          <tr><th>Total de unidades</th><td class="right">${granUnidades}</td></tr>
-          <tr><th>Importe total</th><td class="right">${fmtMx(granTotal)}</td></tr>
+          <tr><th>Total de unidades</th><td class="right">${totUds}</td></tr>
+          <tr><th>Importe total</th><td class="right">${fmtMx(totImp)}</td></tr>
+          <tr><th>Unidades (Efectivo)</th><td class="right">${efUds}</td></tr>
+          <tr><th>Importe (Efectivo)</th><td class="right">${fmtMx(efImp)}</td></tr>
+          <tr><th>Unidades (Tarjeta)</th><td class="right">${tjUds}</td></tr>
+          <tr><th>Importe (Tarjeta)</th><td class="right">${fmtMx(tjImp)}</td></tr>
         </tbody>
       </table>
     </div>`;
