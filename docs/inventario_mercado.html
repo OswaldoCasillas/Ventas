@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inventario actual (Mercado)</title>
+<style>
+  body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:16px;max-width:1100px}
+  h1{margin:0 0 12px}
+  input,select,button{font-size:16px;padding:10px;border:1px solid #ccc;border-radius:8px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
+  .row>*{flex:1 1 240px}
+  table{border-collapse:collapse;width:100%}
+  th,td{border:1px solid #ddd;padding:6px;text-align:left}
+  th{background:#f7f7f7}
+  .right{text-align:right}
+  .muted{color:#666}
+  .badge{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid #ccc;font-size:12px;margin-left:6px}
+</style>
+</head>
+<body>
+<h1>Inventario actual (Mercado) <span id="meta" class="badge"></span></h1>
+<p class="muted">Fuente: <code>data/inventory_mercado.csv</code>. Usa el buscador o filtra por categoría.</p>
+
+<div class="row">
+  <input id="q" placeholder="Buscar (SKU o descripción)">
+  <select id="cat">
+    <option value="">Todas las categorías</option>
+    <option value="PALETA-AGUA">Paleta de Agua</option>
+    <option value="PALETA-AGUA-PREMIUM">Paleta Agua Premium</option>
+    <option value="PALETA-CREMA">Paleta de Crema</option>
+    <option value="PALETA-CREMA-PREMIUM">Paleta Crema Premium</option>
+    <option value="PALETA-SIN-AZUCAR">Paleta Sin Azúcar/Keto</option>
+  </select>
+  <button id="export">Descargar CSV (vista)</button>
+</div>
+
+<table id="tbl">
+  <thead>
+    <tr>
+      <th>SKU</th>
+      <th>Descripción</th>
+      <th class="right">Stock</th>
+      <th class="right">Precio</th>
+      <th>Categoría</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+  <tfoot>
+    <tr>
+      <th colspan="2" class="right">Total items:</th>
+      <th class="right" id="totalStock">0</th>
+      <th></th>
+      <th id="totalCats"></th>
+    </tr>
+  </tfoot>
+</table>
+
+<script>
+const SRC = "data/inventory_mercado.csv"; // GitHub Pages sirve /docs como raíz → usar ruta relativa
+
+const CAT_LABELS = {
+  "PALETA-AGUA":"Paleta de Agua",
+  "PALETA-AGUA-PREMIUM":"Paleta Agua Premium",
+  "PALETA-CREMA":"Paleta de Crema",
+  "PALETA-CREMA-PREMIUM":"Paleta Crema Premium",
+  "PALETA-SIN-AZUCAR":"Paleta Sin Azúcar/Keto"
+};
+
+const state = { rows: [], filtered: [] };
+
+function categoryOf(sku){
+  const keys = Object.keys(CAT_LABELS).sort((a,b)=>b.length-a.length);
+  for (const k of keys){ if (sku.startsWith(k)) return k; }
+  return "";
+}
+
+function parseCSV(text){
+  const [head, ...lines] = text.trim().split(/\r?\n/);
+  const cols = head.split(",");
+  const idx = Object.fromEntries(cols.map((c,i)=>[c,i]));
+  return lines.map(l=>{
+    const t = l.split(",");
+    const sku = t[idx["item"]]||"";
+    return {
+      item: sku,
+      descripcion: (t[idx["descripcion"]]||"").trim(),
+      stock: Number(t[idx["stock"]]||0),
+      precio: t[idx["precio"]]||"",
+      categoria: categoryOf(sku)
+    };
+  });
+}
+
+function render(){
+  const q = document.getElementById("q").value.trim().toLowerCase();
+  const cat = document.getElementById("cat").value;
+  state.filtered = state.rows.filter(r=>{
+    const okCat = !cat || r.categoria === cat;
+    const hay = !q || r.item.toLowerCase().includes(q) || r.descripcion.toLowerCase().includes(q);
+    return okCat && hay;
+  });
+
+  const tb = document.querySelector("#tbl tbody");
+  tb.innerHTML = state.filtered.map(r=>`
+    <tr>
+      <td>${r.item}</td>
+      <td>${r.descripcion||""}</td>
+      <td class="right">${r.stock}</td>
+      <td class="right">${r.precio}</td>
+      <td>${CAT_LABELS[r.categoria]||""}</td>
+    </tr>
+  `).join("");
+
+  const total = state.filtered.reduce((s,r)=>s + (Number.isFinite(r.stock)?r.stock:0), 0);
+  document.getElementById("totalStock").textContent = total.toLocaleString("es-MX");
+
+  const byCat = {};
+  state.filtered.forEach(r=>{ byCat[r.categoria] = (byCat[r.categoria]||0) + (Number.isFinite(r.stock)?r.stock:0); });
+  const cats = Object.entries(byCat)
+    .filter(([k])=>k)
+    .map(([k,v])=>`${CAT_LABELS[k]||k}: ${v}`)
+    .join(" · ");
+  document.getElementById("totalCats").textContent = cats;
+
+  document.getElementById("meta").textContent = `${state.filtered.length} registros`;
+}
+
+function downloadCSV(rows){
+  const head = ["item","descripcion","stock","precio","categoria"];
+  const body = rows.map(r=>[r.item, r.descripcion, r.stock, r.precio, r.categoria]);
+  const csv = [head.join(","), ...body.map(r=>r.join(","))].join("\n");
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "inventario_mercado_vista.csv"; a.click();
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById("q").addEventListener("input", render);
+document.getElementById("cat").addEventListener("change", render);
+document.getElementById("export").onclick = ()=> downloadCSV(state.filtered);
+
+(async ()=>{
+  try{
+    const r = await fetch(SRC + "?_=" + Date.now());
+    if(!r.ok) throw new Error("No se pudo cargar " + SRC);
+    const txt = await r.text();
+    state.rows = parseCSV(txt);
+    render();
+  }catch(e){
+    alert("No encontré 'data/inventory_mercado.csv'. Genera primero el inventario del Mercado.");
+  }
+})();
+</script>
+</body>
+</html>
