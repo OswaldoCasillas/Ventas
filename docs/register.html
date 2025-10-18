@@ -211,6 +211,8 @@
     const params = new URLSearchParams({ template:'sale.md', title, body });
     return `${base}?${params.toString()}`;
   }
+  
+  const API_URL = "https://ventas-backend.vercel.app/api/create-issue";
 
   async function crearVentaViaAPI(){
     const fecha = document.getElementById('fecha').value;
