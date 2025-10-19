@@ -1,2 +1,7 @@
 txn_id,fecha,item,cantidad,precio_unit,importe,issue,metodo_pago,source_id,descripcion
+<<<<<<< Updated upstream
 S-20251018-230323-E4CBFC,2025-10-18,PALETA-AGUA-LIMON,2,25.00,50.00,https://github.com/OswaldoCasillas/Ventas/issues/84,efectivo,ef81a2e7a1c83b59d143319cae731f7f5f34fc78,PALETA AGUA Limon
+=======
+S-20251018-230337-A87F60,2025-10-18,PALETA-AGUA-LIMON,1,25.00,25.00,https://github.com/OswaldoCasillas/Ventas/issues/85,efectivo,7d33cfc172d4cf431b5c26cf18bf3916cde6c450,PALETA AGUA Limon
+S-20251018-230337-DBDAC6,2025-10-18,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,1,30.00,30.00,https://github.com/OswaldoCasillas/Ventas/issues/85,efectivo,1e6e0f44257487171be8424275bab4f032265fb0,PALETA AGUA PREMIUM Frutos Rojos
+>>>>>>> Stashed changes
