@@ -66,8 +66,8 @@
 <!-- Método de pago -->
 <div class="pay-wrap">
   <strong>Método de pago:</strong>
-  <span id="payCash"   class="pill active" data-metodo="efectivo">Efectivo</span>
-  <span id="payCard"   class="pill"        data-metodo="tarjeta">Tarjeta</span>
+  <span id="payCash" class="pill active" data-metodo="efectivo">Efectivo</span>
+  <span id="payCard" class="pill" data-metodo="tarjeta">Tarjeta</span>
 </div>
 
 <label>Notas (opcional)</label>
@@ -79,22 +79,86 @@
 
 <script>
 const ORG="OswaldoCasillas", REPO="Ventas";
-const API_URL=""; // si usas backend, pon la URL aquí
-const CAT_LABELS={ "PALETA-AGUA":"Paleta de Agua","PALETA-AGUA-PREMIUM":"Paleta Agua Premium","PALETA-CREMA":"Paleta de Crema","PALETA-CREMA-PREMIUM":"Paleta Crema Premium","PALETA-SIN-AZUCAR":"Paleta Sin Azúcar/Keto","PALETA-MINI":"Paleta Mini","HELADO-NIEVE":"Helado Nieve","HELADO-CLASICO":"Helado Clásico","HELADO-GOURMET":"Helado Gourmet","HELADO-SIN-AZUCAR":"Helado Sin Azúcar","MALTEADA":"Malteada","AGUA-FRESCA":"Aguas Frescas","BEBIDA":"Bebidas","POSTRE":"Postres","BOTANA":"Botanas","EXTRA":"Extras" };
+
+// ⚠️ Si tienes backend (Vercel/Worker), pon aquí la URL:
+const API_URL="";
+
+// Menú: local con fallback a GitHub Pages
+const MENU_LOCAL    = "menu.json";
+const MENU_FALLBACK = `https://${ORG.toLowerCase()}.github.io/${REPO}/menu.json`;
+
+// Categorías (incluye Paletas para Perro)
+const CAT_LABELS={
+  "PALETA-AGUA":"Paleta de Agua","PALETA-AGUA-PREMIUM":"Paleta Agua Premium",
+  "PALETA-CREMA":"Paleta de Crema","PALETA-CREMA-PREMIUM":"Paleta Crema Premium",
+  "PALETA-SIN-AZUCAR":"Paleta Sin Azúcar/Keto","PALETA-MINI":"Paleta Mini",
+  "PALETAS-PERRO":"Paletas para Perro",
+  "HELADO-NIEVE":"Helado Nieve","HELADO-CLASICO":"Helado Clásico",
+  "HELADO-GOURMET":"Helado Gourmet","HELADO-SIN-AZUCAR":"Helado Sin Azúcar",
+  "MALTEADA":"Malteada","AGUA-FRESCA":"Aguas Frescas","BEBIDA":"Bebidas",
+  "POSTRE":"Postres","BOTANA":"Botanas","EXTRA":"Extras"
+};
 
 let MENU=[], FILTER=null, cart=[];
 let metodoPago="efectivo";
 
-document.getElementById('fecha').valueAsDate=new Date();
+// Fecha en horario de México
+function setTodayMexico(){
+  const tz="America/Mexico_City";
+  const d=new Date();
+  const parts=new Intl.DateTimeFormat('sv-SE',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'})
+    .formatToParts(d).reduce((o,p)=>(o[p.type]=p.value,o),{});
+  document.getElementById('fecha').value=`${parts.year}-${parts.month}-${parts.day}`;
+}
+setTodayMexico();
+
 function fmt(n){return (n==null||n==='')?'':Number(n).toLocaleString('es-MX',{style:'currency',currency:'MXN'})}
 function getCategoryOf(sku){const k=Object.keys(CAT_LABELS).sort((a,b)=>b.length-a.length);for(const p of k){if(sku.startsWith(p))return p}return"OTROS"}
-function skuToNice(s){const pref=["PALETA-AGUA-PREMIUM","PALETA-CREMA-PREMIUM","PALETA-SIN-AZUCAR","PALETA-AGUA","PALETA-CREMA","PALETA-MINI","HELADO-NIEVE","HELADO-CLASICO","HELADO-GOURMET","HELADO-SIN-AZUCAR","AGUA-FRESCA","MALTEADA","BEBIDA","POSTRE","BOTANA","EXTRA"];let n=s;for(const p of pref){if(n.startsWith(p+"-")){n=n.slice(p.length+1);break}}return n.replace(/-/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase())}
+function skuToNice(s){const pref=["PALETA-AGUA-PREMIUM","PALETA-CREMA-PREMIUM","PALETA-SIN-AZUCAR","PALETA-AGUA","PALETA-CREMA","PALETA-MINI","PALETAS-PERRO","HELADO-NIEVE","HELADO-CLASICO","HELADO-GOURMET","HELADO-SIN-AZUCAR","AGUA-FRESCA","MALTEADA","BEBIDA","POSTRE","BOTANA","EXTRA"];let n=s;for(const p of pref){if(n.startsWith(p+"-")){n=n.slice(p.length+1);break}}return n.replace(/-/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase())}
 function niceLabel(p){const base=(p.descripcion&&p.descripcion.trim())?p.descripcion:skuToNice(p.item);const cat=CAT_LABELS[getCategoryOf(p.item)]||"";const price=(p.precio!==undefined&&p.precio!=="")?` ($${p.precio})`:"";return `${base}${price}${cat?` — ${cat}`:''}`}
 
-async function loadMenu(){const r=await fetch('menu.json?_='+Date.now());if(!r.ok){alert("No encuentro menu.json");return}MENU=await r.json();buildCats();renderOptions();setPriceFromSelected()}
-function buildCats(){const set=new Set(MENU.map(x=>getCategoryOf(x.item)).filter(k=>k!=="OTROS"));const c=document.getElementById('cats');c.innerHTML=`<span class="cat ${FILTER===null?'active':''}" data-k="">Todos</span>`+[...set].map(k=>`<span class="cat ${FILTER===k?'active':''}" data-k="${k}">${CAT_LABELS[k]||k}</span>`).join('');c.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{FILTER=b.dataset.k||null;c.querySelectorAll('.cat').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderOptions();setPriceFromSelected()})}
-function renderOptions(){const sel=document.getElementById('item');let items=MENU.slice();if(FILTER)items=items.filter(x=>getCategoryOf(x.item)===FILTER);items.sort((a,b)=>niceLabel(a).localeCompare(niceLabel(b),'es'));sel.innerHTML=items.map(x=>`<option value="${x.item}" data-precio="${x.precio||''}">${niceLabel(x)}</option>`).join('')}
-function setPriceFromSelected(){const sel=document.getElementById('item');if(!sel||!sel.options.length){document.getElementById('precio').value="";return}const p=sel.selectedOptions[0]?.dataset?.precio ?? sel.options[0].dataset.precio;document.getElementById('precio').value=p?Number(p).toFixed(2):""}
+// Menú con fallback
+async function fetchJSON(url){const r=await fetch(url+"?_="+Date.now(),{cache:"no-store"});if(!r.ok)throw new Error(`${r.status} ${url}`);return r.json();}
+async function loadMenu(){
+  try{ MENU=await fetchJSON(MENU_LOCAL); }
+  catch(e1){
+    console.warn("menu.json local no disponible, usando fallback…", e1);
+    try{ MENU=await fetchJSON(MENU_FALLBACK); }
+    catch(e2){
+      console.error("No se pudo cargar el catálogo.", e2);
+      alert("No pude cargar el catálogo (menu.json).");
+      return;
+    }
+  }
+  buildCats(); renderOptions(); setPriceFromSelected();
+}
+
+function buildCats(){
+  const set=new Set(MENU.map(x=>getCategoryOf(x.item)).filter(k=>k!=="OTROS"));
+  const c=document.getElementById('cats');
+  c.innerHTML=`<span class="cat ${FILTER===null?'active':''}" data-k="">Todos</span>`+
+    [...set].map(k=>`<span class="cat ${FILTER===k?'active':''}" data-k="${k}">${CAT_LABELS[k]||k}</span>`).join('');
+  c.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
+    FILTER=b.dataset.k||null;
+    c.querySelectorAll('.cat').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    renderOptions(); setPriceFromSelected();
+  });
+}
+
+function renderOptions(){
+  const sel=document.getElementById('item');
+  let items=MENU.slice();
+  if(FILTER)items=items.filter(x=>getCategoryOf(x.item)===FILTER);
+  items.sort((a,b)=>niceLabel(a).localeCompare(niceLabel(b),'es'));
+  sel.innerHTML=items.map(x=>`<option value="${x.item}" data-precio="${x.precio||''}">${niceLabel(x)}</option>`).join('');
+}
+function setPriceFromSelected(){
+  const sel=document.getElementById('item');
+  if(!sel||!sel.options.length){document.getElementById('precio').value="";return}
+  const p=sel.selectedOptions[0]?.dataset?.precio ?? sel.options[0].dataset.precio;
+  document.getElementById('precio').value=p?Number(p).toFixed(2):"";
+}
 document.getElementById('item').onchange=setPriceFromSelected;
 
 // Cantidad
@@ -104,18 +168,82 @@ document.getElementById('qtyPlus').onclick  = ()=>{ const inp=document.getElemen
 document.getElementById('cantidad').addEventListener('input', clampQty);
 
 // Carrito
-function renderCart(){const tb=document.querySelector('#cartTbl tbody');tb.innerHTML=cart.map((c,i)=>{const imp=(Number(c.precio||0)*Number(c.cantidad||0));return `<tr><td>${c.item}</td><td>${c.descripcion||''}</td><td class="right">${c.cantidad}</td><td class="right">${fmt(c.precio)}</td><td class="right">${fmt(imp)}</td><td><button data-i="${i}" class="rm">Quitar</button></td></tr>`}).join('');tb.querySelectorAll('.rm').forEach(b=>b.onclick=()=>{cart.splice(Number(b.dataset.i),1);renderCart()});document.getElementById('totalCell').textContent=fmt(cart.reduce((s,c)=>s+(Number(c.precio||0)*Number(c.cantidad||0)),0))}
-document.getElementById('add').onclick=()=>{const sel=document.getElementById('item');const sku=sel.value;const cant=parseInt(document.getElementById('cantidad').value||'1',10);if(!sku||cant<=0)return alert("Selecciona producto y cantidad");const p=MENU.find(x=>x.item===sku)||{descripcion:'',precio:''};const prec=document.getElementById('precio').value||p.precio||'';const idx=cart.findIndex(c=>c.item===sku&&String(c.precio||'')===String(prec||''));if(idx>=0)cart[idx].cantidad+=cant;else cart.push({item:sku,descripcion:niceLabel(p).split(' — ')[0],cantidad:cant,precio:prec});renderCart();document.getElementById('cantidad').value=1;setPriceFromSelected()}
-document.getElementById('clear').onclick=()=>{cart.splice(0,cart.length);renderCart()}
+function renderCart(){
+  const tb=document.querySelector('#cartTbl tbody');
+  tb.innerHTML=cart.map((c,i)=>{const imp=(Number(c.precio||0)*Number(c.cantidad||0));return `<tr>
+    <td>${c.item}</td><td>${c.descripcion||''}</td>
+    <td class="right">${c.cantidad}</td>
+    <td class="right">${fmt(c.precio)}</td>
+    <td class="right">${fmt(imp)}</td>
+    <td><button data-i="${i}" class="rm">Quitar</button></td></tr>`}).join('');
+  tb.querySelectorAll('.rm').forEach(b=>b.onclick=()=>{cart.splice(Number(b.dataset.i),1);renderCart()});
+  document.getElementById('totalCell').textContent=fmt(cart.reduce((s,c)=>s+(Number(c.precio||0)*Number(c.cantidad||0)),0));
+}
+
+document.getElementById('add').onclick=()=>{
+  const sel=document.getElementById('item');
+  const sku=sel.value;
+  const cant=parseInt(document.getElementById('cantidad').value||'1',10);
+  if(!sku||cant<=0)return alert("Selecciona producto y cantidad");
+  const p=MENU.find(x=>x.item===sku)||{descripcion:'',precio:''};
+  const prec=document.getElementById('precio').value||p.precio||'';
+  const idx=cart.findIndex(c=>c.item===sku&&String(c.precio||'')===String(prec||''));
+  if(idx>=0)cart[idx].cantidad+=cant; else cart.push({item:sku,descripcion:niceLabel(p).split(' — ')[0],cantidad:cant,precio:prec});
+  renderCart(); document.getElementById('cantidad').value=1; setPriceFromSelected();
+};
+document.getElementById('clear').onclick=()=>{cart.splice(0,cart.length);renderCart()};
 
 // Método de pago (UI)
-function setMetodoPago(m){metodoPago=m;document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));(m==='tarjeta'?document.getElementById('payCard'):document.getElementById('payCash')).classList.add('active');}
+function setMetodoPago(m){
+  metodoPago=m;
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  (m==='tarjeta'?document.getElementById('payCard'):document.getElementById('payCash')).classList.add('active');
+}
 document.getElementById('payCash').onclick = ()=>setMetodoPago('efectivo');
 document.getElementById('payCard').onclick = ()=>setMetodoPago('tarjeta');
 
-// Enviar
-function buildIssueUrl(){const fecha=document.getElementById('fecha').value;const notas=document.getElementById('notas').value;const base=`https://github.com/${ORG}/${REPO}/issues/new`;const prefix=(metodoPago==='tarjeta')?'[TARJETA] ':'';const title=`${prefix}Venta Mercado: ${cart.length} items @ ${fecha}`;let body=`**Fecha**: ${fecha}\n**Método de pago**: ${metodoPago}\n**Notas**: ${notas||''}\n\n**Items**\nSKU | Cantidad | Precio\n`;cart.forEach(c=>body+=`${c.item} | ${c.cantidad} | ${c.precio||''}\n`);const params=new URLSearchParams({template:'sale_mercado.md',title,body,labels:'venta-mercado'});return `${base}?${params.toString()}`}
-async function submit(){const fecha=document.getElementById('fecha').value;if(!fecha)return alert("Falta fecha");if(cart.length===0)return alert("Agrega productos");const notas=document.getElementById('notas').value;if(!API_URL){location.href=buildIssueUrl();return}const items=cart.map(c=>({item:c.item,cantidad:c.cantidad,precio:c.precio||""}));const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'venta-mercado',fecha,notas,items,mercado:true,metodo_pago:metodoPago})});if(!r.ok){const e=await r.json().catch(()=>({}));alert("Error: "+(e.error||r.statusText));return}alert("Venta Mercado registrada ✅");cart.splice(0,cart.length);renderCart();setMetodoPago('efectivo')}
+// Enviar (con anti-doble click)
+function buildIssueUrl(){
+  const fecha=document.getElementById('fecha').value;
+  const notas=document.getElementById('notas').value;
+  const base=`https://github.com/${ORG}/${REPO}/issues/new`;
+  const prefix=(metodoPago==='tarjeta')?'[TARJETA] ':'';
+  const title=`${prefix}Venta Mercado: ${cart.length} items @ ${fecha}`;
+  let body=`**Fecha**: ${fecha}\n**Método de pago**: ${metodoPago}\n**Notas**: ${notas||''}\n\n**Items**\nSKU | Cantidad | Precio\n`;
+  cart.forEach(c=>body+=`${c.item} | ${c.cantidad} | ${c.precio||''}\n`);
+  const params=new URLSearchParams({template:'sale_mercado.md',title,body,labels:'venta-mercado'});
+  return `${base}?${params.toString()}`;
+}
+async function submit(){
+  const btn=document.getElementById('confirm');
+  if(btn.dataset.sending==="1")return;
+  btn.dataset.sending="1"; btn.disabled=true;
+
+  try{
+    const fecha=document.getElementById('fecha').value;
+    if(!fecha){alert("Falta fecha");return}
+    if(cart.length===0){alert("Agrega productos");return}
+    const notas=document.getElementById('notas').value;
+
+    if(!API_URL){ location.href=buildIssueUrl(); return }
+
+    const items=cart.map(c=>({item:c.item,cantidad:c.cantidad,precio:c.precio||""}));
+    const r=await fetch(API_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({type:'venta-mercado',fecha,notas,items,mercado:true,metodo_pago:metodoPago})
+    });
+    if(!r.ok){
+      const e=await r.json().catch(()=>({}));
+      alert("Error: "+(e.error||r.statusText));
+      return;
+    }
+    alert("Venta Mercado registrada ✅");
+    cart.splice(0,cart.length); renderCart(); setMetodoPago('efectivo');
+  } finally {
+    btn.disabled=false; btn.dataset.sending="0";
+  }
+}
 document.getElementById('confirm').onclick=submit;
 
 loadMenu(); setMetodoPago('efectivo');
