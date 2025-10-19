@@ -318,6 +318,10 @@ def apply_stock(inv: pd.DataFrame, items: list, sign: int, path: Path) -> pd.Dat
 
 # ====================== reportes ======================
 
+def norm_date_series(s):
+    """Convierte cualquier serie a fechas 'YYYY-MM-DD' y quita NaT."""
+    return pd.to_datetime(pd.Series(s).astype(str), errors="coerce").dropna().dt.strftime("%Y-%m-%d")
+
 def build_reports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame):
     # Sanea inventarios para no propagar filas corruptas
     inv_gen = inv_gen[inv_gen["item"].apply(is_valid_sku)].copy()
@@ -332,11 +336,15 @@ def build_reports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame):
         sales["cantidad"] = pd.to_numeric(sales["cantidad"], errors="coerce").fillna(0).astype(int)
         sales["precio_unit"] = pd.to_numeric(sales["precio_unit"], errors="coerce").fillna(0.0)
         sales["importe"] = pd.to_numeric(sales["importe"], errors="coerce").fillna(0.0)
+        # 🔧 normalizamos fecha
+        sales["fecha_norm"] = pd.to_datetime(sales["fecha"].astype(str), errors="coerce").dt.strftime("%Y-%m-%d")
 
     prod = pd.read_csv(PROD_CSV) if PROD_CSV.exists() else pd.DataFrame(
         columns=["txn_id","fecha","item","cantidad","issue"])
     if not prod.empty:
         prod["cantidad"] = pd.to_numeric(prod["cantidad"], errors="coerce").fillna(0).astype(int)
+        # 🔧 normalizamos fecha
+        prod["fecha_norm"] = pd.to_datetime(prod["fecha"].astype(str), errors="coerce").dt.strftime("%Y-%m-%d")
 
     inv_key = inv_gen[["item","product_id","descripcion"]]
     sales_detail = sales.merge(inv_key, on="item", how="left")
@@ -350,12 +358,15 @@ def build_reports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame):
     by_item = (sales.groupby("item", as_index=False)[["cantidad","importe"]]
                .sum().sort_values(["cantidad","importe"], ascending=False))
     by_item.to_csv(SALES_ITEM_CSV, index=False)
-    by_day = (sales.groupby("fecha", as_index=False)[["cantidad","importe"]]
-              .sum().sort_values("fecha"))
+    # usar fecha_norm si existe
+    if "fecha_norm" in sales.columns:
+        by_day = (sales.groupby("fecha_norm", as_index=False)[["cantidad","importe"]]
+                  .sum().rename(columns={"fecha_norm":"fecha"}).sort_values("fecha"))
+    else:
+        by_day = (sales.groupby("fecha", as_index=False)[["cantidad","importe"]]
+                  .sum().sort_values("fecha"))
     by_day.to_csv(SALES_DAY_CSV, index=False)
 
-    low = inv_gen[inv_gen["stock"] <= 5].sort_values("stock")
-    prod_by_day = prod.groupby("fecha", as_index=False)["cantidad"].sum().sort_values("fecha") if not prod.empty else pd.DataFrame(columns=["fecha","cantidad"])
     report = {
         "generated_at": datetime.utcnow().isoformat()+"Z",
         "summary": {
@@ -388,14 +399,23 @@ def build_reports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame):
     </html>"""
     REPORT_HTML.write_text(html, encoding="utf-8")
 
-    # diarios general
+    # diarios general (usar fecha normalizada si existe)
     if not sales_detail.empty:
-        for fecha, group in sales_detail.groupby("fecha"):
+        col = "fecha_norm" if "fecha_norm" in sales_detail.columns else "fecha"
+        for fecha, group in sales_detail.groupby(col):
+            if not isinstance(fecha, str) or not fecha:
+                continue
             (DIARIO_DIR / f"{fecha}-ventas.csv").write_text(group.to_csv(index=False), encoding="utf-8")
-    dates = sorted({*sales_detail.get("fecha",[]).tolist(), *prod_detail.get("fecha",[]).tolist()})
+
+    # 🔧 recopilar fechas seguras para index.html
+    dates_sales = norm_date_series(sales_detail.get("fecha", [])) if not sales_detail.empty else pd.Series([], dtype=str)
+    dates_prod  = norm_date_series(prod_detail.get("fecha", [])) if not prod_detail.empty else pd.Series([], dtype=str)
+    dates = sorted(set(dates_sales.tolist() + dates_prod.tolist()))
+
     idx_html = "<!doctype html><meta charset='utf-8'><title>Reportes diarios</title><h1>Reportes diarios</h1><ul>"
     for d in dates:
-        if not d: continue
+        if not d: 
+            continue
         link = (f"<a href='{d}-ventas.csv'>ventas</a>") if (DIARIO_DIR / f"{d}-ventas.csv").exists() else ""
         idx_html += f"<li>{d}: {link}</li>"
     idx_html += "</ul>"
@@ -411,13 +431,17 @@ def build_reports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame):
         sales_mkt["cantidad"] = pd.to_numeric(sales_mkt["cantidad"], errors="coerce").fillna(0).astype(int)
         sales_mkt["precio_unit"] = pd.to_numeric(sales_mkt["precio_unit"], errors="coerce").fillna(0.0)
         sales_mkt["importe"] = pd.to_numeric(sales_mkt["importe"], errors="coerce").fillna(0.0)
+        sales_mkt["fecha_norm"] = pd.to_datetime(sales_mkt["fecha"].astype(str), errors="coerce").dt.strftime("%Y-%m-%d")
 
     sales_mkt_detail = sales_mkt.merge(inv_mkt[["item","product_id","descripcion"]], on="item", how="left")
     sales_mkt_detail.to_csv(SALES_MKT_DETAIL_CSV, index=False)
 
-    # diarios mercado
+    # diarios mercado (usar fecha normalizada si existe)
     if not sales_mkt_detail.empty:
-        for fecha, group in sales_mkt_detail.groupby("fecha"):
+        col = "fecha_norm" if "fecha_norm" in sales_mkt_detail.columns else "fecha"
+        for fecha, group in sales_mkt_detail.groupby(col):
+            if not isinstance(fecha, str) or not fecha:
+                continue
             (MKT_DIARIO_DIR / f"{fecha}-ventas.csv").write_text(group.to_csv(index=False), encoding="utf-8")
 
 # ====================== parseo del issue ======================
@@ -431,7 +455,7 @@ def parse_issue(issue):
     fecha = safe_parse_date(fecha_raw, issue)
     base = {"fecha": fecha, "issue_url": (issue or {}).get("html_url",""), "labels": labels, "notas": notas}
 
-    if "venta" in labels and "mercado" not in labels:
+    if "venta" in labels y "mercado" not in labels:
         table_items = parse_items_table(body, has_price=True)
         if table_items: return {"type":"venta_multi", **base, "items": table_items}
         sku = grab_field(body, "Item"); cant = grab_field(body, "Cantidad"); precio = grab_field(body, "Precio unitario (opcional)")
