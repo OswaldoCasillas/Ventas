@@ -95,17 +95,35 @@
   // Dónde está el menú:
   const MENU_LOCAL    = "menu.json";
   const MENU_FALLBACK = `https://${ORG.toLowerCase()}.github.io/${REPO}/menu.json`;
-
-  // ========= CATEGORÍAS =========
+  
+  // ---------- Categorías (mismo mapping que en register/produccion) ----------
   const CAT_LABELS = {
-    "PALETA-AGUA":"Paleta de Agua","PALETA-AGUA-PREMIUM":"Paleta Agua Premium",
-    "PALETA-CREMA":"Paleta de Crema","PALETA-CREMA-PREMIUM":"Paleta Crema Premium",
-    "PALETA-SIN-AZUCAR":"Paleta Sin Azúcar/Keto","PALETA-MINI":"Paleta Mini",
-    "HELADO-NIEVE":"Helado Nieve","HELADO-CLASICO":"Helado Clásico",
-    "HELADO-GOURMET":"Helado Gourmet","HELADO-SIN-AZUCAR":"Helado Sin Azúcar",
-    "MALTEADA":"Malteada","AGUA-FRESCA":"Aguas Frescas","BEBIDA":"Bebidas",
-    "POSTRE":"Postres","BOTANA":"Botanas","EXTRA":"Extras"
+    "PALETA-AGUA": "Paleta de Agua",
+    "PALETA-AGUA-PREMIUM": "Paleta Agua Premium",
+    "PALETA-CREMA": "Paleta de Crema",
+    "PALETA-CREMA-PREMIUM": "Paleta Crema Premium",
+    "PALETA-SIN-AZUCAR": "Paleta Sin Azúcar/Keto",
+    "PALETA-MINI": "Paleta Mini",
+    "PALETAS-PERRO": "Paletas para Perro",      // 👈 NUEVA
+    "HELADO-NIEVE": "Helado Nieve",
+    "HELADO-CLASICO": "Helado Clásico",
+    "HELADO-GOURMET": "Helado Gourmet",
+    "HELADO-SIN-AZUCAR": "Helado Sin Azúcar",
+    "MALTEADA": "Malteada",
+    "AGUA-FRESCA": "Aguas Frescas",
+    "BEBIDA": "Bebidas",
+    "POSTRE": "Postres",
+    "BOTANA": "Botanas",
+    "EXTRA": "Extras"
   };
+  
+  const SECTION_ORDER = [
+    "PALETA-AGUA","PALETA-AGUA-PREMIUM","PALETA-CREMA","PALETA-CREMA-PREMIUM","PALETA-SIN-AZUCAR","PALETA-MINI",
+    "PALETAS-PERRO",                            // 👈 NUEVA
+    "HELADO-NIEVE","HELADO-CLASICO","HELADO-GOURMET","HELADO-SIN-AZUCAR",
+    "MALTEADA","AGUA-FRESCA","BEBIDA","POSTRE","BOTANA","EXTRA","OTROS"
+  ];
+
 
   // ========= ESTADO =========
   let MENU = []; let FILTER = null; const cart = [];
