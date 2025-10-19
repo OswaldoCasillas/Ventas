@@ -1,7 +1,11 @@
 fecha,cantidad,importe
 2025-10-01,2,50.0
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 2025-10-18,29,725.0
 =======
 2025-10-18,28,685.0
+>>>>>>> Stashed changes
+=======
+2025-10-18,30,765.0
 >>>>>>> Stashed changes
