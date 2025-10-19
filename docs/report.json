@@ -1,28 +1,10 @@
 {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-  "generated_at": "2025-10-19T03:16:04.387643Z",
+  "generated_at": "2025-10-19T03:18:40.809072Z",
   "summary": {
     "items_distintos": 119,
     "items_low_stock": 2,
-    "total_ventas": 31,
-    "total_importe": 775.0,
-=======
-  "generated_at": "2025-10-19T03:16:35.388529Z",
-  "summary": {
-    "items_distintos": 119,
-    "items_low_stock": 2,
-    "total_ventas": 30,
-    "total_importe": 735.0,
->>>>>>> Stashed changes
-=======
-  "generated_at": "2025-10-19T03:16:43.330089Z",
-  "summary": {
-    "items_distintos": 119,
-    "items_low_stock": 2,
-    "total_ventas": 32,
-    "total_importe": 815.0,
->>>>>>> Stashed changes
+    "total_ventas": 38,
+    "total_importe": 1055.0,
     "total_producido": 0
   }
 }
