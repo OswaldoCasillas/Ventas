@@ -1,8 +1,2 @@
 txn_id,fecha,item,cantidad,precio_unit,importe,issue,metodo_pago,product_id,descripcion
-S-20251019-041449-879A6A,2025-10-18,PALETA-AGUA-LIMON,2,25.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/70,efectivo,FFFB8948,PALETA AGUA Limon
-<<<<<<< Updated upstream
-S-20251019-041509-F1CED3,2025-10-18,HELADO-CLASICO-DOBLE,1,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/72,efectivo,BD4D8B7F,Helado Clasico Doble
-=======
-S-20251019-041530-563C69,2025-10-18,PALETA-MINI-MINI-AGUA,6,6.0,36.0,https://github.com/OswaldoCasillas/Ventas/issues/73,efectivo,7A03C7DC,PALETA MINI Mini Agua
-S-20251019-041530-563C69,2025-10-18,PALETA-MINI-MINI-AGUA,6,6.0,36.0,https://github.com/OswaldoCasillas/Ventas/issues/73,efectivo,C371ED50,PALETA MINI Mini Alcohol
->>>>>>> Stashed changes
+
