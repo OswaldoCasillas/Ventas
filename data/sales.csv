@@ -1,4 +1,5 @@
 txn_id,fecha,item,cantidad,precio_unit,importe,issue
 S-20251019-024440-000B91,2025-10-18,PALETA-MINI-MINI-AGUA,10,6.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/51
 S-20251019-024458-84B265,2025-10-18,HELADO-CLASICO-DOBLE,1,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/52
-S-20251019-030316-48957E,2025-10-18,PALETA-AGUA-LIMON,2,25.00,50.00,https://github.com/OswaldoCasillas/Ventas/issues/53
+S-20251019-030316-48957E,2025-10-18,PALETA-AGUA-LIMON,2,25.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/53
+S-20251019-030928-4CB6FC,2025-10-01,PALETA-AGUA-LIMON,2,25.00,50.00,https://github.com/OswaldoCasillas/Ventas/issues/54
