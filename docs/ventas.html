@@ -20,15 +20,13 @@
   .tot{background:#fafafa;font-weight:600}
   .inline{display:inline-block;margin-right:8px}
   .warn{background:#fff3cd;border:1px solid #ffeeba;border-radius:8px;padding:8px}
-  @media print{
-    .no-print{display:none}
-    body{margin:0.5cm}
-  }
+  .info{background:#e8f4ff;border:1px solid #b6dcff;border-radius:8px;padding:8px}
+  @media print{ .no-print{display:none} body{margin:0.5cm} }
 </style>
 </head>
 <body>
 <h1>Ventas por día</h1>
-<p class="muted">Elige una fecha para ver el detalle. Se agrupa por secciones (categorías) y se separa por método de pago.</p>
+<p class="muted">Elige una fecha para ver el detalle (ventas generales). Las ventas de Mercado están en su propia página.</p>
 
 <div class="row no-print">
   <div>
@@ -53,7 +51,7 @@
 const ORG  = "OswaldoCasillas";
 const REPO = "Ventas";
 
-// ---------- Categorías (mismo mapping que en register/produccion) ----------
+// ---------- Categorías ----------
 const CAT_LABELS = {
   "PALETA-AGUA": "Paleta de Agua",
   "PALETA-AGUA-PREMIUM": "Paleta Agua Premium",
@@ -61,6 +59,7 @@ const CAT_LABELS = {
   "PALETA-CREMA-PREMIUM": "Paleta Crema Premium",
   "PALETA-SIN-AZUCAR": "Paleta Sin Azúcar/Keto",
   "PALETA-MINI": "Paleta Mini",
+  "PALETAS-PERRO": "Paletas para Perro", // 👈 agregada
   "HELADO-NIEVE": "Helado Nieve",
   "HELADO-CLASICO": "Helado Clásico",
   "HELADO-GOURMET": "Helado Gourmet",
@@ -74,23 +73,32 @@ const CAT_LABELS = {
 };
 const SECTION_ORDER = [
   "PALETA-AGUA","PALETA-AGUA-PREMIUM","PALETA-CREMA","PALETA-CREMA-PREMIUM","PALETA-SIN-AZUCAR","PALETA-MINI",
+  "PALETAS-PERRO",
   "HELADO-NIEVE","HELADO-CLASICO","HELADO-GOURMET","HELADO-SIN-AZUCAR",
   "MALTEADA","AGUA-FRESCA","BEBIDA","POSTRE","BOTANA","EXTRA","OTROS"
 ];
 
+// ---------- util ----------
+function setTodayMexico(){
+  const tz="America/Mexico_City";
+  const d=new Date();
+  const parts=new Intl.DateTimeFormat('sv-SE',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'})
+    .formatToParts(d).reduce((o,p)=>(o[p.type]=p.value,o),{});
+  document.getElementById('fecha').value=`${parts.year}-${parts.month}-${parts.day}`;
+}
 function getCategoryOf(sku){
   const keys = Object.keys(CAT_LABELS).sort((a,b)=>b.length-a.length);
-  for(const k of keys){ if(sku.startsWith(k)) return k; }
+  for(const k of keys){ if(sku && sku.startsWith(k)) return k; }
   return "OTROS";
 }
 function skuToNice(sku){
   const prefixes = [
     "PALETA-AGUA-PREMIUM","PALETA-CREMA-PREMIUM","PALETA-SIN-AZUCAR",
-    "PALETA-AGUA","PALETA-CREMA","PALETA-MINI",
+    "PALETA-AGUA","PALETA-CREMA","PALETA-MINI","PALETAS-PERRO",
     "HELADO-NIEVE","HELADO-CLASICO","HELADO-GOURMET","HELADO-SIN-AZUCAR",
     "AGUA-FRESCA","MALTEADA","BEBIDA","POSTRE","BOTANA","EXTRA"
   ];
-  let name = sku;
+  let name = sku||"";
   for(const p of prefixes){
     if(name.startsWith(p+"-")) { name = name.slice(p.length+1); break; }
   }
@@ -103,7 +111,8 @@ function fmtMx(n){ return Number(n||0).toLocaleString('es-MX',{style:'currency',
 
 // ---------- CSV parser pequeñito ----------
 function parseCSV(text){
-  const lines = text.trim().split(/\r?\n/);
+  const lines = text.trim().split(/\r?\n/).filter(x=>x!=="");
+  if(lines.length===0) return [];
   const headers = lines.shift().split(",").map(h=>h.trim());
   return lines.map(line=>{
     const parts = [];
@@ -121,101 +130,103 @@ function parseCSV(text){
   });
 }
 
-// ---------- Carga datos para una fecha ----------
+// ---------- Carga datos (general) para una fecha ----------
 async function loadForDate(fecha){
   const msg = document.getElementById('msg');
+  const cont = document.getElementById('contenedor');
+  const res  = document.getElementById('resumen');
   msg.textContent = "Cargando…";
-  // Preferimos el archivo diario si existe
+  cont.innerHTML=""; res.innerHTML="";
+
   const dailyUrl = `diario/${fecha}-ventas.csv?_=${Date.now()}`;
   let rows = null;
+
   try{
     const r = await fetch(dailyUrl);
     if(r.ok){
       rows = parseCSV(await r.text());
     }
   }catch(e){/* ignora */}
-  if(!rows){
-    // Fallback: ventas_detalle.csv y filtramos por fecha
-    const r2 = await fetch(`ventas_detalle.csv?_=${Date.now()}`);
-    if(!r2.ok){
-      msg.innerHTML = `<div class="warn">No encontré ventas para esa fecha ni el detalle general. ¿Ya corrió el workflow después de registrar ventas?</div>`;
-      render([], fecha);
-      return;
-    }
-    const all = parseCSV(await r2.text());
-    rows = all.filter(x=>x.fecha===fecha);
+
+
+  if(!rows || rows.length===0){
+    // Fallback: ventas_detalle.csv (general)
+    try{
+      const r2 = await fetch(`ventas_detalle.csv?_=${Date.now()}`);
+      if(r2.ok){
+        const all = parseCSV(await r2.text());
+        rows = all.filter(x=>x.fecha===fecha);
+      }
+    }catch(e){/* ignora */}
   }
+
+  if(!rows || rows.length===0){
+    // ¿Hay ventas de MERCADO ese día?
+    try{
+      const rm = await fetch(`mercado/diario/${fecha}-ventas.csv?_=${Date.now()}`);
+      if(rm.ok){
+        const mercadoRows = parseCSV(await rm.text());
+        if(mercadoRows && mercadoRows.length){
+          document.getElementById('contenedor').innerHTML =
+            `<div class="info">No hay ventas generales el <b>${fecha}</b>, 
+              pero sí hay ventas de <b>Mercado</b>.
+              Ábrelas aquí: <a href="ventas_mercado.html">ventas Mercado</a>.
+            </div>`;
+          msg.textContent="";
+          return;
+        }
+      }
+    }catch(e){/* ignora */}
+    document.getElementById('contenedor').innerHTML =
+      `<div class="warn">No hay ventas registradas el ${fecha}.</div>`;
+    msg.textContent="";
+    return;
+  }
+
   render(rows, fecha);
   msg.textContent = "";
 }
 
-// ---------- Render con Efectivo/Tarjeta ----------
+// ---------- Render ----------
 function render(rows, fecha){
   const cont = document.getElementById('contenedor');
   const res  = document.getElementById('resumen');
   cont.innerHTML = ""; res.innerHTML = "";
 
-  if(!rows || rows.length===0){
-    cont.innerHTML = `<div class="warn">No hay ventas registradas el ${fecha}.</div>`;
-    return;
-  }
-
-  // Normaliza numéricos + método de pago
+  // Normaliza numéricos
   rows.forEach(r=>{
     r.cantidad = Number(r.cantidad||0);
     r.precio_unit = Number(r.precio_unit||0);
     r.importe = Number(r.importe|| (r.cantidad*r.precio_unit));
-    // metodo_pago si existe, si no, inferimos por texto
-    if (!r.metodo_pago){
-      const t = `${r.issue||""} ${r.descripcion||""} ${r.title||""}`; // por si vienen del parser
-      r.metodo_pago = /\(TARJETA\)|\[\s*TARJETA\s*\]|Método de pago.*Tarjeta/i.test(t) ? "tarjeta" : "efectivo";
-    }
   });
 
-  // Resumen por método
-  const ef = rows.filter(r=>r.metodo_pago==="efectivo");
-  const tj = rows.filter(r=>r.metodo_pago==="tarjeta");
-  const totUds = rows.reduce((s,r)=>s+r.cantidad,0);
-  const totImp = rows.reduce((s,r)=>s+r.importe,0);
-  const efUds  = ef.reduce((s,r)=>s+r.cantidad,0);
-  const efImp  = ef.reduce((s,r)=>s+r.importe,0);
-  const tjUds  = tj.reduce((s,r)=>s+r.cantidad,0);
-  const tjImp  = tj.reduce((s,r)=>s+r.importe,0);
-
-  // Agrupa por sección -> (item, método)
+  // Agrupa por sección -> item
   const bySec = {};
   for(const r of rows){
     const sec = getCategoryOf(r.item);
     if(!bySec[sec]) bySec[sec] = {};
-    const key = r.item + "|" + (r.metodo_pago||"efectivo");
-    if(!bySec[sec][key]) bySec[sec][key] = {
-      sku:r.item,
-      nombre: r.descripcion || skuToNice(r.item),
-      metodo: r.metodo_pago || "efectivo",
-      cantidad:0, importe:0, precio:r.precio_unit
-    };
+    const key = r.item;
+    if(!bySec[sec][key])
+      bySec[sec][key] = { sku:r.item, nombre: r.descripcion || skuToNice(r.item), cantidad:0, importe:0, precio:r.precio_unit };
     bySec[sec][key].cantidad += r.cantidad;
     bySec[sec][key].importe  += r.importe;
     if(!bySec[sec][key].precio && r.precio_unit) bySec[sec][key].precio = r.precio_unit;
   }
 
-  // Render secciones (se separa por método en la fila)
+  // Totales y orden de secciones
+  let granTotal = 0, granUnidades = 0;
   const sections = Object.keys(bySec).sort((a,b)=>SECTION_ORDER.indexOf(a)-SECTION_ORDER.indexOf(b));
   for(const sec of sections){
     const items = Object.values(bySec[sec]).sort((a,b)=>b.cantidad-a.cantidad || a.nombre.localeCompare(b.nombre,'es'));
     const totalSec = items.reduce((s,x)=>s+x.importe,0);
     const udsSec   = items.reduce((s,x)=>s+x.cantidad,0);
+    granTotal += totalSec; granUnidades += udsSec;
 
     const html = `
       <div class="section">
-        <div class="sec-title">${CAT_LABELS[sec]||sec} —
-          <span class="muted">${udsSec} u • ${fmtMx(totalSec)}</span>
-        </div>
+        <div class="sec-title">${CAT_LABELS[sec]||sec} — <span class="muted">${udsSec} u • ${fmtMx(totalSec)}</span></div>
         <table>
-          <thead><tr>
-            <th>Producto</th><th>SKU</th><th class="right">Cantidad</th>
-            <th class="right">Precio</th><th class="right">Importe</th><th>Método</th>
-          </tr></thead>
+          <thead><tr><th>Producto</th><th>SKU</th><th class="right">Cantidad</th><th class="right">Precio</th><th class="right">Importe</th></tr></thead>
           <tbody>
             ${items.map(x=>`<tr>
               <td>${x.nombre}</td>
@@ -223,10 +234,9 @@ function render(rows, fecha){
               <td class="right">${x.cantidad}</td>
               <td class="right">${x.precio?fmtMx(x.precio):""}</td>
               <td class="right">${fmtMx(x.importe)}</td>
-              <td>${x.metodo==="tarjeta"?"Tarjeta":"Efectivo"}</td>
             </tr>`).join("")}
           </tbody>
-          <tfoot><tr><th colspan="4" class="right tot">Total sección</th><th class="right tot">${fmtMx(totalSec)}</th><th></th></tr></tfoot>
+          <tfoot><tr><th colspan="4" class="right tot">Total sección</th><th class="right tot">${fmtMx(totalSec)}</th></tr></tfoot>
         </table>
       </div>`;
     cont.insertAdjacentHTML('beforeend', html);
@@ -237,19 +247,15 @@ function render(rows, fecha){
       <h2>Resumen del día ${fecha}</h2>
       <table>
         <tbody>
-          <tr><th>Total de unidades</th><td class="right">${totUds}</td></tr>
-          <tr><th>Importe total</th><td class="right">${fmtMx(totImp)}</td></tr>
-          <tr><th>Unidades (Efectivo)</th><td class="right">${efUds}</td></tr>
-          <tr><th>Importe (Efectivo)</th><td class="right">${fmtMx(efImp)}</td></tr>
-          <tr><th>Unidades (Tarjeta)</th><td class="right">${tjUds}</td></tr>
-          <tr><th>Importe (Tarjeta)</th><td class="right">${fmtMx(tjImp)}</td></tr>
+          <tr><th>Total de unidades</th><td class="right">${granUnidades}</td></tr>
+          <tr><th>Importe total</th><td class="right">${fmtMx(granTotal)}</td></tr>
         </tbody>
       </table>
     </div>`;
 }
 
 // ---------- UI ----------
-document.getElementById('fecha').valueAsDate = new Date();
+setTodayMexico();
 document.getElementById('cargar').onclick = ()=>{
   const f = document.getElementById('fecha').value;
   if(!f) return alert("Selecciona una fecha");
@@ -257,12 +263,11 @@ document.getElementById('cargar').onclick = ()=>{
 };
 document.getElementById('imprimir').onclick = ()=>window.print();
 
-// Carga inicial con hoy
-loadForDate(document.getElementById('fecha').value = (new Date()).toISOString().slice(0,10));
-</script> <!-- ✅ cerramos el script principal -->
+// Carga inicial con hoy (MX)
+loadForDate(document.getElementById('fecha').value);
+</script>
 
 <!-- Botón universal "Volver al menú" -->
 <script src="back-button.js?v=1" defer></script>
-
 </body>
 </html>
