@@ -2,10 +2,14 @@ txn_id,fecha,item,cantidad,precio_unit,importe,issue,metodo_pago,source_id,descr
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 S-20251018-230323-E4CBFC,2025-10-18,PALETA-AGUA-LIMON,2,25.00,50.00,https://github.com/OswaldoCasillas/Ventas/issues/84,efectivo,ef81a2e7a1c83b59d143319cae731f7f5f34fc78,PALETA AGUA Limon
+<<<<<<< Updated upstream
 =======
 S-20251018-230337-A87F60,2025-10-18,PALETA-AGUA-LIMON,1,25.00,25.00,https://github.com/OswaldoCasillas/Ventas/issues/85,efectivo,7d33cfc172d4cf431b5c26cf18bf3916cde6c450,PALETA AGUA Limon
 S-20251018-230337-DBDAC6,2025-10-18,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,1,30.00,30.00,https://github.com/OswaldoCasillas/Ventas/issues/85,efectivo,1e6e0f44257487171be8424275bab4f032265fb0,PALETA AGUA PREMIUM Frutos Rojos
 >>>>>>> Stashed changes
 =======
 S-20251018-230340-50DBCD,2025-10-18,HELADO-CLASICO-DOBLE,1,60.00,60.00,https://github.com/OswaldoCasillas/Ventas/issues/86,efectivo,588174a24c3d66ed8a373306b834391c7c6d2957,Helado Clasico Doble
+>>>>>>> Stashed changes
+=======
+S-20251018-230356-4122D4,2025-10-18,PALETA-MINI-MINI-AGUA,6,6.00,36.00,https://github.com/OswaldoCasillas/Ventas/issues/87,efectivo,c23b585b374ebeaa07f21e933277cb05ac79749e,PALETA MINI Mini Agua
 >>>>>>> Stashed changes
