@@ -1,6 +1,7 @@
 txn_id,fecha,item,cantidad,precio_unit,importe,issue
-<<<<<<< Updated upstream
-S-20251018-235533-7E762B,2025-10-18,HELADO-CLASICO-DOBLE,1,60.00,60.00,https://github.com/OswaldoCasillas/Ventas/issues/24
-=======
-S-20251018-235553-8CDCA6,2025-10-18,HELADO-CLASICO-DOBLE,1,60.00,60.00,https://github.com/OswaldoCasillas/Ventas/issues/26
->>>>>>> Stashed changes
+<<<<<<< Updated upstream,,,,,,
+S-20251018-235533-7E762B,2025-10-18,HELADO-CLASICO-DOBLE,1.0,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/24
+=======,,,,,,
+S-20251018-235553-8CDCA6,2025-10-18,HELADO-CLASICO-DOBLE,1.0,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/26
+>>>>>>> Stashed changes,,,,,,
+S-20251019-013247-91AC02,2025-10-18,PALETA-MINI-MINI-AGUA,10.0,6.00,60.00,https://github.com/OswaldoCasillas/Ventas/issues/27
