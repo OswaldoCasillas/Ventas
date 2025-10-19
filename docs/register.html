@@ -73,8 +73,8 @@
 <!-- Método de pago -->
 <div class="pay-wrap">
   <strong>Método de pago:</strong>
-  <span id="payCash"   class="pill active" data-metodo="efectivo">Efectivo</span>
-  <span id="payCard"   class="pill"        data-metodo="tarjeta">Tarjeta</span>
+  <span id="payCash" class="pill active" data-metodo="efectivo">Efectivo</span>
+  <span id="payCard" class="pill" data-metodo="tarjeta">Tarjeta</span>
 </div>
 
 <label>Notas (opcional)</label>
@@ -92,11 +92,10 @@
   const REPO = "Ventas";
   const API_URL = "https://ventas-backend-rose.vercel.app/api/create-issue";
 
-  // Dónde está el menú:
   const MENU_LOCAL    = "menu.json";
   const MENU_FALLBACK = `https://${ORG.toLowerCase()}.github.io/${REPO}/menu.json`;
-  
-  // ---------- Categorías (mismo mapping que en register/produccion) ----------
+
+  // ---------- Categorías ----------
   const CAT_LABELS = {
     "PALETA-AGUA": "Paleta de Agua",
     "PALETA-AGUA-PREMIUM": "Paleta Agua Premium",
@@ -104,7 +103,7 @@
     "PALETA-CREMA-PREMIUM": "Paleta Crema Premium",
     "PALETA-SIN-AZUCAR": "Paleta Sin Azúcar/Keto",
     "PALETA-MINI": "Paleta Mini",
-    "PALETAS-PERRO": "Paletas para Perro",      // 👈 NUEVA
+    "PALETAS-PERRO": "Paletas para Perro",   // NUEVA
     "HELADO-NIEVE": "Helado Nieve",
     "HELADO-CLASICO": "Helado Clásico",
     "HELADO-GOURMET": "Helado Gourmet",
@@ -116,27 +115,51 @@
     "BOTANA": "Botanas",
     "EXTRA": "Extras"
   };
-  
+
   const SECTION_ORDER = [
     "PALETA-AGUA","PALETA-AGUA-PREMIUM","PALETA-CREMA","PALETA-CREMA-PREMIUM","PALETA-SIN-AZUCAR","PALETA-MINI",
-    "PALETAS-PERRO",                            // 👈 NUEVA
+    "PALETAS-PERRO",
     "HELADO-NIEVE","HELADO-CLASICO","HELADO-GOURMET","HELADO-SIN-AZUCAR",
     "MALTEADA","AGUA-FRESCA","BEBIDA","POSTRE","BOTANA","EXTRA","OTROS"
   ];
 
-
   // ========= ESTADO =========
   let MENU = []; let FILTER = null; const cart = [];
-  let metodoPago = "efectivo"; // <-- por defecto
-  document.getElementById('fecha').valueAsDate = new Date();
+  let metodoPago = "efectivo"; // default
+
+  // Fecha en horario de México
+  function setTodayMexico() {
+    const tz = "America/Mexico_City";
+    const d = new Date();
+    // Genera YYYY-MM-DD en tz MX:
+    const parts = new Intl.DateTimeFormat('sv-SE', { timeZone: tz, year:'numeric', month:'2-digit', day:'2-digit' })
+      .formatToParts(d)
+      .reduce((o,p)=> (o[p.type]=p.value, o), {});
+    document.getElementById('fecha').value = `${parts.year}-${parts.month}-${parts.day}`;
+  }
+  setTodayMexico();
+
   function fmt(n){ return (n==null||n==='') ? '' : Number(n).toLocaleString('es-MX',{style:'currency',currency:'MXN'}); }
 
   // ========= HELPERS NOMBRES =========
-  function getCategoryOf(sku){const ks=Object.keys(CAT_LABELS).sort((a,b)=>b.length-a.length);for(const k of ks){if(sku.startsWith(k))return k}return"OTROS"}
-  function skuToNice(s){const pref=["PALETA-AGUA-PREMIUM","PALETA-CREMA-PREMIUM","PALETA-SIN-AZUCAR","PALETA-AGUA","PALETA-CREMA","PALETA-MINI","HELADO-NIEVE","HELADO-CLASICO","HELADO-GOURMET","HELADO-SIN-AZUCAR","AGUA-FRESCA","MALTEADA","BEBIDA","POSTRE","BOTANA","EXTRA"];let n=s;for(const p of pref){if(n.startsWith(p+"-")){n=n.slice(p.length+1);break}}return n.replace(/-/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase()).replace(/\bS\/?Azucar\b/gi,'Sin Azúcar')}
-  function niceLabel(p){const base=(p.descripcion&&p.descripcion.trim())?p.descripcion:skuToNice(p.item);const cat=CAT_LABELS[getCategoryOf(p.item)]||"";const price=(p.precio!==undefined&&p.precio!=="")?` ($${p.precio})`:"";return `${base}${price}${cat?` — ${cat}`:''}`}
+  function getCategoryOf(sku){
+    const ks=Object.keys(CAT_LABELS).sort((a,b)=>b.length-a.length);
+    for(const k of ks){ if(sku.startsWith(k)) return k }
+    return "OTROS";
+  }
+  function skuToNice(s){
+    const pref=["PALETA-AGUA-PREMIUM","PALETA-CREMA-PREMIUM","PALETA-SIN-AZUCAR","PALETA-AGUA","PALETA-CREMA","PALETA-MINI","PALETAS-PERRO","HELADO-NIEVE","HELADO-CLASICO","HELADO-GOURMET","HELADO-SIN-AZUCAR","AGUA-FRESCA","MALTEADA","BEBIDA","POSTRE","BOTANA","EXTRA"];
+    let n=s; for(const p of pref){ if(n.startsWith(p+"-")){ n=n.slice(p.length+1); break } }
+    return n.replace(/-/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase()).replace(/\bS\/?Azucar\b/gi,'Sin Azúcar');
+  }
+  function niceLabel(p){
+    const base=(p.descripcion&&p.descripcion.trim())?p.descripcion:skuToNice(p.item);
+    const cat=CAT_LABELS[getCategoryOf(p.item)]||"";
+    const price=(p.precio!==undefined&&p.precio!=="")?` ($${p.precio})`:"";
+    return `${base}${price}${cat?` — ${cat}`:''}`;
+  }
 
-  // ========= MENÚ (con fallback) =========
+  // ========= MENÚ =========
   async function fetchJSON(url){
     const r = await fetch(url + "?_=" + Date.now(), { cache: "no-store" });
     if (!r.ok) throw new Error(`${r.status} ${url}`);
@@ -254,7 +277,7 @@
   document.getElementById('payCash').onclick = ()=>setMetodoPago('efectivo');
   document.getElementById('payCard').onclick = ()=>setMetodoPago('tarjeta');
 
-  // ========= ENVIAR =========
+  // ========= ENVIAR (con anti-doble click) =========
   function buildIssueUrlFallback(){
     const fecha = document.getElementById('fecha').value;
     const notas = document.getElementById('notas').value;
@@ -268,14 +291,18 @@
   }
 
   async function crearVentaViaAPI(){
-    const fecha = document.getElementById('fecha').value;
-    const notas = document.getElementById('notas').value;
-    if(!fecha){ alert("Falta la fecha"); return; }
-    if(cart.length===0){ alert("Agrega al menos un producto"); return; }
-
-    if (!API_URL) { location.href = buildIssueUrlFallback(); return; }
+    const btn = document.getElementById('confirm');
+    if (btn.dataset.sending === "1") return;   // anti doble click
+    btn.dataset.sending = "1"; btn.disabled = true;
 
     try{
+      const fecha = document.getElementById('fecha').value;
+      const notas = document.getElementById('notas').value;
+      if(!fecha){ alert("Falta la fecha"); return; }
+      if(cart.length===0){ alert("Agrega al menos un producto"); return; }
+
+      if (!API_URL) { location.href = buildIssueUrlFallback(); return; }
+
       const items = cart.map(c => ({ item: c.item, cantidad: c.cantidad, precio: c.precio || "" }));
       const resp = await fetch(API_URL, {
         method: "POST",
@@ -294,13 +321,15 @@
       setMetodoPago('efectivo');
     }catch(e){
       alert("No se pudo contactar el backend. Verifica API_URL o usa el plan B (issue directo).");
+    } finally {
+      btn.disabled = false; btn.dataset.sending = "0";
     }
   }
   document.getElementById('confirm').onclick = crearVentaViaAPI;
 
   // ========= INICIO =========
   document.addEventListener("DOMContentLoaded", ()=>{ loadMenu(); setMetodoPago('efectivo'); });
-</script> <!-- ✅ cerramos el script principal -->
+</script>
 
 <!-- Botón universal "Volver al menú" -->
 <script src="back-button.js?v=1" defer></script>
