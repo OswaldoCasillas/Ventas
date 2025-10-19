@@ -1,3 +1,7 @@
 txn_id,fecha,item,cantidad,precio_unit,importe,issue,metodo_pago
 S-20251019-041449-879A6A,2025-10-18,PALETA-AGUA-LIMON,2,25.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/70,efectivo
+<<<<<<< Updated upstream
 S-20251019-041509-F1CED3,2025-10-18,HELADO-CLASICO-DOBLE,1,60.00,60.00,https://github.com/OswaldoCasillas/Ventas/issues/72,efectivo
+=======
+S-20251019-041530-563C69,2025-10-18,PALETA-MINI-MINI-AGUA,6,6.00,36.00,https://github.com/OswaldoCasillas/Ventas/issues/73,efectivo
+>>>>>>> Stashed changes

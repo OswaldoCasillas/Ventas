@@ -1,10 +1,19 @@
 {
+<<<<<<< Updated upstream
   "generated_at": "2025-10-19T04:15:09.433092Z",
   "summary": {
     "items_distintos": 119,
     "items_low_stock": 2,
     "total_ventas": 3,
     "total_importe": 110.0,
+=======
+  "generated_at": "2025-10-19T04:15:30.697617Z",
+  "summary": {
+    "items_distintos": 119,
+    "items_low_stock": 2,
+    "total_ventas": 8,
+    "total_importe": 86.0,
+>>>>>>> Stashed changes
     "total_producido": 0
   }
 }
