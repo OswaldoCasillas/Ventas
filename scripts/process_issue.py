@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json, os, re, secrets, hashlib
-from datetime import datetime, timezone
-from zoneinfo import ZoneInfo  # ← agrega esto
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 import pandas as pd
 
@@ -13,6 +12,7 @@ DOCS = ROOT / "docs"
 DIARIO_DIR = DOCS / "diario"
 MKT_DIR = DOCS / "mercado"
 MKT_DIARIO_DIR = MKT_DIR / "diario"
+LOCK_DIR = ROOT / ".ci-locks"   # --- LOCK
 
 # --- archivos (general) ---
 INVENTORY_CSV = DATA / "inventory.csv"
@@ -46,6 +46,7 @@ def ensure_files():
     DIARIO_DIR.mkdir(parents=True, exist_ok=True)
     MKT_DIR.mkdir(parents=True, exist_ok=True)
     MKT_DIARIO_DIR.mkdir(parents=True, exist_ok=True)
+    LOCK_DIR.mkdir(parents=True, exist_ok=True)  # --- LOCK
 
     if not INVENTORY_CSV.exists():
         INVENTORY_CSV.write_text("item,descripcion,stock,precio\n", encoding="utf-8")
@@ -70,41 +71,28 @@ def load_event_issue():
     return evt.get("issue")
 
 def grab_field(body: str, key: str) -> str:
-    # Acepta "**Fecha**: ..." o "Fecha: ..."
     pat = rf"^\s*(?:\*\*\s*{re.escape(key)}\s*\*\*|{re.escape(key)})\s*:\s*(.*)$"
     m = re.search(pat, body, re.IGNORECASE | re.MULTILINE)
     return (m.group(1) if m else "").strip()
 
 def safe_parse_date(s: str, issue: dict) -> str:
-    """
-    Devuelve la fecha (YYYY-MM-DD) en horario de Ciudad de México.
-    - Si el usuario escribió una fecha válida, se respeta.
-    - Si no hay fecha o es inválida, se toma issue.created_at (UTC),
-      se convierte a America/Mexico_City y se devuelve ese día local.
-    """
+    # interpreta la fecha en horario de México si no viene válida
     s = (s or "").strip()
-    # 1) Si el usuario escribió fecha, respétala (varios formatos comunes)
     for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%Y/%m/%d"):
         try:
             return datetime.strptime(s, fmt).date().isoformat()
         except Exception:
             pass
-
-    # 2) Fallback: usa la fecha de creación del issue, convertida a MX
     created = (issue or {}).get("created_at") or ""
     if created:
-        # created es ISO UTC, ej: "2025-03-08T05:12:34Z"
+        # created_at viene en UTC; ajustamos a CDMX (UTC-6/-5). Tomamos -6 fijo por simplicidad.
         try:
-            dt_utc = datetime.fromisoformat(created.replace("Z", "+00:00"))
-            dt_mx  = dt_utc.astimezone(ZoneInfo("America/Mexico_City"))
-            return dt_mx.date().isoformat()
+            dt = datetime.fromisoformat(created.replace("Z","")).replace(tzinfo=timezone.utc) - timedelta(hours=6)
+            return dt.date().isoformat()
         except Exception:
-            pass
-
-    # 3) Último recurso: ahora mismo en MX
-    now_mx = datetime.now(ZoneInfo("America/Mexico_City"))
-    return now_mx.date().isoformat()
-
+            return created[:10]
+    # fallback: ahora en CDMX
+    return (datetime.now(timezone.utc) - timedelta(hours=6)).date().isoformat()
 
 # ---------- Validación/parseo robusto de Items ----------
 
@@ -112,18 +100,15 @@ def is_valid_sku(s: str) -> bool:
     if not s or not isinstance(s, str):
         return False
     s = s.strip()
-    if s.startswith("**"):           # evita "**Cantidad**:" y similares
+    if s.startswith("**"):
         return False
-    if " " in s:                     # no espacios
+    if " " in s:
         return False
     if not re.match(r"^[A-Z0-9\-:]{3,}$", s):
         return False
     return True
 
 def parse_items_section(body: str) -> str | None:
-    """
-    Encuentra el encabezado 'Items' (con o sin ** **) y devuelve el texto posterior.
-    """
     lines = body.splitlines()
     for i, ln in enumerate(lines):
         if re.match(r"^\s*(\*\*\s*)?items(\s*\*\*)?\s*$", ln, re.IGNORECASE):
@@ -131,11 +116,6 @@ def parse_items_section(body: str) -> str | None:
     return None
 
 def parse_items_table(body: str, has_price: bool):
-    """
-    Lee una tabla tipo:
-      SKU | Cantidad [| Precio]
-    Ignora encabezados y filas inválidas. Devuelve lista de dicts.
-    """
     section = parse_items_section(body)
     if not section:
         return []
@@ -143,37 +123,26 @@ def parse_items_table(body: str, has_price: bool):
     for raw in section.splitlines():
         ln = raw.strip()
         if not ln or "|" not in ln:
-            if out:
-                break
-            else:
-                continue
+            if out: break
+            else: continue
         parts = [p.strip() for p in ln.split("|")]
-
-        # ignora encabezados/separadores
         head = "|".join(p.lower() for p in parts[:3])
         if ("sku" in head and "cantidad" in head) or ln.startswith("---"):
             continue
-
         try:
             if has_price:
-                if len(parts) < 3:
-                    continue
+                if len(parts) < 3: continue
                 sku, qty, price = parts[0], parts[1], parts[2]
-                if not is_valid_sku(sku):
-                    continue
+                if not is_valid_sku(sku): continue
                 qty_i = int(str(qty).strip())
-                if qty_i <= 0:
-                    continue
+                if qty_i <= 0: continue
                 out.append({"item": sku, "cantidad": qty_i, "precio_unit": str(price).strip()})
             else:
-                if len(parts) < 2:
-                    continue
+                if len(parts) < 2: continue
                 sku, qty = parts[0], parts[1]
-                if not is_valid_sku(sku):
-                    continue
+                if not is_valid_sku(sku): continue
                 qty_i = int(str(qty).strip())
-                if qty_i <= 0:
-                    continue
+                if qty_i <= 0: continue
                 out.append({"item": sku, "cantidad": qty_i})
         except Exception:
             continue
@@ -207,6 +176,26 @@ def already_processed(issue_url: str) -> bool:
         _csv_has_issue(TRANSFER_MKT_CSV, issue_url)
     )
 
+# --- LOCK: archivo de bloqueo por issue (cross-run)
+def acquire_issue_lock(issue_number: int) -> bool:
+    try:
+        LOCK_DIR.mkdir(parents=True, exist_ok=True)
+        lock_path = LOCK_DIR / f"issue-{issue_number}.lock"
+        # open en modo exclusivo: falla si ya existe
+        fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        os.write(fd, b"1")
+        os.close(fd)
+        return True
+    except FileExistsError:
+        return False
+
+def release_issue_lock(issue_number: int):
+    lock_path = LOCK_DIR / f"issue-{issue_number}.lock"
+    try:
+        lock_path.unlink(missing_ok=True)
+    except Exception:
+        pass
+
 # ====================== inventario / menú ======================
 
 def _load_inventory_file(path: Path) -> pd.DataFrame:
@@ -234,7 +223,6 @@ def write_inventory(path: Path, inv: pd.DataFrame):
     inv.to_csv(path, index=False)
 
 def write_menu_json(inv_general: pd.DataFrame):
-    # Filtra SKUs inválidos para no contaminar el menú
     inv_ok = inv_general[inv_general["item"].apply(is_valid_sku)].copy()
     cols = [c for c in ["product_id","item","descripcion","precio"] if c in inv_ok.columns]
     MENU_JSON.write_text(json.dumps(inv_ok[cols].fillna("").to_dict(orient="records"),
@@ -338,12 +326,7 @@ def apply_stock(inv: pd.DataFrame, items: list, sign: int, path: Path) -> pd.Dat
 
 # ====================== reportes ======================
 
-def norm_date_series(s):
-    """Convierte cualquier serie a fechas 'YYYY-MM-DD' y quita NaT."""
-    return pd.to_datetime(pd.Series(s).astype(str), errors="coerce").dropna().dt.strftime("%Y-%m-%d")
-
 def build_reports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame):
-    # Sanea inventarios para no propagar filas corruptas
     inv_gen = inv_gen[inv_gen["item"].apply(is_valid_sku)].copy()
     inv_mkt = inv_mkt[inv_mkt["item"].apply(is_valid_sku)].copy()
     inv_gen["stock"] = pd.to_numeric(inv_gen["stock"], errors="coerce").fillna(0).astype(int)
@@ -356,15 +339,11 @@ def build_reports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame):
         sales["cantidad"] = pd.to_numeric(sales["cantidad"], errors="coerce").fillna(0).astype(int)
         sales["precio_unit"] = pd.to_numeric(sales["precio_unit"], errors="coerce").fillna(0.0)
         sales["importe"] = pd.to_numeric(sales["importe"], errors="coerce").fillna(0.0)
-        # 🔧 normalizamos fecha
-        sales["fecha_norm"] = pd.to_datetime(sales["fecha"].astype(str), errors="coerce").dt.strftime("%Y-%m-%d")
 
     prod = pd.read_csv(PROD_CSV) if PROD_CSV.exists() else pd.DataFrame(
         columns=["txn_id","fecha","item","cantidad","issue"])
     if not prod.empty:
         prod["cantidad"] = pd.to_numeric(prod["cantidad"], errors="coerce").fillna(0).astype(int)
-        # 🔧 normalizamos fecha
-        prod["fecha_norm"] = pd.to_datetime(prod["fecha"].astype(str), errors="coerce").dt.strftime("%Y-%m-%d")
 
     inv_key = inv_gen[["item","product_id","descripcion"]]
     sales_detail = sales.merge(inv_key, on="item", how="left")
@@ -378,13 +357,8 @@ def build_reports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame):
     by_item = (sales.groupby("item", as_index=False)[["cantidad","importe"]]
                .sum().sort_values(["cantidad","importe"], ascending=False))
     by_item.to_csv(SALES_ITEM_CSV, index=False)
-    # usar fecha_norm si existe
-    if "fecha_norm" in sales.columns:
-        by_day = (sales.groupby("fecha_norm", as_index=False)[["cantidad","importe"]]
-                  .sum().rename(columns={"fecha_norm":"fecha"}).sort_values("fecha"))
-    else:
-        by_day = (sales.groupby("fecha", as_index=False)[["cantidad","importe"]]
-                  .sum().sort_values("fecha"))
+    by_day = (sales.groupby("fecha", as_index=False)[["cantidad","importe"]]
+              .sum().sort_values("fecha"))
     by_day.to_csv(SALES_DAY_CSV, index=False)
 
     report = {
@@ -403,9 +377,9 @@ def build_reports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame):
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Reporte Inventario/Ventas</title>
     <style>body{{font-family:system-ui;margin:20px}} table{{border-collapse:collapse;width:100%}}
-    th,td{{border:1px solid #ddd;padding:6px;text-align:left}} th{{background:#f7f7f7}} .kpi{{margin:0 0 6px}}</style>
+    th,td{{border:1px solid #ddd;padding:6px;text-align:left}} th{{background:#f7f7f7}}</style>
     <h1>Reporte (General)</h1>
-    <p class="kpi">Generado: {report['generated_at']}</p>
+    <p>Generado: {report['generated_at']}</p>
     <h2>Inventario actual</h2>
     {inv_out.to_html(index=False)}
     <h2>Ventas (detalle)</h2>
@@ -419,23 +393,17 @@ def build_reports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame):
     </html>"""
     REPORT_HTML.write_text(html, encoding="utf-8")
 
-    # diarios general (usar fecha normalizada si existe)
+    # diarios general
     if not sales_detail.empty:
-        col = "fecha_norm" if "fecha_norm" in sales_detail.columns else "fecha"
-        for fecha, group in sales_detail.groupby(col):
-            if not isinstance(fecha, str) or not fecha:
-                continue
+        for fecha, group in sales_detail.groupby("fecha"):
             (DIARIO_DIR / f"{fecha}-ventas.csv").write_text(group.to_csv(index=False), encoding="utf-8")
-
-    # 🔧 recopilar fechas seguras para index.html
-    dates_sales = norm_date_series(sales_detail.get("fecha", [])) if not sales_detail.empty else pd.Series([], dtype=str)
-    dates_prod  = norm_date_series(prod_detail.get("fecha", [])) if not prod_detail.empty else pd.Series([], dtype=str)
-    dates = sorted(set(dates_sales.tolist() + dates_prod.tolist()))
-
+    # índice diario (evita mezclar tipos num/str)
+    sales_dates = sales_detail["fecha"].dropna().astype(str).tolist() if not sales_detail.empty else []
+    prod_dates  = prod_detail["fecha"].dropna().astype(str).tolist() if not prod_detail.empty else []
+    dates = sorted(set(sales_dates + prod_dates))
     idx_html = "<!doctype html><meta charset='utf-8'><title>Reportes diarios</title><h1>Reportes diarios</h1><ul>"
     for d in dates:
-        if not d: 
-            continue
+        if not d: continue
         link = (f"<a href='{d}-ventas.csv'>ventas</a>") if (DIARIO_DIR / f"{d}-ventas.csv").exists() else ""
         idx_html += f"<li>{d}: {link}</li>"
     idx_html += "</ul>"
@@ -451,17 +419,12 @@ def build_reports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame):
         sales_mkt["cantidad"] = pd.to_numeric(sales_mkt["cantidad"], errors="coerce").fillna(0).astype(int)
         sales_mkt["precio_unit"] = pd.to_numeric(sales_mkt["precio_unit"], errors="coerce").fillna(0.0)
         sales_mkt["importe"] = pd.to_numeric(sales_mkt["importe"], errors="coerce").fillna(0.0)
-        sales_mkt["fecha_norm"] = pd.to_datetime(sales_mkt["fecha"].astype(str), errors="coerce").dt.strftime("%Y-%m-%d")
 
     sales_mkt_detail = sales_mkt.merge(inv_mkt[["item","product_id","descripcion"]], on="item", how="left")
     sales_mkt_detail.to_csv(SALES_MKT_DETAIL_CSV, index=False)
 
-    # diarios mercado (usar fecha normalizada si existe)
     if not sales_mkt_detail.empty:
-        col = "fecha_norm" if "fecha_norm" in sales_mkt_detail.columns else "fecha"
-        for fecha, group in sales_mkt_detail.groupby(col):
-            if not isinstance(fecha, str) or not fecha:
-                continue
+        for fecha, group in sales_mkt_detail.groupby("fecha"):
             (MKT_DIARIO_DIR / f"{fecha}-ventas.csv").write_text(group.to_csv(index=False), encoding="utf-8")
 
 # ====================== parseo del issue ======================
@@ -515,49 +478,59 @@ def main():
     ensure_files()
     inv_gen = load_inventory_general()
     inv_mkt = load_inventory_mkt()
-    write_menu_json(inv_gen)  # menú siempre desde inventario general
+    write_menu_json(inv_gen)
 
     issue = load_event_issue()
     if issue is None:
         build_reports(inv_gen, inv_mkt)
         return
 
-    # Idempotencia: si este issue ya fue aplicado, solo reconstruye reportes y sal
-    issue_url = (issue or {}).get("html_url", "")
-    if already_processed(issue_url):
+    # --- LOCK: si ya hay otro job manejando este issue, salimos
+    issue_number = (issue or {}).get("number")
+    if issue_number is not None:
+        if not acquire_issue_lock(int(issue_number)):
+            print(f"[lock] Issue #{issue_number} ya está en proceso, salgo.")
+            return
+
+    try:
+        # Idempotencia por CSV
+        issue_url = (issue or {}).get("html_url", "")
+        if already_processed(issue_url):
+            build_reports(inv_gen, inv_mkt)
+            return
+
+        data = parse_issue(issue)
+        t = data["type"]
+
+        if t.startswith("venta_mkt"):
+            txn = new_txn_id("SM")
+            append_sales_mkt(inv_mkt, data["fecha"], data["items"], data["issue_url"], txn)
+            inv_mkt = apply_stock(inv_mkt, data["items"], sign=-1, path=INVENTORY_MKT_CSV)
+            build_reports(inv_gen, inv_mkt); return
+
+        if t.startswith("abasto_mkt"):
+            txn = new_txn_id("TM")
+            inv_gen = apply_stock(inv_gen, data["items"], sign=-1, path=INVENTORY_CSV)
+            inv_mkt = apply_stock(inv_mkt, data["items"], sign=+1, path=INVENTORY_MKT_CSV)
+            append_transfer_mkt(data["fecha"], data["items"], data["issue_url"], txn)
+            build_reports(inv_gen, inv_mkt); return
+
+        if t.startswith("venta"):
+            txn = new_txn_id("S")
+            append_sales_general(inv_gen, data["fecha"], data["items"], data["issue_url"], txn)
+            inv_gen = apply_stock(inv_gen, data["items"], sign=-1, path=INVENTORY_CSV)
+            build_reports(inv_gen, inv_mkt); return
+
+        if t.startswith("prod"):
+            txn = new_txn_id("P")
+            append_production(data["fecha"], data["items"], data["issue_url"], txn)
+            inv_gen = apply_stock(inv_gen, data["items"], sign=+1, path=INVENTORY_CSV)
+            build_reports(inv_gen, inv_mkt); return
+
         build_reports(inv_gen, inv_mkt)
-        return
-
-    data = parse_issue(issue)
-    t = data["type"]
-
-    if t.startswith("venta_mkt"):
-        txn = new_txn_id("SM")  # Sales Mercado
-        append_sales_mkt(inv_mkt, data["fecha"], data["items"], data["issue_url"], txn)
-        inv_mkt = apply_stock(inv_mkt, data["items"], sign=-1, path=INVENTORY_MKT_CSV)
-        build_reports(inv_gen, inv_mkt); return
-
-    if t.startswith("abasto_mkt"):
-        txn = new_txn_id("TM")  # Transfer Mercado
-        # resta en general, suma en mercado
-        inv_gen = apply_stock(inv_gen, data["items"], sign=-1, path=INVENTORY_CSV)
-        inv_mkt = apply_stock(inv_mkt, data["items"], sign=+1, path=INVENTORY_MKT_CSV)
-        append_transfer_mkt(data["fecha"], data["items"], data["issue_url"], txn)
-        build_reports(inv_gen, inv_mkt); return
-
-    if t.startswith("venta"):
-        txn = new_txn_id("S")
-        append_sales_general(inv_gen, data["fecha"], data["items"], data["issue_url"], txn)
-        inv_gen = apply_stock(inv_gen, data["items"], sign=-1, path=INVENTORY_CSV)
-        build_reports(inv_gen, inv_mkt); return
-
-    if t.startswith("prod"):
-        txn = new_txn_id("P")
-        append_production(data["fecha"], data["items"], data["issue_url"], txn)
-        inv_gen = apply_stock(inv_gen, data["items"], sign=+1, path=INVENTORY_CSV)
-        build_reports(inv_gen, inv_mkt); return
-
-    build_reports(inv_gen, inv_mkt)
+    finally:
+        if issue_number is not None:
+            release_issue_lock(int(issue_number))
 
 if __name__ == "__main__":
     main()
