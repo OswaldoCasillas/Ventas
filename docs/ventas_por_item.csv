@@ -1,3 +1,9 @@
 item,cantidad,importe
+<<<<<<< Updated upstream
 PALETA-MINI-MINI-AGUA,10,60.0
 HELADO-CLASICO-DOBLE,3,180.0
+=======
+PALETA-MINI-MINI-AGUA,11,66.0
+AGUA-FRESCA-GRANDE,3,105.0
+HELADO-CLASICO-DOBLE,2,120.0
+>>>>>>> Stashed changes
