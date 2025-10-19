@@ -455,7 +455,7 @@ def parse_issue(issue):
     fecha = safe_parse_date(fecha_raw, issue)
     base = {"fecha": fecha, "issue_url": (issue or {}).get("html_url",""), "labels": labels, "notas": notas}
 
-    if "venta" in labels y "mercado" not in labels:
+    if "venta" in labels and "mercado" not in labels:
         table_items = parse_items_table(body, has_price=True)
         if table_items: return {"type":"venta_multi", **base, "items": table_items}
         sku = grab_field(body, "Item"); cant = grab_field(body, "Cantidad"); precio = grab_field(body, "Precio unitario (opcional)")
