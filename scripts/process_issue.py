@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json, os, re, secrets, hashlib
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 import pandas as pd
 
@@ -49,16 +49,16 @@ def ensure_files():
     if not INVENTORY_CSV.exists():
         INVENTORY_CSV.write_text("item,descripcion,stock,precio\n", encoding="utf-8")
     if not SALES_CSV.exists():
-        SALES_CSV.write_text("txn_id,fecha,item,cantidad,precio_unit,importe,metodo_pago,issue\n", encoding="utf-8")
+        SALES_CSV.write_text("txn_id,fecha,item,cantidad,precio_unit,importe,metodo_pago,source_id,issue\n", encoding="utf-8")
     if not PROD_CSV.exists():
-        PROD_CSV.write_text("txn_id,fecha,item,cantidad,issue\n", encoding="utf-8")
+        PROD_CSV.write_text("txn_id,fecha,item,cantidad,source_id,issue\n", encoding="utf-8")
 
     if not INVENTORY_MKT_CSV.exists():
         INVENTORY_MKT_CSV.write_text("item,descripcion,stock,precio\n", encoding="utf-8")
     if not SALES_MKT_CSV.exists():
-        SALES_MKT_CSV.write_text("txn_id,fecha,item,cantidad,precio_unit,importe,metodo_pago,issue\n", encoding="utf-8")
+        SALES_MKT_CSV.write_text("txn_id,fecha,item,cantidad,precio_unit,importe,metodo_pago,source_id,issue\n", encoding="utf-8")
     if not TRANSFER_MKT_CSV.exists():
-        TRANSFER_MKT_CSV.write_text("txn_id,fecha,item,cantidad,issue\n", encoding="utf-8")
+        TRANSFER_MKT_CSV.write_text("txn_id,fecha,item,cantidad,source_id,issue\n", encoding="utf-8")
 
 def load_event_issue():
     path = os.environ.get("GITHUB_EVENT_PATH")
@@ -75,6 +75,8 @@ def grab_field(body: str, key: str) -> str:
     return (m.group(1) if m else "").strip()
 
 def safe_parse_date(s: str, issue: dict) -> str:
+    # FECHA LOCAL MX (America/Mexico_City): usamos UTC-6/UTC-5 aprox con un desfase fijo -6h,
+    # y "cortamos" el día a las 06:00 UTC (~medianoche MX) para que a las 00:00-05:59 UTC siga siendo "del día anterior" MX.
     s = (s or "").strip()
     for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%Y/%m/%d"):
         try:
@@ -83,8 +85,10 @@ def safe_parse_date(s: str, issue: dict) -> str:
             pass
     created = (issue or {}).get("created_at") or ""
     if created:
-        return created[:10]
-    return datetime.now(timezone.utc).date().isoformat()
+        dt = datetime.fromisoformat(created.replace("Z","+00:00"))
+        dt_local_cut = dt - timedelta(hours=6)  # aprox MX (no DST perfecto, pero suficiente para corte)
+        return dt_local_cut.date().isoformat()
+    return (datetime.now(timezone.utc) - timedelta(hours=6)).date().isoformat()
 
 # ---------- Validación/parseo robusto de Items ----------
 
@@ -92,16 +96,15 @@ def is_valid_sku(s: str) -> bool:
     if not s or not isinstance(s, str):
         return False
     s = s.strip()
-    if s.startswith("**"):           # evita "**Cantidad**:" y similares
+    if s.startswith("**"):
         return False
-    if " " in s:                     # no espacios
+    if " " in s:
         return False
     if not re.match(r"^[A-Z0-9\-:]{3,}$", s):
         return False
     return True
 
 def parse_items_section(body: str) -> str | None:
-    """Encuentra el encabezado 'Items' (con o sin ** **) y devuelve el texto posterior."""
     lines = body.splitlines()
     for i, ln in enumerate(lines):
         if re.match(r"^\s*(\*\*\s*)?items(\s*\*\*)?\s*$", ln, re.IGNORECASE):
@@ -109,11 +112,6 @@ def parse_items_section(body: str) -> str | None:
     return None
 
 def parse_items_table(body: str, has_price: bool):
-    """
-    Lee una tabla tipo:
-      SKU | Cantidad [| Precio]
-    Ignora encabezados y filas inválidas. Devuelve lista de dicts.
-    """
     section = parse_items_section(body)
     if not section:
         return []
@@ -121,32 +119,25 @@ def parse_items_table(body: str, has_price: bool):
     for raw in section.splitlines():
         ln = raw.strip()
         if not ln or "|" not in ln:
-            if out:
-                break
-            else:
-                continue
+            if out: break
+            else:   continue
         parts = [p.strip() for p in ln.split("|")]
 
-        # ignora encabezados/separadores
         head = "|".join(p.lower() for p in parts[:3])
         if ("sku" in head and "cantidad" in head) or ln.startswith("---"):
             continue
 
         try:
             if has_price:
-                if len(parts) < 3:
-                    continue
+                if len(parts) < 3: continue
                 sku, qty, price = parts[0], parts[1], parts[2]
-                if not is_valid_sku(sku):
-                    continue
+                if not is_valid_sku(sku): continue
                 qty_i = int(str(qty).strip());  assert qty_i > 0
                 out.append({"item": sku, "cantidad": qty_i, "precio_unit": str(price).strip()})
             else:
-                if len(parts) < 2:
-                    continue
+                if len(parts) < 2: continue
                 sku, qty = parts[0], parts[1]
-                if not is_valid_sku(sku):
-                    continue
+                if not is_valid_sku(sku): continue
                 qty_i = int(str(qty).strip());  assert qty_i > 0
                 out.append({"item": sku, "cantidad": qty_i})
         except Exception:
@@ -161,7 +152,12 @@ def new_txn_id(prefix: str) -> str:
     rand = secrets.token_hex(3).upper()
     return f"{prefix}-{now}-{rand}"
 
-# --- evitar doble-procesamiento del mismo issue
+# --- util para IDs estables por renglón
+def make_source_id(issue_url: str, row_index: int, sku: str, qty: int, price: str = "") -> str:
+    base = f"{issue_url}#{row_index}|{sku}|{qty}|{price}"
+    return hashlib.sha1(base.encode("utf-8")).hexdigest().upper()
+
+# --- evitar doble-procesamiento
 def _csv_has_issue(path: Path, issue_url: str) -> bool:
     if not issue_url:
         return False
@@ -174,6 +170,8 @@ def _csv_has_issue(path: Path, issue_url: str) -> bool:
     return df["issue"].astype(str).eq(issue_url).any()
 
 def already_processed(issue_url: str) -> bool:
+    # ya no lo usamos para bloquear todo el issue; dejamos el dedupe por source_id,
+    # pero mantenerlo ayuda a evitar trabajo si fuera necesario.
     return (
         _csv_has_issue(SALES_CSV, issue_url) or
         _csv_has_issue(SALES_MKT_CSV, issue_url) or
@@ -213,14 +211,21 @@ def write_menu_json(inv_general: pd.DataFrame):
     MENU_JSON.write_text(json.dumps(inv_ok[cols].fillna("").to_dict(orient="records"),
                                     ensure_ascii=False, indent=2), encoding="utf-8")
 
-# ====================== guardar movimientos ======================
+# ====================== append con dedupe ======================
 
-def _append_sales_csv(path: Path, rows: list):
-    df = pd.read_csv(path) if path.exists() and path.stat().st_size>0 else pd.DataFrame()
-    df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
-    # Compat: asegúrate de que exista metodo_pago
-    if "metodo_pago" not in df.columns:
-        df["metodo_pago"] = "efectivo"
+def _append_rows_unique(path: Path, rows: list, key: str = "source_id"):
+    new = pd.DataFrame(rows)
+    old = pd.read_csv(path) if path.exists() and path.stat().st_size>0 else pd.DataFrame(columns=new.columns)
+    # compat: asegúrate de columnas clave
+    if key not in old.columns:
+        old[key] = ""
+    for col in new.columns:
+        if col not in old.columns:
+            old[col] = ""
+    # concat y dedupe por key
+    df = pd.concat([old, new], ignore_index=True)
+    if key in df.columns:
+        df = df.drop_duplicates(subset=[key], keep="first")
     df.to_csv(path, index=False)
 
 def _clean_items(items, require_price: bool = False):
@@ -246,7 +251,7 @@ def append_sales_general(inv: pd.DataFrame, fecha: str, items: list, issue_url: 
     if not items:
         return
     rows = []
-    for it in items:
+    for i, it in enumerate(items, start=1):
         sku = it["item"]; qty = int(it["cantidad"])
         precio_s = it.get("precio_unit","")
         precio = pd.to_numeric(precio_s, errors="coerce")
@@ -254,18 +259,19 @@ def append_sales_general(inv: pd.DataFrame, fecha: str, items: list, issue_url: 
             row = inv.loc[inv["item"]==sku]
             precio = float(row["precio"].iloc[0]) if not row.empty and pd.notna(row["precio"].iloc[0]) else 0.0
         importe = float(qty) * float(precio)
+        sid = make_source_id(issue_url, i, sku, qty, f"{precio:.2f}")
         rows.append({"txn_id": txn_id, "fecha": fecha, "item": sku, "cantidad": qty,
                      "precio_unit": f"{precio:.2f}", "importe": f"{importe:.2f}",
                      "metodo_pago": (metodo_pago or "efectivo").lower(),
-                     "issue": issue_url})
-    _append_sales_csv(SALES_CSV, rows)
+                     "source_id": sid, "issue": issue_url})
+    _append_rows_unique(SALES_CSV, rows, key="source_id")
 
 def append_sales_mkt(inv_mkt: pd.DataFrame, fecha: str, items: list, issue_url: str, txn_id: str, metodo_pago: str = "efectivo"):
     items = _clean_items(items, require_price=True)
     if not items:
         return
     rows = []
-    for it in items:
+    for i, it in enumerate(items, start=1):
         sku = it["item"]; qty = int(it["cantidad"])
         precio_s = it.get("precio_unit","")
         precio = pd.to_numeric(precio_s, errors="coerce")
@@ -273,33 +279,36 @@ def append_sales_mkt(inv_mkt: pd.DataFrame, fecha: str, items: list, issue_url: 
             row = inv_mkt.loc[inv_mkt["item"]==sku]
             precio = float(row["precio"].iloc[0]) if not row.empty and pd.notna(row["precio"].iloc[0]) else 0.0
         importe = float(qty) * float(precio)
+        sid = make_source_id(issue_url, i, sku, qty, f"{precio:.2f}")
         rows.append({"txn_id": txn_id, "fecha": fecha, "item": sku, "cantidad": qty,
                      "precio_unit": f"{precio:.2f}", "importe": f"{importe:.2f}",
                      "metodo_pago": (metodo_pago or "efectivo").lower(),
-                     "issue": issue_url})
-    _append_sales_csv(SALES_MKT_CSV, rows)
+                     "source_id": sid, "issue": issue_url})
+    _append_rows_unique(SALES_MKT_CSV, rows, key="source_id")
 
 def append_production(fecha: str, items: list, issue_url: str, txn_id: str):
     items = _clean_items(items, require_price=False)
     if not items:
         return
-    df = pd.read_csv(PROD_CSV) if PROD_CSV.exists() and PROD_CSV.stat().st_size>0 else pd.DataFrame()
-    for it in items:
-        df = pd.concat([df, pd.DataFrame([{
-            "txn_id": txn_id, "fecha": fecha, "item": it["item"], "cantidad": int(it["cantidad"]), "issue": issue_url
-        }])], ignore_index=True)
-    df.to_csv(PROD_CSV, index=False)
+    rows = []
+    for i, it in enumerate(items, start=1):
+        sku = it["item"]; qty = int(it["cantidad"])
+        sid = make_source_id(issue_url, i, sku, qty, "")
+        rows.append({"txn_id": txn_id, "fecha": fecha, "item": sku, "cantidad": qty,
+                     "source_id": sid, "issue": issue_url})
+    _append_rows_unique(PROD_CSV, rows, key="source_id")
 
 def append_transfer_mkt(fecha: str, items: list, issue_url: str, txn_id: str):
     items = _clean_items(items, require_price=False)
     if not items:
         return
-    df = pd.read_csv(TRANSFER_MKT_CSV) if TRANSFER_MKT_CSV.exists() and TRANSFER_MKT_CSV.stat().st_size>0 else pd.DataFrame()
-    for it in items:
-        df = pd.concat([df, pd.DataFrame([{
-            "txn_id": txn_id, "fecha": fecha, "item": it["item"], "cantidad": int(it["cantidad"]), "issue": issue_url
-        }])], ignore_index=True)
-    df.to_csv(TRANSFER_MKT_CSV, index=False)
+    rows = []
+    for i, it in enumerate(items, start=1):
+        sku = it["item"]; qty = int(it["cantidad"])
+        sid = make_source_id(issue_url, i, sku, qty, "")
+        rows.append({"txn_id": txn_id, "fecha": fecha, "item": sku, "cantidad": qty,
+                     "source_id": sid, "issue": issue_url})
+    _append_rows_unique(TRANSFER_MKT_CSV, rows, key="source_id")
 
 def apply_stock(inv: pd.DataFrame, items: list, sign: int, path: Path) -> pd.DataFrame:
     items = _clean_items(items, require_price=False)
@@ -333,7 +342,7 @@ def build_reports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame):
 
     # ----- general -----
     sales = pd.read_csv(SALES_CSV) if SALES_CSV.exists() else pd.DataFrame(
-        columns=["txn_id","fecha","item","cantidad","precio_unit","importe","metodo_pago","issue"])
+        columns=["txn_id","fecha","item","cantidad","precio_unit","importe","metodo_pago","source_id","issue"])
     if not sales.empty:
         sales["cantidad"] = pd.to_numeric(sales["cantidad"], errors="coerce").fillna(0).astype(int)
         sales["precio_unit"] = pd.to_numeric(sales["precio_unit"], errors="coerce").fillna(0.0)
@@ -341,7 +350,7 @@ def build_reports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame):
         sales = _ensure_metodo(sales)
 
     prod = pd.read_csv(PROD_CSV) if PROD_CSV.exists() else pd.DataFrame(
-        columns=["txn_id","fecha","item","cantidad","issue"])
+        columns=["txn_id","fecha","item","cantidad","source_id","issue"])
     if not prod.empty:
         prod["cantidad"] = pd.to_numeric(prod["cantidad"], errors="coerce").fillna(0).astype(int)
 
@@ -396,7 +405,7 @@ def build_reports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame):
     </html>"""
     REPORT_HTML.write_text(html, encoding="utf-8")
 
-    # diarios general (sobrescribe archivos de cada fecha)
+    # diarios general
     if not sales_detail.empty:
         for fecha, group in sales_detail.groupby("fecha"):
             (DIARIO_DIR / f"{str(fecha)}-ventas.csv").write_text(group.to_csv(index=False), encoding="utf-8")
@@ -417,7 +426,7 @@ def build_reports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame):
     inv_mkt_out.to_csv(INV_MKT_OUT_CSV, index=False)
 
     sales_mkt = pd.read_csv(SALES_MKT_CSV) if SALES_MKT_CSV.exists() else pd.DataFrame(
-        columns=["txn_id","fecha","item","cantidad","precio_unit","importe","metodo_pago","issue"])
+        columns=["txn_id","fecha","item","cantidad","precio_unit","importe","metodo_pago","source_id","issue"])
     if not sales_mkt.empty:
         sales_mkt["cantidad"] = pd.to_numeric(sales_mkt["cantidad"], errors="coerce").fillna(0).astype(int)
         sales_mkt["precio_unit"] = pd.to_numeric(sales_mkt["precio_unit"], errors="coerce").fillna(0.0)
@@ -443,7 +452,13 @@ def parse_issue(issue):
     metodo = metodo if metodo in {"efectivo","tarjeta"} else "efectivo"
 
     fecha = safe_parse_date(fecha_raw, issue)
-    base = {"fecha": fecha, "issue_url": (issue or {}).get("html_url",""), "labels": labels, "notas": notas, "metodo_pago": metodo}
+    base = {
+        "fecha": fecha,
+        "issue_url": (issue or {}).get("html_url",""),
+        "labels": labels,
+        "notas": notas,
+        "metodo_pago": metodo
+    }
 
     if "venta-mercado" in labels:
         table_items = parse_items_table(body, has_price=True)
@@ -492,12 +507,6 @@ def main():
         build_reports(inv_gen, inv_mkt)
         return
 
-    # Idempotencia: si este issue ya fue aplicado, solo reconstruye reportes y sal
-    issue_url = (issue or {}).get("html_url", "")
-    if already_processed(issue_url):
-        build_reports(inv_gen, inv_mkt)
-        return
-
     data = parse_issue(issue)
     t = data["type"]
 
@@ -509,7 +518,6 @@ def main():
 
     if t.startswith("abasto_mkt"):
         txn = new_txn_id("TM")  # Transfer Mercado
-        # resta en general, suma en mercado
         inv_gen = apply_stock(inv_gen, data["items"], sign=-1, path=INVENTORY_CSV)
         inv_mkt = apply_stock(inv_mkt, data["items"], sign=+1, path=INVENTORY_MKT_CSV)
         append_transfer_mkt(data["fecha"], data["items"], data["issue_url"], txn)
@@ -527,6 +535,7 @@ def main():
         inv_gen = apply_stock(inv_gen, data["items"], sign=+1, path=INVENTORY_CSV)
         build_reports(inv_gen, inv_mkt); return
 
+    # ninguno
     build_reports(inv_gen, inv_mkt)
 
 if __name__ == "__main__":
