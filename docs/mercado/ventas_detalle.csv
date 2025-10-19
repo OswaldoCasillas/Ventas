@@ -1,1 +1,1 @@
-txn_id,fecha,item,cantidad,precio_unit,importe,metodo_pago,issue
+txn_id,fecha,item,cantidad,precio_unit,importe,issue,product_id,descripcion

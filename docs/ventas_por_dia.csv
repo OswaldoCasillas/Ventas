@@ -1,2 +1,2 @@
-fecha,total_unidades,total_importe,unidades_efectivo,importe_efectivo,unidades_tarjeta,importe_tarjeta
-2025-10-18,1.0,60.0,1.0,60.0,0.0,0.0
+fecha,cantidad,importe
+2025-10-18,2,120.0

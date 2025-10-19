@@ -87,7 +87,7 @@
     "product_id": "AA40C33B",
     "item": "HELADO-CLASICO-MEDIO-LITRO",
     "descripcion": "Helado Clasico Medio Litro",
-    "precio": 90.0
+    "precio": 85.0
   },
   {
     "product_id": "9D68612D",
@@ -111,7 +111,7 @@
     "product_id": "2682D29D",
     "item": "HELADO-GOURMET-MEDIO-LITRO",
     "descripcion": "Helado Gourmet Medio Litro",
-    "precio": 95.0
+    "precio": 90.0
   },
   {
     "product_id": "97EEAB91",
@@ -432,12 +432,6 @@
     "precio": 35.0
   },
   {
-    "product_id": "02298024",
-    "item": "PALETA-CREMA-QUESO",
-    "descripcion": "PALETA CREMA Queso",
-    "precio": 35.0
-  },
-  {
     "product_id": "05908024",
     "item": "PALETA-CREMA-SALTED-CARAMEL",
     "descripcion": "PALETA CREMA Salted Caramel",
@@ -501,6 +495,12 @@
     "product_id": "92CFB2A5",
     "item": "PALETA-CREMA-PREMIUM-NUTELLA",
     "descripcion": "PALETA CREMA PREMIUM Nutella",
+    "precio": 40.0
+  },
+  {
+    "product_id": "02298024",
+    "item": "PALETA-CREMA-PREMIUM-QUESO",
+    "descripcion": "PALETA CREMA PREMIUM Queso",
     "precio": 40.0
   },
   {
