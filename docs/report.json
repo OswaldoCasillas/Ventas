@@ -1,10 +1,10 @@
 {
-  "generated_at": "2025-10-19T02:41:18.769597Z",
+  "generated_at": "2025-10-19T02:44:40.382599Z",
   "summary": {
     "items_distintos": 119,
     "items_low_stock": 2,
-    "total_ventas": 0,
-    "total_importe": 0.0,
+    "total_ventas": 10,
+    "total_importe": 60.0,
     "total_producido": 0
   }
 }
