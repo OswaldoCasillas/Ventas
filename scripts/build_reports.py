@@ -1,117 +1,149 @@
+# scripts/build_reports.py
+# ------------------------------------------------------------
+# Genera archivos de reportes a partir de detalles de ventas y producción.
+# Corrige el manejo de fechas mezcladas (str/float/NaT) y estandariza a YYYY-MM-DD.
+# ------------------------------------------------------------
+
+from __future__ import annotations
 import os
-import re
-import pandas as pd
 from pathlib import Path
+import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]  # repo root
-DATA = ROOT / "data"
-DOCS = ROOT / "docs"
-MERC = DOCS / "mercado"
 
-DOCS.mkdir(exist_ok=True, parents=True)
-MERC.mkdir(exist_ok=True, parents=True)
+def _collect_unique_dates(*series_like) -> list[str]:
+    """
+    Recibe una o más Series/listas de fechas, convierte todo a datetime,
+    descarta NaT y regresa lista única ordenada como 'YYYY-MM-DD'.
+    """
+    chunks = []
+    for s in series_like:
+        if s is None:
+            continue
+        s = pd.Series(s)
+        dt = pd.to_datetime(s.astype(str), errors="coerce").dropna()
+        if not dt.empty:
+            chunks.append(dt)
+    if not chunks:
+        return []
+    all_dt = pd.concat(chunks, ignore_index=True)
+    return sorted(all_dt.dt.strftime("%Y-%m-%d").unique().tolist())
 
-# Entradas esperadas (ya las usas)
-SALES_MAIN = DATA / "sales.csv"             # txn_id,fecha,item,cantidad,precio_unit,importe,issue,(labels? opcional)
-SALES_MERC = DATA / "sales_mercado.csv"     # idem
 
-# Salidas
-DETALLE_MAIN = DOCS / "ventas_detalle.csv"
-DETALLE_MERC = MERC / "ventas_detalle.csv"
-POR_DIA      = DOCS / "ventas_por_dia.csv"
+def _ensure_dir(p: Path) -> None:
+    p.parent.mkdir(parents=True, exist_ok=True)
 
-CARD_PATTERNS = [
-    re.compile(r"\(TARJETA\)", re.I),
-    re.compile(r"\*\*Método de pago\*\*:\s*Tarjeta", re.I),
-    re.compile(r"\[TARJETA\]", re.I)
-]
 
-def is_card(row):
-    # Si tu extracción desde issues incluyó labels:
-    labels = (row.get("labels") or "").lower()
-    if "pago-tarjeta" in labels:
-        return True
+def build_reports(
+    inv_gen: pd.DataFrame,
+    inv_mkt: pd.DataFrame,
+    sales_detail: pd.DataFrame,
+    prod_detail: pd.DataFrame,
+    out_dir: str | Path = "docs"
+) -> None:
+    """
+    Genera:
+      - docs/ventas_por_dia.csv  (fecha,cantidad,importe)
+      - docs/ventas_por_item.csv (item,cantidad,importe)
+      - docs/ventas_detalle.csv  (detalle consolidado)
+      - docs/diario/YYYY-MM-DD-ventas.csv (detalle por día)
+      - docs/produccion_detalle.csv (si hay producción)
+      - Mercado (si corresponde) lo gestionas fuera de aquí
 
-    title = str(row.get("title", ""))  # si existe
-    body  = str(row.get("body", ""))   # si existe
-    issue = str(row.get("issue", ""))  # por compat: algunos parsers guardan cuerpo en 'issue'
+    Parámetros:
+      inv_gen, inv_mkt: inventarios (no se usan aquí, pero se mantienen por compatibilidad)
+      sales_detail: DataFrame con columnas al menos: fecha,item,cantidad,precio_unit,importe,descripcion,product_id
+      prod_detail:  DataFrame con columnas al menos: fecha,item,cantidad,descripcion,product_id
+    """
+    out_dir = Path(out_dir)
+    _ensure_dir(out_dir / "diario/file.txt")  # crea docs/diario/
 
-    text = " ".join([title, body, issue])
-    return any(p.search(text) for p in CARD_PATTERNS)
+    # -------- Normalización mínima de columnas esperadas --------
+    sales_detail = (sales_detail or pd.DataFrame()).copy()
+    prod_detail  = (prod_detail  or pd.DataFrame()).copy()
 
-def load_sales_csv(path: Path) -> pd.DataFrame:
-    if not path.exists():
-        return pd.DataFrame(columns=["txn_id","fecha","item","cantidad","precio_unit","importe","issue"])
-    df = pd.read_csv(path, dtype=str).fillna("")
-    # Normaliza numéricos
-    for col in ["cantidad","precio_unit","importe"]:
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0)
-        else:
-            df[col] = 0
-    # Método de pago
-    if "metodo_pago" not in df.columns:
-        df["metodo_pago"] = df.apply(lambda r: "tarjeta" if is_card(r) else "efectivo", axis=1)
-    return df
+    # Asegura columnas básicas para ventas
+    for col in ["fecha", "item", "cantidad", "precio_unit", "importe", "descripcion", "product_id", "payment"]:
+        if col not in sales_detail.columns:
+            sales_detail[col] = None
 
-def write_detalle(df: pd.DataFrame, outpath: Path):
-    cols = ["txn_id","fecha","item","cantidad","precio_unit","importe","metodo_pago","issue"]
-    for c in cols:
-        if c not in df.columns:
-            df[c] = "" if c in ("txn_id","fecha","item","issue") else 0
-    df = df[cols].copy()
-    df.sort_values(["fecha","item"], inplace=True)
-    df.to_csv(outpath, index=False)
+    # Tipos numéricos
+    sales_detail["cantidad"]    = pd.to_numeric(sales_detail["cantidad"], errors="coerce").fillna(0).astype(int)
+    sales_detail["precio_unit"] = pd.to_numeric(sales_detail["precio_unit"], errors="coerce")
+    sales_detail["importe"]     = pd.to_numeric(sales_detail["importe"], errors="coerce")
 
-def make_por_dia(df_all: pd.DataFrame) -> pd.DataFrame:
-    if df_all.empty:
-        return pd.DataFrame(columns=[
-            "fecha","total_unidades","total_importe",
-            "unidades_efectivo","importe_efectivo",
-            "unidades_tarjeta","importe_tarjeta"
-        ])
-    # Asegura columnas
-    for c in ("cantidad","importe"):
-        if c not in df_all.columns:
-            df_all[c] = 0
-    if "metodo_pago" not in df_all.columns:
-        df_all["metodo_pago"] = df_all.apply(lambda r: "tarjeta" if is_card(r) else "efectivo", axis=1)
+    # Si importe viene vacío, lo calculamos
+    mask_imp = sales_detail["importe"].isna()
+    sales_detail.loc[mask_imp, "importe"] = (
+        sales_detail.loc[mask_imp, "cantidad"].astype(float) * sales_detail.loc[mask_imp, "precio_unit"].astype(float)
+    )
 
-    def agg(df):
-        t_u = df["cantidad"].sum()
-        t_i = df["importe"].sum()
-        ef  = df[df["metodo_pago"]=="efectivo"]
-        tj  = df[df["metodo_pago"]=="tarjeta"]
-        return pd.Series({
-            "total_unidades": t_u,
-            "total_importe":  t_i,
-            "unidades_efectivo": ef["cantidad"].sum(),
-            "importe_efectivo":  ef["importe"].sum(),
-            "unidades_tarjeta":  tj["cantidad"].sum(),
-            "importe_tarjeta":   tj["importe"].sum(),
-        })
+    # Producción (opcional)
+    if not prod_detail.empty:
+        for col in ["fecha", "item", "cantidad", "descripcion", "product_id"]:
+            if col not in prod_detail.columns:
+                prod_detail[col] = None
+        prod_detail["cantidad"] = pd.to_numeric(prod_detail["cantidad"], errors="coerce").fillna(0).astype(int)
 
-    out = df_all.groupby("fecha", as_index=False).apply(agg).reset_index(drop=True)
-    out = out[[
-        "fecha","total_unidades","total_importe",
-        "unidades_efectivo","importe_efectivo",
-        "unidades_tarjeta","importe_tarjeta"
-    ]]
-    out.sort_values("fecha", inplace=True)
-    return out
+    # -------- Fechas únicas (corregido) --------
+    dates = _collect_unique_dates(sales_detail.get("fecha"), prod_detail.get("fecha"))
+    # Si no hay fechas, no generamos diarios (pero sí podemos generar agregados vacíos)
+    # No cortamos la función: dejamos que los agregados escriban aunque estén vacíos.
 
-def main():
-    df_main = load_sales_csv(SALES_MAIN)
-    df_merc = load_sales_csv(SALES_MERC)
+    # -------- Guardar ventas_detalle.csv --------
+    ventas_detalle_csv = out_dir / "ventas_detalle.csv"
+    _ensure_dir(ventas_detalle_csv)
+    # Ordena por fecha e item para consistencia
+    if not sales_detail.empty:
+        # Normalizamos 'fecha' a texto YYYY-MM-DD para salida
+        f_norm = pd.to_datetime(sales_detail["fecha"].astype(str), errors="coerce").dt.strftime("%Y-%m-%d")
+        sales_export = sales_detail.copy()
+        sales_export["fecha"] = f_norm
+        sales_export = sales_export.sort_values(["fecha", "item", "precio_unit"], na_position="last")
+    else:
+        sales_export = sales_detail.copy()
+    sales_export.to_csv(ventas_detalle_csv, index=False)
 
-    # Escribe detalle con metodo_pago
-    write_detalle(df_main, DETALLE_MAIN)
-    write_detalle(df_merc, DETALLE_MERC)
+    # -------- diarios por fecha --------
+    for d in dates:
+        day_rows = sales_export[sales_export["fecha"] == d]
+        daily_path = out_dir / "diario" / f"{d}-ventas.csv"
+        _ensure_dir(daily_path)
+        day_rows.to_csv(daily_path, index=False)
 
-    # Por día (consolida ambos)
-    both = pd.concat([df_main, df_merc], ignore_index=True)
-    por_dia = make_por_dia(both)
-    por_dia.to_csv(POR_DIA, index=False)
+    # -------- ventas_por_dia.csv --------
+    vpd_path = out_dir / "ventas_por_dia.csv"
+    if not sales_export.empty:
+        vpd = (sales_export.groupby("fecha", as_index=False)
+                          .agg(cantidad=("cantidad", "sum"),
+                               importe=("importe", "sum")))
+        vpd = vpd.sort_values("fecha")
+    else:
+        vpd = pd.DataFrame(columns=["fecha", "cantidad", "importe"])
+    _ensure_dir(vpd_path)
+    vpd.to_csv(vpd_path, index=False)
 
-if __name__ == "__main__":
-    main()
+    # -------- ventas_por_item.csv --------
+    vpi_path = out_dir / "ventas_por_item.csv"
+    if not sales_export.empty:
+        vpi = (sales_export.groupby("item", as_index=False)
+                          .agg(cantidad=("cantidad", "sum"),
+                               importe=("importe", "sum")))
+        vpi = vpi.sort_values(["cantidad", "importe", "item"], ascending=[False, False, True])
+    else:
+        vpi = pd.DataFrame(columns=["item", "cantidad", "importe"])
+    _ensure_dir(vpi_path)
+    vpi.to_csv(vpi_path, index=False)
+
+    # -------- produccion_detalle.csv (si aplica) --------
+    prod_csv = out_dir / "produccion_detalle.csv"
+    if not prod_detail.empty:
+        f_norm = pd.to_datetime(prod_detail["fecha"].astype(str), errors="coerce").dt.strftime("%Y-%m-%d")
+        prod_export = prod_detail.copy()
+        prod_export["fecha"] = f_norm
+        prod_export = prod_export.sort_values(["fecha", "item"], na_position="last")
+        _ensure_dir(prod_csv)
+        prod_export.to_csv(prod_csv, index=False)
+    else:
+        # Si prefieres mantener vacío sólo cuando exista alguno anterior, descomenta:
+        # if prod_csv.exists(): prod_csv.unlink()
+        pass
