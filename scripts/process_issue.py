@@ -75,8 +75,7 @@ def grab_field(body: str, key: str) -> str:
     return (m.group(1) if m else "").strip()
 
 def safe_parse_date(s: str, issue: dict) -> str:
-    # FECHA LOCAL MX (America/Mexico_City): usamos UTC-6/UTC-5 aprox con un desfase fijo -6h,
-    # y "cortamos" el día a las 06:00 UTC (~medianoche MX) para que a las 00:00-05:59 UTC siga siendo "del día anterior" MX.
+    # Ajuste simple a horario de México: UTC-6 como corte de día
     s = (s or "").strip()
     for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%Y/%m/%d"):
         try:
@@ -86,17 +85,17 @@ def safe_parse_date(s: str, issue: dict) -> str:
     created = (issue or {}).get("created_at") or ""
     if created:
         dt = datetime.fromisoformat(created.replace("Z","+00:00"))
-        dt_local_cut = dt - timedelta(hours=6)  # aprox MX (no DST perfecto, pero suficiente para corte)
+        dt_local_cut = dt - timedelta(hours=6)  # corte aproximado a medianoche MX
         return dt_local_cut.date().isoformat()
     return (datetime.now(timezone.utc) - timedelta(hours=6)).date().isoformat()
 
-# ---------- Validación/parseo robusto de Items ----------
+# ---------- Validación/parseo de Items ----------
 
 def is_valid_sku(s: str) -> bool:
     if not s or not isinstance(s, str):
         return False
     s = s.strip()
-    if s.startswith("**"):
+    if s.startswith("**"):  # evita "**Cantidad**"
         return False
     if " " in s:
         return False
@@ -152,32 +151,10 @@ def new_txn_id(prefix: str) -> str:
     rand = secrets.token_hex(3).upper()
     return f"{prefix}-{now}-{rand}"
 
-# --- util para IDs estables por renglón
+# --- ID estable por renglón
 def make_source_id(issue_url: str, row_index: int, sku: str, qty: int, price: str = "") -> str:
     base = f"{issue_url}#{row_index}|{sku}|{qty}|{price}"
     return hashlib.sha1(base.encode("utf-8")).hexdigest().upper()
-
-# --- evitar doble-procesamiento
-def _csv_has_issue(path: Path, issue_url: str) -> bool:
-    if not issue_url:
-        return False
-    if not path.exists() or path.stat().st_size == 0:
-        return False
-    try:
-        df = pd.read_csv(path, usecols=["issue"])
-    except Exception:
-        return False
-    return df["issue"].astype(str).eq(issue_url).any()
-
-def already_processed(issue_url: str) -> bool:
-    # ya no lo usamos para bloquear todo el issue; dejamos el dedupe por source_id,
-    # pero mantenerlo ayuda a evitar trabajo si fuera necesario.
-    return (
-        _csv_has_issue(SALES_CSV, issue_url) or
-        _csv_has_issue(SALES_MKT_CSV, issue_url) or
-        _csv_has_issue(PROD_CSV, issue_url) or
-        _csv_has_issue(TRANSFER_MKT_CSV, issue_url)
-    )
 
 # ====================== inventario / menú ======================
 
@@ -211,21 +188,53 @@ def write_menu_json(inv_general: pd.DataFrame):
     MENU_JSON.write_text(json.dumps(inv_ok[cols].fillna("").to_dict(orient="records"),
                                     ensure_ascii=False, indent=2), encoding="utf-8")
 
-# ====================== append con dedupe ======================
+# ====================== append con dedupe correcto ======================
 
 def _append_rows_unique(path: Path, rows: list, key: str = "source_id"):
+    """
+    Agrega filas al CSV evitando duplicados por `key`.
+    - No elimina filas con key vacío.
+    - Rellena key 'legacy' en filas antiguas sin key para estabilizarlas.
+    """
     new = pd.DataFrame(rows)
-    old = pd.read_csv(path) if path.exists() and path.stat().st_size>0 else pd.DataFrame(columns=new.columns)
-    # compat: asegúrate de columnas clave
+    old = pd.read_csv(path) if path.exists() and path.stat().st_size>0 else pd.DataFrame()
+
+    # Alinear columnas (unión)
+    cols = list(dict.fromkeys(list(old.columns) + list(new.columns)))
+    old = old.reindex(columns=cols, fill_value="")
+    new = new.reindex(columns=cols, fill_value="")
+
+    # Backfill de key legacy en filas antiguas sin key
     if key not in old.columns:
         old[key] = ""
-    for col in new.columns:
-        if col not in old.columns:
-            old[col] = ""
-    # concat y dedupe por key
+    if not old.empty:
+        mask_empty = old[key].isna() | (old[key].astype(str).str.len() == 0)
+        if mask_empty.any():
+            def _legacy_sid(row):
+                parts = [
+                    str(row.get("txn_id","")),
+                    str(row.get("fecha","")),
+                    str(row.get("item","")),
+                    str(row.get("cantidad","")),
+                    str(row.get("precio_unit","")),
+                    str(row.get("importe","")),
+                    str(row.get("issue","")),
+                ]
+                h = hashlib.sha1("|".join(parts).encode("utf-8")).hexdigest().upper()
+                return f"LEG-{h}"
+            old.loc[mask_empty, key] = old[mask_empty].apply(_legacy_sid, axis=1)
+
+    # Concatenar
     df = pd.concat([old, new], ignore_index=True)
+
+    # Dedupe solo para keys NO vacíos
     if key in df.columns:
-        df = df.drop_duplicates(subset=[key], keep="first")
+        k = df[key].astype(str)
+        nonempty = k.str.len() > 0
+        df_nonempty = df[nonempty].drop_duplicates(subset=[key], keep="first")
+        df_empty    = df[~nonempty]  # se preservan todas (no se tocan)
+        df = pd.concat([df_empty, df_nonempty], ignore_index=True)
+
     df.to_csv(path, index=False)
 
 def _clean_items(items, require_price: bool = False):
@@ -382,7 +391,7 @@ def build_reports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame):
     }
     REPORT_JSON.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    # HTML (solo columnas que existan)
+    # HTML (seguro a columnas)
     cols_sales = [c for c in ["txn_id","fecha","product_id","item","descripcion","cantidad","precio_unit","importe","metodo_pago","issue"] if c in sales_detail.columns]
     cols_prod  = [c for c in ["txn_id","fecha","product_id","item","descripcion","cantidad","issue"] if c in prod_detail.columns]
     html = f"""<!doctype html><html lang="es"><meta charset="utf-8">
@@ -409,7 +418,7 @@ def build_reports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame):
     if not sales_detail.empty:
         for fecha, group in sales_detail.groupby("fecha"):
             (DIARIO_DIR / f"{str(fecha)}-ventas.csv").write_text(group.to_csv(index=False), encoding="utf-8")
-    # índice de diarios
+
     sd_fechas = [str(x) for x in sales_detail.get("fecha",[]).tolist()] if "fecha" in sales_detail.columns else []
     pd_fechas = [str(x) for x in prod_detail.get("fecha",[]).tolist()] if "fecha" in prod_detail.columns else []
     dates = sorted(set(sd_fechas) | set(pd_fechas))
@@ -500,7 +509,7 @@ def main():
     ensure_files()
     inv_gen = load_inventory_general()
     inv_mkt = load_inventory_mkt()
-    write_menu_json(inv_gen)  # menú siempre desde inventario general
+    write_menu_json(inv_gen)  # menú desde inventario general
 
     issue = load_event_issue()
     if issue is None:
