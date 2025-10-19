@@ -3,6 +3,7 @@
 
 import json, os, re, secrets, hashlib
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo  # ← agrega esto
 from pathlib import Path
 import pandas as pd
 
@@ -75,16 +76,35 @@ def grab_field(body: str, key: str) -> str:
     return (m.group(1) if m else "").strip()
 
 def safe_parse_date(s: str, issue: dict) -> str:
+    """
+    Devuelve la fecha (YYYY-MM-DD) en horario de Ciudad de México.
+    - Si el usuario escribió una fecha válida, se respeta.
+    - Si no hay fecha o es inválida, se toma issue.created_at (UTC),
+      se convierte a America/Mexico_City y se devuelve ese día local.
+    """
     s = (s or "").strip()
+    # 1) Si el usuario escribió fecha, respétala (varios formatos comunes)
     for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%Y/%m/%d"):
         try:
             return datetime.strptime(s, fmt).date().isoformat()
         except Exception:
             pass
+
+    # 2) Fallback: usa la fecha de creación del issue, convertida a MX
     created = (issue or {}).get("created_at") or ""
     if created:
-        return created[:10]
-    return datetime.now(timezone.utc).date().isoformat()
+        # created es ISO UTC, ej: "2025-03-08T05:12:34Z"
+        try:
+            dt_utc = datetime.fromisoformat(created.replace("Z", "+00:00"))
+            dt_mx  = dt_utc.astimezone(ZoneInfo("America/Mexico_City"))
+            return dt_mx.date().isoformat()
+        except Exception:
+            pass
+
+    # 3) Último recurso: ahora mismo en MX
+    now_mx = datetime.now(ZoneInfo("America/Mexico_City"))
+    return now_mx.date().isoformat()
+
 
 # ---------- Validación/parseo robusto de Items ----------
 
