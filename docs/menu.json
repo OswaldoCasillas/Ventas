@@ -200,7 +200,7 @@
   {
     "product_id": "K2F6E9F9",
     "item": "PALETA-AGUA-GUANABANA",
-    "descripcion": "PALETA AGUA Guanabana ",
+    "descripcion": "PALETA AGUA Guanabana",
     "precio": 25.0
   },
   {
@@ -410,13 +410,13 @@
   {
     "product_id": "07A7679E",
     "item": "PALETA-CREMA-MAZAPAN",
-    "descripcion": "PALETA CREMA Mazapan ",
+    "descripcion": "PALETA CREMA Mazapan",
     "precio": 35.0
   },
   {
     "product_id": "97A7679E",
     "item": "PALETA-CREMA-MENTA-CHOCOLATE",
-    "descripcion": "PALETA CREMA Menta con Chocolate ",
+    "descripcion": "PALETA CREMA Menta con Chocolate",
     "precio": 35.0
   },
   {
@@ -570,13 +570,7 @@
     "precio": 35.0
   },
   {
-    "product_id": "7A03C7DC",
-    "item": "PALETA-MINI-MINI-AGUA",
-    "descripcion": "PALETA MINI Mini Agua",
-    "precio": 6.0
-  },
-  {
-    "product_id": " C371ED40",
+    "product_id": "C371ED40",
     "item": "PALETA-MINI-MINI-CREMA",
     "descripcion": "PALETA MINI Mini Crema",
     "precio": 8.0
