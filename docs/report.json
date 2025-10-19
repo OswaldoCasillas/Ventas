@@ -1,17 +1,17 @@
 {
-  "generated_at": "2025-10-19T05:14:15.450763Z",
+  "generated_at": "2025-10-19T05:14:41.800488Z",
   "summary": {
     "items_distintos": 119,
     "items_low_stock": 2,
-    "total_ventas": 13,
-    "total_importe": 276.0,
+    "total_ventas": 14,
+    "total_importe": 311.0,
     "total_producido": 0
   },
   "pagos": [
     {
       "fecha": "2025-10-18",
       "metodo_pago": "efectivo",
-      "importe": 276.0
+      "importe": 311.0
     }
   ]
 }
