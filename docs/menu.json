@@ -48,12 +48,6 @@
     "precio": 15.0
   },
   {
-    "product_id": "7E9B8EC1",
-    "item": "EXTRA-CONO",
-    "descripcion": "EXTRA Cono",
-    "precio": 5.0
-  },
-  {
     "product_id": "062CFB68",
     "item": "EXTRA-COBERTURA-CHOCOLATE",
     "descripcion": "EXTRA Cobertura Chocolate",
@@ -66,10 +60,10 @@
     "precio": 15.0
   },
   {
-    "product_id": "6A3513FD",
-    "item": "PALETAS-PERRO",
-    "descripcion": "Paletas para Perro",
-    "precio": 30.0
+    "product_id": "7E9B8EC1",
+    "item": "EXTRA-CONO",
+    "descripcion": "EXTRA Cono",
+    "precio": 5.0
   },
   {
     "product_id": "BD4D8B7F",
@@ -390,15 +384,15 @@
     "precio": 35.0
   },
   {
-    "product_id": "03C761EC",
-    "item": "PALETA-CREMA-FRESA-CREMA",
-    "descripcion": "PALETA CREMA Fresa Crema",
-    "precio": 35.0
-  },
-  {
     "product_id": "03C761CC",
     "item": "PALETA-CREMA-FRESA-CON-CREMA",
     "descripcion": "PALETA CREMA Fresa con Crema",
+    "precio": 35.0
+  },
+  {
+    "product_id": "03C761EC",
+    "item": "PALETA-CREMA-FRESA-CREMA",
+    "descripcion": "PALETA CREMA Fresa Crema",
     "precio": 35.0
   },
   {
@@ -430,24 +424,6 @@
     "item": "PALETA-CREMA-PAY-DE-LIMON",
     "descripcion": "PALETA CREMA Pay de Limon",
     "precio": 35.0
-  },
-  {
-    "product_id": "05908024",
-    "item": "PALETA-CREMA-SALTED-CARAMEL",
-    "descripcion": "PALETA CREMA Salted Caramel",
-    "precio": 35.0
-  },
-  {
-    "product_id": "F6F917A9",
-    "item": "PALETA-CREMA-PREMIUM-PINON",
-    "descripcion": "PALETA CREMA PREMIUM Pinon",
-    "precio": 40.0
-  },
-  {
-    "product_id": "E4F287A9",
-    "item": "PALETA-CREMA-PREMIUM-PISTACHE",
-    "descripcion": "PALETA CREMA PREMIUM Pistache",
-    "precio": 40.0
   },
   {
     "product_id": "71F27465",
@@ -498,6 +474,18 @@
     "precio": 40.0
   },
   {
+    "product_id": "F6F917A9",
+    "item": "PALETA-CREMA-PREMIUM-PINON",
+    "descripcion": "PALETA CREMA PREMIUM Pinon",
+    "precio": 40.0
+  },
+  {
+    "product_id": "E4F287A9",
+    "item": "PALETA-CREMA-PREMIUM-PISTACHE",
+    "descripcion": "PALETA CREMA PREMIUM Pistache",
+    "precio": 40.0
+  },
+  {
     "product_id": "02298024",
     "item": "PALETA-CREMA-PREMIUM-QUESO",
     "descripcion": "PALETA CREMA PREMIUM Queso",
@@ -522,6 +510,18 @@
     "precio": 40.0
   },
   {
+    "product_id": "05833dE3",
+    "item": "PALETA-CREMA-PREMIUM-SELVA-BLANCA",
+    "descripcion": "PALETA CREMA PREMIUM Selva Blanca",
+    "precio": 40.0
+  },
+  {
+    "product_id": "05833CE3",
+    "item": "PALETA-CREMA-PREMIUM-SELVA-NEGRA",
+    "descripcion": "PALETA CREMA PREMIUM Selva Negra",
+    "precio": 40.0
+  },
+  {
     "product_id": "3A0CCE07",
     "item": "PALETA-CREMA-PREMIUM-SNICKERS",
     "descripcion": "PALETA CREMA PREMIUM Snickers",
@@ -540,16 +540,10 @@
     "precio": 35.0
   },
   {
-    "product_id": "05833dE3",
-    "item": "PALETA-CREMA-PREMIUM-SELVA-BLANCA",
-    "descripcion": "PALETA CREMA PREMIUM Selva Blanca",
-    "precio": 40.0
-  },
-  {
-    "product_id": "05833CE3",
-    "item": "PALETA-CREMA-PREMIUM-SELVA-NEGRA",
-    "descripcion": "PALETA CREMA PREMIUM Selva Negra",
-    "precio": 40.0
+    "product_id": "05908024",
+    "item": "PALETA-CREMA-SALTED-CARAMEL",
+    "descripcion": "PALETA CREMA Salted Caramel",
+    "precio": 35.0
   },
   {
     "product_id": "866B8AED",
@@ -570,22 +564,16 @@
     "precio": 35.0
   },
   {
-    "product_id": "7A03C7DC",
+    "product_id": "C371ED50",
     "item": "PALETA-MINI-MINI-AGUA",
-    "descripcion": "PALETA MINI Mini Agua",
-    "precio": 6.0
+    "descripcion": "PALETA MINI Mini Alcohol",
+    "precio": 10.0
   },
   {
     "product_id": " C371ED40",
     "item": "PALETA-MINI-MINI-CREMA",
     "descripcion": "PALETA MINI Mini Crema",
     "precio": 8.0
-  },
-  {
-    "product_id": "C371ED50",
-    "item": "PALETA-MINI-MINI-AGUA",
-    "descripcion": "PALETA MINI Mini Alcohol",
-    "precio": 10.0
   },
   {
     "product_id": "D189174D",
@@ -712,6 +700,12 @@
     "item": "PALETA-SIN-AZUCAR-VAINILLA",
     "descripcion": "PALETA SIN AZUCAR Vainilla",
     "precio": 45.0
+  },
+  {
+    "product_id": "6A3513FD",
+    "item": "PALETAS-PERRO",
+    "descripcion": "Paletas para Perro",
+    "precio": 30.0
   },
   {
     "product_id": "3B6B12C9",
