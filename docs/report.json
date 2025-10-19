@@ -5,6 +5,7 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   "generated_at": "2025-10-19T05:16:01.865051Z",
 =======
   "generated_at": "2025-10-19T05:16:08.223919Z",
@@ -57,12 +58,21 @@
     "total_ventas": 28,
     "total_importe": 796.0,
 >>>>>>> Stashed changes
+=======
+  "generated_at": "2025-10-19T05:17:25.367223Z",
+  "summary": {
+    "items_distintos": 119,
+    "items_low_stock": 2,
+    "total_ventas": 31,
+    "total_importe": 901.0,
+>>>>>>> Stashed changes
     "total_producido": 0
   },
   "pagos": [
     {
       "fecha": "2025-10-18",
       "metodo_pago": "efectivo",
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
@@ -87,6 +97,9 @@
 >>>>>>> Stashed changes
 =======
       "importe": 796.0
+>>>>>>> Stashed changes
+=======
+      "importe": 901.0
 >>>>>>> Stashed changes
     }
   ]

@@ -4,6 +4,7 @@ PALETA-AGUA-LIMON,3,75.0
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 PALETAS-PERRO,2,60.0
 <<<<<<< Updated upstream
 POSTRE-DANONINO-GRANDE,2,60.0
@@ -11,9 +12,13 @@ HELADO-CLASICO-DOBLE,1,60.0
 =======
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 HELADO-CLASICO-DOBLE,2,120.0
+HELADO-SIN-AZUCAR-SENCILLO,2,90.0
 PALETAS-PERRO,2,60.0
 POSTRE-DANONINO-GRANDE,2,60.0
+<<<<<<< Updated upstream
 BOTANA-DORILOCOS,1,50.0
 HELADO-SIN-AZUCAR-SENCILLO,1,45.0
 HELADO-GOURMET-SENCILLO,1,40.0
@@ -45,11 +50,18 @@ PALETA-CREMA-PREMIUM-SELVA-NEGRA,1,40.0
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
+=======
+HELADO-NIEVE-SENCILLO,2,50.0
+BOTANA-DORILOCOS,1,50.0
+HELADO-GOURMET-SENCILLO,1,40.0
+PALETA-CREMA-PREMIUM-SELVA-NEGRA,1,40.0
+>>>>>>> Stashed changes
 AGUA-FRESCA-GRANDE,1,35.0
 BEBIDA-CHOCOLATE-CALIENTE,1,35.0
 HELADO-CLASICO-SENCILLO,1,35.0
 PALETA-CREMA-FRESA-CON-CREMA,1,35.0
 PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,1,30.0
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
@@ -63,6 +75,10 @@ PALETA-AGUA-PREMIUM-MANGO-CHAMOY,1,30.0
 =======
 >>>>>>> Stashed changes
 HELADO-NIEVE-SENCILLO,1,25.0
+=======
+PALETA-AGUA-PREMIUM-MANGO-CHAMOY,1,30.0
+PALETA-AGUA-PREMIUM-PINA-CHAMOY,1,30.0
+>>>>>>> Stashed changes
 PALETA-AGUA-GUAYABA,1,25.0
 PALETA-AGUA-KIWI,1,25.0
 PALETA-AGUA-TAMARINDO,1,25.0
