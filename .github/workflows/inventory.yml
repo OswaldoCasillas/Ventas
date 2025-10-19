@@ -5,7 +5,7 @@ on:
 
   # Procesa ventas / abastos / producción que llegan por Issues
   issues:
-    types: [opened, edited, reopened]  # quitamos "labeled" para reducir duplicados
+    types: [opened, edited, reopened]  # evitamos "labeled" para reducir duplicados
 
   # Recalcula menú y reportes cuando cambian insumos/código/páginas
   push:
@@ -26,12 +26,26 @@ permissions:
   contents: write
   issues: write
 
+# 🚦 Evita carreras: solo 1 ejecución por issue (o por run en push/dispatch)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.issue.number || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   process:
     runs-on: ubuntu-latest
-    concurrency:
-      group: inventory-bot-${{ github.ref }}
-      cancel-in-progress: false
+
+    # Solo corre en issues si traen alguna etiqueta relevante.
+    # En push / workflow_dispatch siempre corre.
+    if: >
+      github.event_name != 'issues' || (
+        contains(join(fromJson(toJson(github.event.issue.labels)).*.name, ','), 'venta') ||
+        contains(join(fromJson(toJson(github.event.issue.labels)).*.name, ','), 'produccion') ||
+        contains(join(fromJson(toJson(github.event.issue.labels)).*.name, ','), 'producción') ||
+        contains(join(fromJson(toJson(github.event.issue.labels)).*.name, ','), 'venta-mercado') ||
+        contains(join(fromJson(toJson(github.event.issue.labels)).*.name, ','), 'abasto-mercado') ||
+        contains(join(fromJson(toJson(github.event.issue.labels)).*.name, ','), 'traspaso-mercado')
+      )
 
     steps:
       - name: Checkout
@@ -49,26 +63,34 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pandas
+        env:
+          TZ: America/Mexico_City
 
       - name: Prepare output folders
         run: |
           mkdir -p docs/diario
           mkdir -p docs/mercado/diario
+          mkdir -p .ci-locks
+        env:
+          TZ: America/Mexico_City
 
       - name: Run processor (genera menú, reportes y procesa issues)
         env:
           GITHUB_EVENT_PATH: ${{ github.event_path }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TZ: America/Mexico_City
         run: |
           python scripts/process_issue.py
 
       - name: Generar reportes (Efectivo vs Tarjeta)
         run: python scripts/build_reports.py
-
+        env:
+          TZ: America/Mexico_City
 
       - name: Commit & push (rebase-safe)
         env:
           BRANCH_NAME: ${{ github.ref_name }}
+          TZ: America/Mexico_City
         run: |
           set -e
           git config user.name  "inventory-bot"
@@ -76,7 +98,7 @@ jobs:
 
           branch="${BRANCH_NAME:-$(git rev-parse --abbrev-ref HEAD)}"
 
-          # Primero traemos la punta remota (con autostash por si ya hay cambios locales)
+          # Trae la punta remota (con autostash por si ya hay cambios locales)
           git fetch origin "$branch" --prune
           git -c rebase.autoStash=true pull --rebase origin "$branch" || {
             echo "⚠️ No se pudo rebasear (autostash). Se aborta push para evitar conflictos."
