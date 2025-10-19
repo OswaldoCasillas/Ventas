@@ -1,5 +1,6 @@
 {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   "generated_at": "2025-10-19T03:18:40.809072Z",
 =======
   "generated_at": "2025-10-19T03:18:55.359987Z",
@@ -12,6 +13,14 @@
     "total_importe": 1055.0,
 =======
     "total_importe": 1020.0,
+>>>>>>> Stashed changes
+=======
+  "generated_at": "2025-10-19T03:19:12.529155Z",
+  "summary": {
+    "items_distintos": 119,
+    "items_low_stock": 2,
+    "total_ventas": 39,
+    "total_importe": 1085.0,
 >>>>>>> Stashed changes
     "total_producido": 0
   }
