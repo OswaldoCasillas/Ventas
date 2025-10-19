@@ -1,21 +1,25 @@
 {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   "generated_at": "2025-10-19T05:14:41.800488Z",
 =======
   "generated_at": "2025-10-19T05:14:49.706287Z",
 >>>>>>> Stashed changes
+=======
+  "generated_at": "2025-10-19T05:15:06.952924Z",
+>>>>>>> Stashed changes
   "summary": {
     "items_distintos": 119,
     "items_low_stock": 2,
-    "total_ventas": 14,
-    "total_importe": 311.0,
+    "total_ventas": 18,
+    "total_importe": 431.0,
     "total_producido": 0
   },
   "pagos": [
     {
       "fecha": "2025-10-18",
       "metodo_pago": "efectivo",
-      "importe": 311.0
+      "importe": 431.0
     }
   ]
 }
