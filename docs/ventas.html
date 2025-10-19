@@ -20,13 +20,19 @@
   .tot{background:#fafafa;font-weight:600}
   .inline{display:inline-block;margin-right:8px}
   .warn{background:#fff3cd;border:1px solid #ffeeba;border-radius:8px;padding:8px}
-  .info{background:#e8f4ff;border:1px solid #b6dcff;border-radius:8px;padding:8px}
-  @media print{ .no-print{display:none} body{margin:0.5cm} }
+  /* filtro método de pago */
+  .pay-wrap{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}
+  .pill{border:1px solid #ccc;border-radius:999px;padding:8px 14px;background:#f5f5f5;cursor:pointer;user-select:none}
+  .pill.active{outline:2px solid #000;background:#fff}
+  @media print{
+    .no-print{display:none}
+    body{margin:0.5cm}
+  }
 </style>
 </head>
 <body>
 <h1>Ventas por día</h1>
-<p class="muted">Elige una fecha para ver el detalle (ventas generales). Las ventas de Mercado están en su propia página.</p>
+<p class="muted">Elige una fecha para ver el detalle. Se agrupa por secciones (categorías). Ahora puedes filtrar por método de pago.</p>
 
 <div class="row no-print">
   <div>
@@ -41,6 +47,14 @@
   </div>
 </div>
 
+<!-- Filtro de método de pago -->
+<div class="pay-wrap no-print">
+  <strong>Método de pago:</strong>
+  <span id="payTodos"  class="pill active" data-metodo="todos">Todos</span>
+  <span id="payEfe"    class="pill"        data-metodo="efectivo">Efectivo</span>
+  <span id="payTarj"   class="pill"        data-metodo="tarjeta">Tarjeta</span>
+</div>
+
 <div id="msg" class="muted"></div>
 
 <div id="resumen" class="section"></div>
@@ -51,7 +65,7 @@
 const ORG  = "OswaldoCasillas";
 const REPO = "Ventas";
 
-// ---------- Categorías ----------
+// ---------- Categorías (mismo mapping que en register/produccion) ----------
 const CAT_LABELS = {
   "PALETA-AGUA": "Paleta de Agua",
   "PALETA-AGUA-PREMIUM": "Paleta Agua Premium",
@@ -59,7 +73,7 @@ const CAT_LABELS = {
   "PALETA-CREMA-PREMIUM": "Paleta Crema Premium",
   "PALETA-SIN-AZUCAR": "Paleta Sin Azúcar/Keto",
   "PALETA-MINI": "Paleta Mini",
-  "PALETAS-PERRO": "Paletas para Perro", // 👈 agregada
+  "PALETAS-PERRO": "Paletas para Perro", // 👈 agregado
   "HELADO-NIEVE": "Helado Nieve",
   "HELADO-CLASICO": "Helado Clásico",
   "HELADO-GOURMET": "Helado Gourmet",
@@ -78,27 +92,38 @@ const SECTION_ORDER = [
   "MALTEADA","AGUA-FRESCA","BEBIDA","POSTRE","BOTANA","EXTRA","OTROS"
 ];
 
-// ---------- util ----------
-function setTodayMexico(){
-  const tz="America/Mexico_City";
-  const d=new Date();
-  const parts=new Intl.DateTimeFormat('sv-SE',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'})
-    .formatToParts(d).reduce((o,p)=>(o[p.type]=p.value,o),{});
-  document.getElementById('fecha').value=`${parts.year}-${parts.month}-${parts.day}`;
+let _rowsFull = []; // sin filtrar
+let _fechaActual = ""; 
+let _metodo = "todos"; // todos | efectivo | tarjeta
+
+function setMetodo(m){
+  _metodo = m;
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  (m==='efectivo' ? document.getElementById('payEfe')
+   : m==='tarjeta' ? document.getElementById('payTarj')
+   : document.getElementById('payTodos')
+  ).classList.add('active');
+
+  // Vuelve a renderizar con el filtro
+  const filtradas = (_metodo==='todos')
+    ? _rowsFull.slice()
+    : _rowsFull.filter(r => (r.metodo_pago||'efectivo').toLowerCase() === _metodo);
+  render(filtradas, _fechaActual, _rowsFull);
 }
+
 function getCategoryOf(sku){
   const keys = Object.keys(CAT_LABELS).sort((a,b)=>b.length-a.length);
-  for(const k of keys){ if(sku && sku.startsWith(k)) return k; }
+  for(const k of keys){ if(sku.startsWith(k)) return k; }
   return "OTROS";
 }
 function skuToNice(sku){
   const prefixes = [
     "PALETA-AGUA-PREMIUM","PALETA-CREMA-PREMIUM","PALETA-SIN-AZUCAR",
-    "PALETA-AGUA","PALETA-CREMA","PALETA-MINI","PALETAS-PERRO",
+    "PALETA-AGUA","PALETA-CREMA","PALETA-MINI",
     "HELADO-NIEVE","HELADO-CLASICO","HELADO-GOURMET","HELADO-SIN-AZUCAR",
-    "AGUA-FRESCA","MALTEADA","BEBIDA","POSTRE","BOTANA","EXTRA"
+    "AGUA-FRESCA","MALTEADA","BEBIDA","POSTRE","BOTANA","EXTRA","PALETAS-PERRO"
   ];
-  let name = sku||"";
+  let name = sku;
   for(const p of prefixes){
     if(name.startsWith(p+"-")) { name = name.slice(p.length+1); break; }
   }
@@ -111,11 +136,10 @@ function fmtMx(n){ return Number(n||0).toLocaleString('es-MX',{style:'currency',
 
 // ---------- CSV parser pequeñito ----------
 function parseCSV(text){
-  const lines = text.trim().split(/\r?\n/).filter(x=>x!=="");
-  if(lines.length===0) return [];
+  const lines = text.trim().split(/\r?\n/);
   const headers = lines.shift().split(",").map(h=>h.trim());
   return lines.map(line=>{
-    const parts = [];
+    const parts = []; // soporta comas simples (sin comillas escapadas complejas)
     let current = "", inQuotes = false;
     for(let i=0;i<line.length;i++){
       const ch = line[i];
@@ -130,75 +154,56 @@ function parseCSV(text){
   });
 }
 
-// ---------- Carga datos (general) para una fecha ----------
+// ---------- Carga datos para una fecha ----------
 async function loadForDate(fecha){
   const msg = document.getElementById('msg');
-  const cont = document.getElementById('contenedor');
-  const res  = document.getElementById('resumen');
   msg.textContent = "Cargando…";
-  cont.innerHTML=""; res.innerHTML="";
+  _fechaActual = fecha;
 
+  // Preferimos el archivo diario si existe
   const dailyUrl = `diario/${fecha}-ventas.csv?_=${Date.now()}`;
   let rows = null;
-
   try{
     const r = await fetch(dailyUrl);
     if(r.ok){
       rows = parseCSV(await r.text());
     }
-  }catch(e){/* ignora */}
-
-
-  if(!rows || rows.length===0){
-    // Fallback: ventas_detalle.csv (general)
-    try{
-      const r2 = await fetch(`ventas_detalle.csv?_=${Date.now()}`);
-      if(r2.ok){
-        const all = parseCSV(await r2.text());
-        rows = all.filter(x=>x.fecha===fecha);
-      }
-    }catch(e){/* ignora */}
+  }catch(e){/* ignora */ }
+  if(!rows){
+    // Fallback: ventas_detalle.csv y filtramos por fecha
+    const r2 = await fetch(`ventas_detalle.csv?_=${Date.now()}`);
+    if(!r2.ok){
+      msg.innerHTML = `<div class="warn">No encontré ventas para esa fecha ni el detalle general. ¿Ya corrió el workflow después de registrar ventas?</div>`;
+      render([], fecha, []);
+      return;
+    }
+    const all = parseCSV(await r2.text());
+    rows = all.filter(x=>x.fecha===fecha);
   }
 
-  if(!rows || rows.length===0){
-    // ¿Hay ventas de MERCADO ese día?
-    try{
-      const rm = await fetch(`mercado/diario/${fecha}-ventas.csv?_=${Date.now()}`);
-      if(rm.ok){
-        const mercadoRows = parseCSV(await rm.text());
-        if(mercadoRows && mercadoRows.length){
-          document.getElementById('contenedor').innerHTML =
-            `<div class="info">No hay ventas generales el <b>${fecha}</b>, 
-              pero sí hay ventas de <b>Mercado</b>.
-              Ábrelas aquí: <a href="ventas_mercado.html">ventas Mercado</a>.
-            </div>`;
-          msg.textContent="";
-          return;
-        }
-      }
-    }catch(e){/* ignora */}
-    document.getElementById('contenedor').innerHTML =
-      `<div class="warn">No hay ventas registradas el ${fecha}.</div>`;
-    msg.textContent="";
-    return;
-  }
-
-  render(rows, fecha);
-  msg.textContent = "";
-}
-
-// ---------- Render ----------
-function render(rows, fecha){
-  const cont = document.getElementById('contenedor');
-  const res  = document.getElementById('resumen');
-  cont.innerHTML = ""; res.innerHTML = "";
-
-  // Normaliza numéricos
+  // normaliza numéricos y método
   rows.forEach(r=>{
     r.cantidad = Number(r.cantidad||0);
     r.precio_unit = Number(r.precio_unit||0);
     r.importe = Number(r.importe|| (r.cantidad*r.precio_unit));
+    r.metodo_pago = (r.metodo_pago || "efectivo").toLowerCase();
   });
+
+  _rowsFull = rows.slice(); // guardamos SIN filtrar
+  setMetodo(_metodo);       // fuerza primera render con el filtro actual
+  msg.textContent = "";
+}
+
+// ---------- Render ----------
+function render(rows, fecha, allRows){
+  const cont = document.getElementById('contenedor');
+  const res  = document.getElementById('resumen');
+  cont.innerHTML = ""; res.innerHTML = "";
+
+  if(!rows || rows.length===0){
+    cont.innerHTML = `<div class="warn">No hay ventas registradas el ${fecha}${_metodo!=='todos' ? ` (filtro: ${_metodo})` : ''}.</div>`;
+    return;
+  }
 
   // Agrupa por sección -> item
   const bySec = {};
@@ -206,14 +211,13 @@ function render(rows, fecha){
     const sec = getCategoryOf(r.item);
     if(!bySec[sec]) bySec[sec] = {};
     const key = r.item;
-    if(!bySec[sec][key])
-      bySec[sec][key] = { sku:r.item, nombre: r.descripcion || skuToNice(r.item), cantidad:0, importe:0, precio:r.precio_unit };
+    if(!bySec[sec][key]) bySec[sec][key] = { sku:r.item, nombre: r.descripcion || skuToNice(r.item), cantidad:0, importe:0, precio:r.precio_unit };
     bySec[sec][key].cantidad += r.cantidad;
     bySec[sec][key].importe  += r.importe;
     if(!bySec[sec][key].precio && r.precio_unit) bySec[sec][key].precio = r.precio_unit;
   }
 
-  // Totales y orden de secciones
+  // Totales (con filtro aplicado)
   let granTotal = 0, granUnidades = 0;
   const sections = Object.keys(bySec).sort((a,b)=>SECTION_ORDER.indexOf(a)-SECTION_ORDER.indexOf(b));
   for(const sec of sections){
@@ -242,20 +246,39 @@ function render(rows, fecha){
     cont.insertAdjacentHTML('beforeend', html);
   }
 
+  // Resumen por método (siempre basado en allRows = sin filtrar)
+  const sumAll = (list, m)=> list.filter(r=>m==='todos' ? true : (r.metodo_pago||'efectivo')===m)
+                                 .reduce((acc,r)=>{acc.u+=r.cantidad; acc.$+=r.importe; return acc;},{u:0,$:0});
+  const totTodos   = sumAll(allRows, 'todos');
+  const totEfe     = sumAll(allRows, 'efectivo');
+  const totTarj    = sumAll(allRows, 'tarjeta');
+
   res.innerHTML = `
     <div class="section">
-      <h2>Resumen del día ${fecha}</h2>
+      <h2>Resumen del día ${fecha}${_metodo!=='todos' ? ` — <span class="muted">Filtro: ${_metodo}</span>` : ''}</h2>
       <table>
         <tbody>
-          <tr><th>Total de unidades</th><td class="right">${granUnidades}</td></tr>
-          <tr><th>Importe total</th><td class="right">${fmtMx(granTotal)}</td></tr>
+          <tr><th>Total de unidades (filtro)</th><td class="right">${granUnidades}</td></tr>
+          <tr><th>Importe total (filtro)</th><td class="right">${fmtMx(granTotal)}</td></tr>
         </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h3>Por método de pago (sin filtro)</h3>
+      <table>
+        <thead><tr><th>Método</th><th class="right">Unidades</th><th class="right">Importe</th></tr></thead>
+        <tbody>
+          <tr><td>Efectivo</td><td class="right">${totEfe.u}</td><td class="right">${fmtMx(totEfe.$)}</td></tr>
+          <tr><td>Tarjeta</td><td class="right">${totTarj.u}</td><td class="right">${fmtMx(totTarj.$)}</td></tr>
+        </tbody>
+        <tfoot><tr><th>Total día</th><th class="right">${totTodos.u}</th><th class="right">${fmtMx(totTodos.$)}</th></tr></tfoot>
       </table>
     </div>`;
 }
 
 // ---------- UI ----------
-setTodayMexico();
+document.getElementById('fecha').valueAsDate = new Date();
 document.getElementById('cargar').onclick = ()=>{
   const f = document.getElementById('fecha').value;
   if(!f) return alert("Selecciona una fecha");
@@ -263,11 +286,17 @@ document.getElementById('cargar').onclick = ()=>{
 };
 document.getElementById('imprimir').onclick = ()=>window.print();
 
-// Carga inicial con hoy (MX)
-loadForDate(document.getElementById('fecha').value);
-</script>
+// Filtro método de pago
+document.getElementById('payTodos').onclick = ()=>setMetodo('todos');
+document.getElementById('payEfe').onclick   = ()=>setMetodo('efectivo');
+document.getElementById('payTarj').onclick  = ()=>setMetodo('tarjeta');
+
+// Carga inicial con hoy
+loadForDate(document.getElementById('fecha').value = (new Date()).toISOString().slice(0,10));
+</script> <!-- ✅ cerramos el script principal -->
 
 <!-- Botón universal "Volver al menú" -->
 <script src="back-button.js?v=1" defer></script>
+
 </body>
 </html>
