@@ -39,7 +39,7 @@
     "item": "BEBIDA-CHAMOYADA",
     "descripcion": "BEBIDA Chamoyada",
     "precio": 60.0,
-    "stock": 99999996
+    "stock": 99999994
   },
   {
     "product_id": "F76E2099",
@@ -102,7 +102,7 @@
     "item": "HELADO-CLASICO-DOBLE",
     "descripcion": "Helado Clasico Doble",
     "precio": 60.0,
-    "stock": 99999994
+    "stock": 99999993
   },
   {
     "product_id": "7968996E",
