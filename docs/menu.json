@@ -18,7 +18,7 @@
     "item": "BEBIDA-CHAMOYADA",
     "descripcion": "BEBIDA Chamoyada",
     "precio": 60.0,
-    "stock": 99999999
+    "stock": 99999997
   },
   {
     "product_id": "F76E2099",
@@ -501,7 +501,7 @@
     "item": "PALETA-CREMA-PREMIUM-BAILEYS",
     "descripcion": "PALETA CREMA PREMIUM Baileys",
     "precio": 40.0,
-    "stock": 22
+    "stock": 21
   },
   {
     "product_id": "6AD82AE1",
