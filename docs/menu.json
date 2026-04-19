@@ -39,7 +39,7 @@
     "item": "BEBIDA-CHAMOYADA",
     "descripcion": "BEBIDA Chamoyada",
     "precio": 60.0,
-    "stock": 99999991
+    "stock": 99999989
   },
   {
     "product_id": "F76E2099",
@@ -270,7 +270,7 @@
     "item": "PALETA-AGUA-LIMON",
     "descripcion": "PALETA AGUA Limon",
     "precio": 25.0,
-    "stock": 55
+    "stock": 54
   },
   {
     "product_id": "3D2B18C9",
@@ -340,7 +340,7 @@
     "item": "PALETA-AGUA-PREMIUM-PICAPANDA",
     "descripcion": "PALETA AGUA PREMIUM Picapanda",
     "precio": 30.0,
-    "stock": 52
+    "stock": 51
   },
   {
     "product_id": "BFE99BE3",
@@ -690,7 +690,7 @@
     "item": "PALETA-MINI-MINI-CREMA",
     "descripcion": "PALETA MINI Mini Crema",
     "precio": 8.0,
-    "stock": 99999999986
+    "stock": 99999999985
   },
   {
     "product_id": "D189174D",

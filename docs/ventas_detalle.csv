@@ -8,6 +8,7 @@ S000006,2026-04-18,BEBIDA-CHAMOYADA,2,60.0,120.0,https://github.com/OswaldoCasil
 S000027,2026-04-18,BEBIDA-CHAMOYADA,1,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/137,efectivo,client:21a2fcf3-136f-4c18-8719-c67558a94bab#0,BEBIDA Chamoyada,1C271C39,efectivo
 S000031,2026-04-18,BEBIDA-CHAMOYADA,2,60.0,120.0,https://github.com/OswaldoCasillas/Ventas/issues/142,efectivo,client:52c52d35-f816-4227-ba38-af59ae217ed1#0,BEBIDA Chamoyada,1C271C39,efectivo
 S000032,2026-04-18,BEBIDA-CHAMOYADA,3,60.0,180.0,https://github.com/OswaldoCasillas/Ventas/issues/143,efectivo,client:9cb33026-a90e-4099-8116-10b496122811#0,BEBIDA Chamoyada,1C271C39,efectivo
+S000042,2026-04-18,BEBIDA-CHAMOYADA,2,60.0,120.0,https://github.com/OswaldoCasillas/Ventas/issues/153,efectivo,client:6641ee28-0301-4d8a-8251-801fe65bb56e#2,BEBIDA Chamoyada,1C271C39,efectivo
 S000016,2026-04-18,EXTRA-COBERTURA-CON-TOPPING,4,15.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/123,efectivo,client:781bcf64-bc9d-42f6-aa6a-03de922108d0#4,EXTRA Cobertura con Topping,A9581B56,efectivo
 S000020,2026-04-18,EXTRA-COBERTURA-CON-TOPPING,1,15.0,15.0,https://github.com/OswaldoCasillas/Ventas/issues/127,efectivo,client:72335082-c4ac-4ef0-b4a7-1e1c4992e76e#1,EXTRA Cobertura con Topping,A9581B56,efectivo
 S000017,2026-04-18,HELADO-CLASICO-DOBLE,1,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/124,tarjeta,client:34f90a0f-ed5f-4a2a-b9b5-3ce7a1251045#1,Helado Clasico Doble,BD4D8B7F,tarjeta
@@ -43,6 +44,7 @@ S000028,2026-04-18,PALETA-AGUA-GUAYABA,4,25.0,100.0,https://github.com/OswaldoCa
 S000010,2026-04-18,PALETA-AGUA-LIMON,3,25.0,75.0,https://github.com/OswaldoCasillas/Ventas/issues/116,efectivo,client:4084cb20-ce60-4195-8835-95d21ea62ab7#0,PALETA AGUA Limon,FFFB8948,efectivo
 S000021,2026-04-18,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/130,tarjeta,client:55e50021-4f49-4e16-b667-6dfebb7bd66d#1,PALETA AGUA Limon,FFFB8948,tarjeta
 S000035,2026-04-18,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/146,tarjeta,client:13bc8fcc-90f2-488b-a9a5-ce9c7b60377e#0,PALETA AGUA Limon,FFFB8948,tarjeta
+S000042,2026-04-18,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/153,efectivo,client:6641ee28-0301-4d8a-8251-801fe65bb56e#0,PALETA AGUA Limon,FFFB8948,efectivo
 S000009,2026-04-18,PALETA-AGUA-MANDARINA,2,25.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/114,efectivo,client:71ee5115-0b41-40f6-bfc5-22fc76230177#1,PALETA AGUA Mandarina,3D2B18C9,efectivo
 S000021,2026-04-18,PALETA-AGUA-MARACUYA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/130,tarjeta,client:55e50021-4f49-4e16-b667-6dfebb7bd66d#3,PALETA AGUA Maracuya,4E1A8D0F,tarjeta
 S000016,2026-04-18,PALETA-AGUA-PINA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/123,efectivo,client:781bcf64-bc9d-42f6-aa6a-03de922108d0#3,PALETA AGUA Pina,BFE88BE3,efectivo
@@ -50,6 +52,7 @@ S000013,2026-04-18,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,1,30.0,30.0,https://github.c
 S000029,2026-04-18,PALETA-AGUA-PREMIUM-MANGO-CHAMOY,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/140,efectivo,client:ac26ca43-9481-419e-b5e9-5f8a3ed24b7d#0,PALETA AGUA PREMIUM Mango-Chamoy,331268B8,efectivo
 S000009,2026-04-18,PALETA-AGUA-PREMIUM-PICAFRESA,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/114,efectivo,client:71ee5115-0b41-40f6-bfc5-22fc76230177#2,PALETA AGUA PREMIUM Picafresa,331378B8,efectivo
 S000030,2026-04-18,PALETA-AGUA-PREMIUM-PICAPANDA,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/141,efectivo,client:5e57bd8e-884e-4c27-86f6-5ec65454c3e7#0,PALETA AGUA PREMIUM Picapanda,431378B8,efectivo
+S000042,2026-04-18,PALETA-AGUA-PREMIUM-PICAPANDA,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/153,efectivo,client:6641ee28-0301-4d8a-8251-801fe65bb56e#1,PALETA AGUA PREMIUM Picapanda,431378B8,efectivo
 S000041,2026-04-18,PALETA-AGUA-PREMIUM-PINA-CHAMOY,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/152,efectivo,client:4d70738c-3f54-4891-bd22-a6934560e352#2,PALETA AGUA PREMIUM Pina-Chamoy,BFE99BE3,efectivo
 S000002,2026-04-18,PALETA-AGUA-SANDIA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/106,tarjeta,client:00249f25-0747-4a67-b8e0-c8df2c7b22d6#0,PALETA AGUA Sandia,21BFA58F,tarjeta
 S000010,2026-04-18,PALETA-AGUA-SANDIA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/116,efectivo,client:4084cb20-ce60-4195-8835-95d21ea62ab7#1,PALETA AGUA Sandia,21BFA58F,efectivo
@@ -95,6 +98,7 @@ S000002,2026-04-18,PALETA-MINI-MINI-CREMA,1,8.0,8.0,https://github.com/OswaldoCa
 S000014,2026-04-18,PALETA-MINI-MINI-CREMA,2,8.0,16.0,https://github.com/OswaldoCasillas/Ventas/issues/121,efectivo,client:60c91380-7d19-42d6-b221-4dfcf9c7cf4f#2,PALETA MINI Mini Crema,C371ED40,efectivo
 S000037,2026-04-18,PALETA-MINI-MINI-CREMA,3,8.0,24.0,https://github.com/OswaldoCasillas/Ventas/issues/148,efectivo,client:6d7c183a-2f45-4d83-8cde-104aa63fc20a#1,PALETA MINI Mini Crema,C371ED40,efectivo
 S000038,2026-04-18,PALETA-MINI-MINI-CREMA,7,8.0,56.0,https://github.com/OswaldoCasillas/Ventas/issues/149,tarjeta,client:c7c412f7-df76-4128-8113-5314a14ccaee#1,PALETA MINI Mini Crema,C371ED40,tarjeta
+S000042,2026-04-18,PALETA-MINI-MINI-CREMA,1,8.0,8.0,https://github.com/OswaldoCasillas/Ventas/issues/153,efectivo,client:6641ee28-0301-4d8a-8251-801fe65bb56e#3,PALETA MINI Mini Crema,C371ED40,efectivo
 S000003,2026-04-18,PALETA-MINI-MINI-SIN-AZUCAR,2,10.0,20.0,https://github.com/OswaldoCasillas/Ventas/issues/108,efectivo,client:2fb60e78-24f2-4c28-9127-003bb2c8071c#0,PALETA MINI Sin Azucar,D189174D,efectivo
 S000007,2026-04-18,PALETA-MINI-MINI-SIN-AZUCAR,1,10.0,10.0,https://github.com/OswaldoCasillas/Ventas/issues/112,tarjeta,client:c946c4b7-f0e1-4a5f-9a56-581151debb47#2,PALETA MINI Sin Azucar,D189174D,tarjeta
 S000032,2026-04-18,PALETA-MINI-MINI-SIN-AZUCAR,3,10.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/143,efectivo,client:9cb33026-a90e-4099-8116-10b496122811#1,PALETA MINI Sin Azucar,D189174D,efectivo
