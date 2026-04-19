@@ -403,7 +403,7 @@
     "item": "PALETA-CREMA-ARROZ",
     "descripcion": "PALETA CREMA Arroz",
     "precio": 35.0,
-    "stock": 26
+    "stock": 25
   },
   {
     "product_id": "0F878660",
@@ -732,7 +732,7 @@
     "item": "PALETA-SIN-AZUCAR-FRUTOS-ROJOS",
     "descripcion": "PALETA SIN AZUCAR Ketofrutos",
     "precio": 45.0,
-    "stock": 30
+    "stock": 27
   },
   {
     "product_id": "68DDFR5D",
