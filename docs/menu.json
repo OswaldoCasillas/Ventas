@@ -305,7 +305,11 @@
     "item": "PALETA-AGUA-PREMIUM-MANGO-CHAMOY",
     "descripcion": "PALETA AGUA PREMIUM Mango-Chamoy",
     "precio": 30.0,
+<<<<<<< Updated upstream
     "stock": 35
+=======
+    "stock": 32
+>>>>>>> Stashed changes
   },
   {
     "product_id": "331378B8",
