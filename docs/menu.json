@@ -368,7 +368,7 @@
     "item": "PALETA-AGUA-ZAPOTE",
     "descripcion": "PALETA AGUA Zapote",
     "precio": 25.0,
-    "stock": 13
+    "stock": 12
   },
   {
     "product_id": "BJK64A9B",
@@ -417,7 +417,7 @@
     "item": "PALETA-CREMA-CAPUCHINO",
     "descripcion": "PALETA CREMA Capuchino",
     "precio": 35.0,
-    "stock": 40
+    "stock": 39
   },
   {
     "product_id": "053D0623",
@@ -494,7 +494,7 @@
     "item": "PALETA-CREMA-PAY-DE-LIMON",
     "descripcion": "PALETA CREMA Pay de Limon",
     "precio": 35.0,
-    "stock": 24
+    "stock": 23
   },
   {
     "product_id": "71F27465",
@@ -606,14 +606,14 @@
     "item": "PALETA-CREMA-PREMIUM-SELVA-NEGRA",
     "descripcion": "PALETA CREMA PREMIUM Selva Negra",
     "precio": 40.0,
-    "stock": 37
+    "stock": 36
   },
   {
     "product_id": "3A0CCE07",
     "item": "PALETA-CREMA-PREMIUM-SNICKERS",
     "descripcion": "PALETA CREMA PREMIUM Snickers",
     "precio": 40.0,
-    "stock": 21
+    "stock": 20
   },
   {
     "product_id": "6DF1F449",
