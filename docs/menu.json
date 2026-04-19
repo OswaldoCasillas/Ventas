@@ -39,7 +39,7 @@
     "item": "BEBIDA-CHAMOYADA",
     "descripcion": "BEBIDA Chamoyada",
     "precio": 60.0,
-    "stock": 99999989
+    "stock": 99999987
   },
   {
     "product_id": "F76E2099",
@@ -158,7 +158,7 @@
     "item": "HELADO-NIEVE-DOBLE",
     "descripcion": "Helado Nieve Doble",
     "precio": 45.0,
-    "stock": 99999998
+    "stock": 99999997
   },
   {
     "product_id": "D6B795F8",
@@ -235,7 +235,7 @@
     "item": "PALETA-AGUA-FRESA",
     "descripcion": "PALETA AGUA Fresa",
     "precio": 25.0,
-    "stock": 25
+    "stock": 23
   },
   {
     "product_id": "81CEF3B7",
@@ -375,7 +375,7 @@
     "item": "PALETA-AGUA-TAMARINDO",
     "descripcion": "PALETA AGUA Tamarindo",
     "precio": 25.0,
-    "stock": 33
+    "stock": 32
   },
   {
     "product_id": "27D27C45",
@@ -543,7 +543,7 @@
     "item": "PALETA-CREMA-PREMIUM-FERRERO",
     "descripcion": "PALETA CREMA PREMIUM Ferrero",
     "precio": 40.0,
-    "stock": 23
+    "stock": 22
   },
   {
     "product_id": "2CF84FBA",
@@ -690,7 +690,7 @@
     "item": "PALETA-MINI-MINI-CREMA",
     "descripcion": "PALETA MINI Mini Crema",
     "precio": 8.0,
-    "stock": 99999999984
+    "stock": 99999999985
   },
   {
     "product_id": "D189174D",
