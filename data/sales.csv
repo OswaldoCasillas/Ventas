@@ -189,3 +189,8 @@ S000057,2026-04-19,EXTRA-COBERTURA-CON-TOPPING,1,15.00,15.00,https://github.com/
 S000057,2026-04-19,PALETA-CREMA-PREMIUM-NUEZ,1,40.00,40.00,https://github.com/OswaldoCasillas/Ventas/issues/172,efectivo,client:fea93239-3165-4ab8-9e87-1aea6a423e16#1,
 S000058,2026-04-19,PALETA-CREMA-DURAZNOS-CON-CREMA,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/173,tarjeta,client:2b38a754-56fe-4ea5-a634-52f27457a1ba#0,
 S000058,2026-04-19,AGUA-FRESCA-GRANDE,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/173,tarjeta,client:2b38a754-56fe-4ea5-a634-52f27457a1ba#1,
+S000059,2026-04-19,PALETA-CREMA-PREMIUM-VINO-TINTO-RELLENO,1,40.00,40.00,https://github.com/OswaldoCasillas/Ventas/issues/174,tarjeta,client:b9c01d2d-dbbf-4f8a-aa2d-62732b3286cb#0,
+S000059,2026-04-19,PALETA-CREMA-PREMIUM-PINON,1,40.00,40.00,https://github.com/OswaldoCasillas/Ventas/issues/174,tarjeta,client:b9c01d2d-dbbf-4f8a-aa2d-62732b3286cb#1,
+S000059,2026-04-19,PALETA-SIN-AZUCAR-PINON,1,45.00,45.00,https://github.com/OswaldoCasillas/Ventas/issues/174,tarjeta,client:b9c01d2d-dbbf-4f8a-aa2d-62732b3286cb#2,
+S000059,2026-04-19,PALETA-SIN-AZUCAR-CAJETA,1,45.00,45.00,https://github.com/OswaldoCasillas/Ventas/issues/174,tarjeta,client:b9c01d2d-dbbf-4f8a-aa2d-62732b3286cb#3,
+S000059,2026-04-19,HELADO-NIEVE-DOBLE,2,45.00,90.00,https://github.com/OswaldoCasillas/Ventas/issues/174,tarjeta,client:b9c01d2d-dbbf-4f8a-aa2d-62732b3286cb#4,

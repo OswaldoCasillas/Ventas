@@ -137,7 +137,7 @@
     "item": "HELADO-NIEVE-DOBLE",
     "descripcion": "Helado Nieve Doble",
     "precio": 45.0,
-    "stock": 9999999
+    "stock": 9999997
   },
   {
     "product_id": "D6B795F8",
@@ -557,7 +557,7 @@
     "item": "PALETA-CREMA-PREMIUM-PINON",
     "descripcion": "PALETA CREMA PREMIUM Pinon",
     "precio": 40.0,
-    "stock": 25
+    "stock": 24
   },
   {
     "product_id": "E4F287A9",
@@ -620,7 +620,7 @@
     "item": "PALETA-CREMA-PREMIUM-VINO-TINTO-RELLENO",
     "descripcion": "PALETA CREMA PREMIUM Vino Tinto",
     "precio": 40.0,
-    "stock": 11
+    "stock": 10
   },
   {
     "product_id": "ACF8DA00",
@@ -690,7 +690,7 @@
     "item": "PALETA-SIN-AZUCAR-CAJETA",
     "descripcion": "PALETA SIN AZUCAR Cajeta",
     "precio": 45.0,
-    "stock": 45
+    "stock": 44
   },
   {
     "product_id": "68DJ808D",
@@ -809,7 +809,7 @@
     "item": "PALETA-SIN-AZUCAR-PINON",
     "descripcion": "PALETA SIN AZUCAR Pinon",
     "precio": 45.0,
-    "stock": 33
+    "stock": 32
   },
   {
     "product_id": "66B31F3E",
