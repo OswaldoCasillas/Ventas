@@ -1,8 +1,9 @@
 txn_id,fecha,item,cantidad,precio_unit,importe,issue,metodo_pago,source_id,descripcion
 S000001,2026-04-18,HELADO-CLASICO-SENCILLO,3,35.00,105.00,https://github.com/OswaldoCasillas/Ventas/issues/105,tarjeta,client:600e8a66-0582-4084-891b-ebfd838cabf4#0,
-<<<<<<< Updated upstream
+<<<<<<< Updated upstream,,,,,,,,,
 S000002,2026-04-18,PALETA-AGUA-SANDIA,1,25.00,25.00,https://github.com/OswaldoCasillas/Ventas/issues/106,tarjeta,client:00249f25-0747-4a67-b8e0-c8df2c7b22d6#0,
 S000002,2026-04-18,HELADO-GOURMET-SENCILLO,1,40.00,40.00,https://github.com/OswaldoCasillas/Ventas/issues/106,tarjeta,client:00249f25-0747-4a67-b8e0-c8df2c7b22d6#1,
-=======
+=======,,,,,,,,,
 S000002,2026-04-18,PALETA-MINI-MINI-CREMA,1,8.00,8.00,https://github.com/OswaldoCasillas/Ventas/issues/107,efectivo,client:5d755750-b731-4489-be59-1109fff6556b#0,
->>>>>>> Stashed changes
+>>>>>>> Stashed changes,,,,,,,,,
+S000003,2026-04-18,PALETA-MINI-MINI-SIN-AZUCAR,2,10.00,20.00,https://github.com/OswaldoCasillas/Ventas/issues/108,efectivo,client:2fb60e78-24f2-4c28-9127-003bb2c8071c#0,
