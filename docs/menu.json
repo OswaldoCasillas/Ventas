@@ -151,7 +151,7 @@
     "item": "HELADO-GOURMET-SENCILLO",
     "descripcion": "Helado Gourmet Sencillo",
     "precio": 40.0,
-    "stock": 99999986
+    "stock": 99999984
   },
   {
     "product_id": "3021BE59",
@@ -459,7 +459,7 @@
     "item": "PALETA-CREMA-COCO",
     "descripcion": "PALETA CREMA Coco",
     "precio": 35.0,
-    "stock": 54
+    "stock": 53
   },
   {
     "product_id": "C8A28FAC",
