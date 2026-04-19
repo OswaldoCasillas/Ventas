@@ -130,7 +130,7 @@
     "item": "HELADO-GOURMET-SENCILLO",
     "descripcion": "Helado Gourmet Sencillo",
     "precio": 40.0,
-    "stock": 99999997
+    "stock": 99999996
   },
   {
     "product_id": "3021BE59",
@@ -459,14 +459,14 @@
     "item": "PALETA-CREMA-FRESA-CREMA",
     "descripcion": "PALETA CREMA Fresa Crema",
     "precio": 35.0,
-    "stock": 29
+    "stock": 28
   },
   {
     "product_id": "07A7670E",
     "item": "PALETA-CREMA-MAMEY",
     "descripcion": "PALETA CREMA Mamey",
     "precio": 35.0,
-    "stock": 23
+    "stock": 22
   },
   {
     "product_id": "07A7679E",
@@ -655,7 +655,7 @@
     "item": "PALETA-CREMA-VAINILLA",
     "descripcion": "PALETA CREMA Vainilla",
     "precio": 35.0,
-    "stock": 42
+    "stock": 41
   },
   {
     "product_id": "C371ED50",
