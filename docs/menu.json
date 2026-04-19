@@ -494,7 +494,7 @@
     "item": "PALETA-CREMA-MAZAPAN",
     "descripcion": "PALETA CREMA Mazapan",
     "precio": 35.0,
-    "stock": 27
+    "stock": 26
   },
   {
     "product_id": "97A7679E",
@@ -620,14 +620,14 @@
     "item": "PALETA-CREMA-PREMIUM-SELVA-BLANCA",
     "descripcion": "PALETA CREMA PREMIUM Selva Blanca",
     "precio": 40.0,
-    "stock": 25
+    "stock": 24
   },
   {
     "product_id": "05833CE3",
     "item": "PALETA-CREMA-PREMIUM-SELVA-NEGRA",
     "descripcion": "PALETA CREMA PREMIUM Selva Negra",
     "precio": 40.0,
-    "stock": 50
+    "stock": 49
   },
   {
     "product_id": "3A0CCE07",

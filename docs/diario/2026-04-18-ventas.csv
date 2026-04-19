@@ -61,6 +61,7 @@ S000016,2026-04-18,PALETA-CREMA-FRESA-CREMA,1,35.0,35.0,https://github.com/Oswal
 S000009,2026-04-18,PALETA-CREMA-MAMEY,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/114,efectivo,client:71ee5115-0b41-40f6-bfc5-22fc76230177#0,PALETA CREMA Mamey,07A7670E,efectivo
 S000011,2026-04-18,PALETA-CREMA-MAMEY,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/118,efectivo,client:37d0a918-8902-48ff-96b9-0ebe4ec746f8#0,PALETA CREMA Mamey,07A7670E,efectivo
 S000034,2026-04-18,PALETA-CREMA-MAMEY,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/145,efectivo,client:387b93c0-6642-42f4-b5db-dcd468a3d645#1,PALETA CREMA Mamey,07A7670E,efectivo
+S000036,2026-04-18,PALETA-CREMA-MAZAPAN,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/147,tarjeta,client:fee67117-ea9e-4423-8131-d2cdf9d6c8d5#2,PALETA CREMA Mazapan,07A7679E,tarjeta
 S000034,2026-04-18,PALETA-CREMA-OREO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/145,efectivo,client:387b93c0-6642-42f4-b5db-dcd468a3d645#2,PALETA CREMA Oreo,02298874,efectivo
 S000006,2026-04-18,PALETA-CREMA-PREMIUM-BAILEYS,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/111,efectivo,client:56833fab-f5a6-44b9-ae13-54ec6d3939ba#1,PALETA CREMA PREMIUM Baileys,71F27465,efectivo
 S000004,2026-04-18,PALETA-CREMA-PREMIUM-CAJETA,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/109,efectivo,client:4e4e374f-a18e-4c57-af82-9465659308e5#3,PALETA CREMA PREMIUM Cajeta,6AD82AE1,efectivo
@@ -69,6 +70,8 @@ S000004,2026-04-18,PALETA-CREMA-PREMIUM-PISTACHE,1,40.0,40.0,https://github.com/
 S000016,2026-04-18,PALETA-CREMA-PREMIUM-PISTACHE,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/123,efectivo,client:781bcf64-bc9d-42f6-aa6a-03de922108d0#1,PALETA CREMA PREMIUM Pistache,E4F287A9,efectivo
 S000033,2026-04-18,PALETA-CREMA-PREMIUM-QUESO-CON-ZARZAMORA,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/144,efectivo,client:0cad00f4-c366-499c-812f-23dcde48a1bc#2,PALETA CREMA PREMIUM Queso con Zarzamora,000CCCFD,efectivo
 S000033,2026-04-18,PALETA-CREMA-PREMIUM-SELVA-BLANCA,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/144,efectivo,client:0cad00f4-c366-499c-812f-23dcde48a1bc#1,PALETA CREMA PREMIUM Selva Blanca,05833dE3,efectivo
+S000036,2026-04-18,PALETA-CREMA-PREMIUM-SELVA-BLANCA,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/147,tarjeta,client:fee67117-ea9e-4423-8131-d2cdf9d6c8d5#1,PALETA CREMA PREMIUM Selva Blanca,05833dE3,tarjeta
+S000036,2026-04-18,PALETA-CREMA-PREMIUM-SELVA-NEGRA,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/147,tarjeta,client:fee67117-ea9e-4423-8131-d2cdf9d6c8d5#0,PALETA CREMA PREMIUM Selva Negra,05833CE3,tarjeta
 S000004,2026-04-18,PALETA-CREMA-PREMIUM-SNICKERS,2,40.0,80.0,https://github.com/OswaldoCasillas/Ventas/issues/109,efectivo,client:4e4e374f-a18e-4c57-af82-9465659308e5#0,PALETA CREMA PREMIUM Snickers,3A0CCE07,efectivo
 S000011,2026-04-18,PALETA-CREMA-VAINILLA,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/118,efectivo,client:37d0a918-8902-48ff-96b9-0ebe4ec746f8#1,PALETA CREMA Vainilla,F6AEC245,efectivo
 S000007,2026-04-18,PALETA-MINI-MINI-AGUA,1,6.0,6.0,https://github.com/OswaldoCasillas/Ventas/issues/112,tarjeta,client:c946c4b7-f0e1-4a5f-9a56-581151debb47#0,PALETA MINI Mini Alcohol,C371ED50,tarjeta
