@@ -16,8 +16,12 @@ S000011,2026-04-18,HELADO-GOURMET-SENCILLO,1,40.0,40.0,https://github.com/Oswald
 S000022,2026-04-18,HELADO-GOURMET-SENCILLO,5,40.0,200.0,https://github.com/OswaldoCasillas/Ventas/issues/131,efectivo,client:f053e2e4-4b6b-4048-9695-a099bb519315#0,Helado Gourmet Sencillo,97EEAB91,efectivo
 <<<<<<< Updated upstream
 S000023,2026-04-18,HELADO-GOURMET-SENCILLO,2,40.0,80.0,https://github.com/OswaldoCasillas/Ventas/issues/132,efectivo,client:97f671fa-a0d9-4fa4-97c0-f67ccad14f70#0,Helado Gourmet Sencillo,97EEAB91,efectivo
+<<<<<<< Updated upstream
 =======
 S000023,2026-04-18,HELADO-NIEVE-DOBLE,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/133,efectivo,client:5bd0e723-3650-470d-9399-a5788bd6a2d9#0,Helado Nieve Doble,3021BE59,efectivo
+>>>>>>> Stashed changes
+=======
+S000024,2026-04-18,HELADO-NIEVE-MEDIO-LITRO,1,75.0,75.0,https://github.com/OswaldoCasillas/Ventas/issues/134,efectivo,client:85d7964d-da7c-43ab-bb11-79b549b8432c#0,Helado Nieve Medio Litro,7081D5FB,efectivo
 >>>>>>> Stashed changes
 S000020,2026-04-18,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/128,efectivo,client:04f99846-fb53-4a1f-a4f3-767cc9ebfcf3#0,Helado Nieve Sencillo,641AA19F,efectivo
 S000020,2026-04-18,HELADO-NIEVE-SENCILLO,2,25.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/129,efectivo,client:f337a01c-8ac3-4c6d-b0f6-56155c3694db#0,Helado Nieve Sencillo,641AA19F,efectivo
