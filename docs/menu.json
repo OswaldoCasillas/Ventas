@@ -32,7 +32,7 @@
     "item": "AGUA-FRESCA-GRANDE",
     "descripcion": "AGUA FRESCA Grande",
     "precio": 35.0,
-    "stock": 9999993
+    "stock": 9999991
   },
   {
     "product_id": "1C271C39",
@@ -123,7 +123,7 @@
     "item": "HELADO-CLASICO-SENCILLO",
     "descripcion": "Helado Clasico Sencillo",
     "precio": 35.0,
-    "stock": 99999992
+    "stock": 99999991
   },
   {
     "product_id": "7888486E",
@@ -690,7 +690,7 @@
     "item": "PALETA-MINI-MINI-CREMA",
     "descripcion": "PALETA MINI Mini Crema",
     "precio": 8.0,
-    "stock": 99999999985
+    "stock": 99999999984
   },
   {
     "product_id": "D189174D",

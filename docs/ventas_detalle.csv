@@ -5,6 +5,7 @@ S000010,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasi
 S000027,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/137,efectivo,client:21a2fcf3-136f-4c18-8719-c67558a94bab#1,AGUA FRESCA Grande,9C1B04E4,efectivo
 S000030,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/141,efectivo,client:5e57bd8e-884e-4c27-86f6-5ec65454c3e7#2,AGUA FRESCA Grande,9C1B04E4,efectivo
 S000047,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/158,efectivo,client:cdc9929c-e9ff-443c-b200-eaf5e8e9e9c9#2,AGUA FRESCA Grande,9C1B04E4,efectivo
+S000049,2026-04-18,AGUA-FRESCA-GRANDE,2,35.0,70.0,https://github.com/OswaldoCasillas/Ventas/issues/160,efectivo,client:a5c5da8b-e7ed-4dfa-85d3-fbbb6fb4e1ed#0,AGUA FRESCA Grande,9C1B04E4,efectivo
 S000006,2026-04-18,BEBIDA-CHAMOYADA,2,60.0,120.0,https://github.com/OswaldoCasillas/Ventas/issues/111,efectivo,client:56833fab-f5a6-44b9-ae13-54ec6d3939ba#0,BEBIDA Chamoyada,1C271C39,efectivo
 S000027,2026-04-18,BEBIDA-CHAMOYADA,1,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/137,efectivo,client:21a2fcf3-136f-4c18-8719-c67558a94bab#0,BEBIDA Chamoyada,1C271C39,efectivo
 S000031,2026-04-18,BEBIDA-CHAMOYADA,2,60.0,120.0,https://github.com/OswaldoCasillas/Ventas/issues/142,efectivo,client:52c52d35-f816-4227-ba38-af59ae217ed1#0,BEBIDA Chamoyada,1C271C39,efectivo
@@ -19,6 +20,7 @@ S000001,2026-04-18,HELADO-CLASICO-SENCILLO,3,35.0,105.0,https://github.com/Oswal
 S000017,2026-04-18,HELADO-CLASICO-SENCILLO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/124,tarjeta,client:34f90a0f-ed5f-4a2a-b9b5-3ce7a1251045#0,Helado Clasico Sencillo,9D68612D,tarjeta
 S000037,2026-04-18,HELADO-CLASICO-SENCILLO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/148,efectivo,client:6d7c183a-2f45-4d83-8cde-104aa63fc20a#0,Helado Clasico Sencillo,9D68612D,efectivo
 S000045,2026-04-18,HELADO-CLASICO-SENCILLO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/156,efectivo,client:a134ed07-5b29-43b0-bc77-9916c498ac59#1,Helado Clasico Sencillo,9D68612D,efectivo
+S000049,2026-04-18,HELADO-CLASICO-SENCILLO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/160,efectivo,client:a5c5da8b-e7ed-4dfa-85d3-fbbb6fb4e1ed#1,Helado Clasico Sencillo,9D68612D,efectivo
 S000018,2026-04-18,HELADO-GOURMET-DOBLE,2,70.0,140.0,https://github.com/OswaldoCasillas/Ventas/issues/125,efectivo,client:aefec092-477f-43f0-84e9-7a07b39aa7aa#1,Helado Gourmet Doble,7888486E,efectivo
 S000019,2026-04-18,HELADO-GOURMET-MEDIO-LITRO,1,90.0,90.0,https://github.com/OswaldoCasillas/Ventas/issues/126,efectivo,client:64095a94-cb52-4857-8d2c-bc543b967f89#0,Helado Gourmet Medio Litro,2682D29D,efectivo
 S000002,2026-04-18,HELADO-GOURMET-SENCILLO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/106,tarjeta,client:00249f25-0747-4a67-b8e0-c8df2c7b22d6#1,Helado Gourmet Sencillo,97EEAB91,tarjeta
@@ -110,6 +112,7 @@ S000014,2026-04-18,PALETA-MINI-MINI-CREMA,2,8.0,16.0,https://github.com/OswaldoC
 S000037,2026-04-18,PALETA-MINI-MINI-CREMA,3,8.0,24.0,https://github.com/OswaldoCasillas/Ventas/issues/148,efectivo,client:6d7c183a-2f45-4d83-8cde-104aa63fc20a#1,PALETA MINI Mini Crema,C371ED40,efectivo
 S000038,2026-04-18,PALETA-MINI-MINI-CREMA,7,8.0,56.0,https://github.com/OswaldoCasillas/Ventas/issues/149,tarjeta,client:c7c412f7-df76-4128-8113-5314a14ccaee#1,PALETA MINI Mini Crema,C371ED40,tarjeta
 S000042,2026-04-18,PALETA-MINI-MINI-CREMA,1,8.0,8.0,https://github.com/OswaldoCasillas/Ventas/issues/153,efectivo,client:6641ee28-0301-4d8a-8251-801fe65bb56e#3,PALETA MINI Mini Crema,C371ED40,efectivo
+S000049,2026-04-18,PALETA-MINI-MINI-CREMA,1,8.0,8.0,https://github.com/OswaldoCasillas/Ventas/issues/160,efectivo,client:a5c5da8b-e7ed-4dfa-85d3-fbbb6fb4e1ed#2,PALETA MINI Mini Crema,C371ED40,efectivo
 S000003,2026-04-18,PALETA-MINI-MINI-SIN-AZUCAR,2,10.0,20.0,https://github.com/OswaldoCasillas/Ventas/issues/108,efectivo,client:2fb60e78-24f2-4c28-9127-003bb2c8071c#0,PALETA MINI Sin Azucar,D189174D,efectivo
 S000007,2026-04-18,PALETA-MINI-MINI-SIN-AZUCAR,1,10.0,10.0,https://github.com/OswaldoCasillas/Ventas/issues/112,tarjeta,client:c946c4b7-f0e1-4a5f-9a56-581151debb47#2,PALETA MINI Sin Azucar,D189174D,tarjeta
 S000032,2026-04-18,PALETA-MINI-MINI-SIN-AZUCAR,3,10.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/143,efectivo,client:9cb33026-a90e-4099-8116-10b496122811#1,PALETA MINI Sin Azucar,D189174D,efectivo
