@@ -508,7 +508,7 @@
     "item": "PALETA-CREMA-PREMIUM-CAJETA",
     "descripcion": "PALETA CREMA PREMIUM Cajeta",
     "precio": 40.0,
-    "stock": 41
+    "stock": 40
   },
   {
     "product_id": "884118CA",
@@ -522,7 +522,7 @@
     "item": "PALETA-CREMA-PREMIUM-FERRERO",
     "descripcion": "PALETA CREMA PREMIUM Ferrero",
     "precio": 40.0,
-    "stock": 24
+    "stock": 23
   },
   {
     "product_id": "2CF84FBA",
@@ -564,7 +564,7 @@
     "item": "PALETA-CREMA-PREMIUM-PISTACHE",
     "descripcion": "PALETA CREMA PREMIUM Pistache",
     "precio": 40.0,
-    "stock": 36
+    "stock": 35
   },
   {
     "product_id": "02298024",
@@ -613,7 +613,7 @@
     "item": "PALETA-CREMA-PREMIUM-SNICKERS",
     "descripcion": "PALETA CREMA PREMIUM Snickers",
     "precio": 40.0,
-    "stock": 45
+    "stock": 43
   },
   {
     "product_id": "6DF1F449",
