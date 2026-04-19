@@ -37,8 +37,10 @@ S000022,2026-04-18,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoC
 S000045,2026-04-18,HELADO-NIEVE-SENCILLO,2,25.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/156,efectivo,client:a134ed07-5b29-43b0-bc77-9916c498ac59#2,Helado Nieve Sencillo,641AA19F,efectivo
 S000044,2026-04-18,HELADO-SIN-AZUCAR-DOBLE,1,75.0,75.0,https://github.com/OswaldoCasillas/Ventas/issues/155,tarjeta,client:78a7c394-0d8b-498a-bb45-bc35e458c990#1,Helado Sin Azucar Doble,93BBD957,tarjeta
 S000019,2026-04-18,HELADO-SIN-AZUCAR-MEDIO-LITRO,3,95.0,285.0,https://github.com/OswaldoCasillas/Ventas/issues/126,efectivo,client:64095a94-cb52-4857-8d2c-bc543b967f89#1,Helado Sin Azucar Medio Litro,DA2364A6,efectivo
+S000048,2026-04-18,HELADO-SIN-AZUCAR-MEDIO-LITRO,2,95.0,190.0,https://github.com/OswaldoCasillas/Ventas/issues/159,tarjeta,client:c5ee8ea1-847f-45e0-8309-a097624e45bd#1,Helado Sin Azucar Medio Litro,DA2364A6,tarjeta
 S000020,2026-04-18,HELADO-SIN-AZUCAR-SENCILLO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/127,efectivo,client:72335082-c4ac-4ef0-b4a7-1e1c4992e76e#2,Helado Sin Azucar Sencillo,9E69701A,efectivo
 S000023,2026-04-18,HELADO-SIN-AZUCAR-SENCILLO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/132,efectivo,client:97f671fa-a0d9-4fa4-97c0-f67ccad14f70#1,Helado Sin Azucar Sencillo,9E69701A,efectivo
+S000048,2026-04-18,HELADO-SIN-AZUCAR-SENCILLO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/159,tarjeta,client:c5ee8ea1-847f-45e0-8309-a097624e45bd#2,Helado Sin Azucar Sencillo,9E69701A,tarjeta
 S000028,2026-04-18,MALTEADA-CLASICA,1,65.0,65.0,https://github.com/OswaldoCasillas/Ventas/issues/139,efectivo,client:992b0ad3-dce7-4f56-9c70-068e55b1c5ad#0,MALTEADA Clasica,D7361A46,efectivo
 S000021,2026-04-18,PALETA-AGUA-FRESA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/130,tarjeta,client:55e50021-4f49-4e16-b667-6dfebb7bd66d#4,PALETA AGUA Fresa,6D8A2D50,tarjeta
 S000040,2026-04-18,PALETA-AGUA-FRESA,2,25.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/151,efectivo,client:e6f082ab-aac6-48ba-84f0-806df9e41bbe#1,PALETA AGUA Fresa,6D8A2D50,efectivo
@@ -112,6 +114,7 @@ S000003,2026-04-18,PALETA-MINI-MINI-SIN-AZUCAR,2,10.0,20.0,https://github.com/Os
 S000007,2026-04-18,PALETA-MINI-MINI-SIN-AZUCAR,1,10.0,10.0,https://github.com/OswaldoCasillas/Ventas/issues/112,tarjeta,client:c946c4b7-f0e1-4a5f-9a56-581151debb47#2,PALETA MINI Sin Azucar,D189174D,tarjeta
 S000032,2026-04-18,PALETA-MINI-MINI-SIN-AZUCAR,3,10.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/143,efectivo,client:9cb33026-a90e-4099-8116-10b496122811#1,PALETA MINI Sin Azucar,D189174D,efectivo
 S000043,2026-04-18,PALETA-SIN-AZUCAR-CAJETA,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/154,tarjeta,client:06a7b2d9-0553-4bbb-8528-c8e39a283180#1,PALETA SIN AZUCAR Cajeta,68DJ885D,tarjeta
+S000048,2026-04-18,PALETA-SIN-AZUCAR-CHOCOLATE-CON-FRESA,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/159,tarjeta,client:c5ee8ea1-847f-45e0-8309-a097624e45bd#0,PALETA Chocofresa,03400F0A,tarjeta
 S000015,2026-04-18,PALETA-SIN-AZUCAR-COCO,2,45.0,90.0,https://github.com/OswaldoCasillas/Ventas/issues/122,efectivo,client:e7156d36-4902-4cc1-8f5d-a14105bab1ed#0,PALETA SIN AZUCAR Cocoketo,68D4185D,efectivo
 S000033,2026-04-18,PALETA-SIN-AZUCAR-FERRERO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/144,efectivo,client:0cad00f4-c366-499c-812f-23dcde48a1bc#0,PALETA SIN AZUCAR Ferreroketo,0935F20F,efectivo
 S000044,2026-04-18,PALETA-SIN-AZUCAR-FERRERO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/155,tarjeta,client:78a7c394-0d8b-498a-bb45-bc35e458c990#0,PALETA SIN AZUCAR Ferreroketo,0935F20F,tarjeta

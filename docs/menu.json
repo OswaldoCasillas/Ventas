@@ -200,14 +200,14 @@
     "item": "HELADO-SIN-AZUCAR-MEDIO-LITRO",
     "descripcion": "Helado Sin Azucar Medio Litro",
     "precio": 95.0,
-    "stock": 99999996
+    "stock": 99999994
   },
   {
     "product_id": "9E69701A",
     "item": "HELADO-SIN-AZUCAR-SENCILLO",
     "descripcion": "Helado Sin Azucar Sencillo",
     "precio": 45.0,
-    "stock": 99999995
+    "stock": 99999994
   },
   {
     "product_id": "D7361A46",
@@ -725,7 +725,7 @@
     "item": "PALETA-SIN-AZUCAR-CHOCOLATE-CON-FRESA",
     "descripcion": "PALETA Chocofresa",
     "precio": 45.0,
-    "stock": 25
+    "stock": 24
   },
   {
     "product_id": "68D4185D",
