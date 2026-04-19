@@ -81,7 +81,7 @@
     "item": "HELADO-CLASICO-DOBLE",
     "descripcion": "Helado Clasico Doble",
     "precio": 60.0,
-    "stock": 99999995
+    "stock": 99999994
   },
   {
     "product_id": "7968996E",
@@ -109,7 +109,7 @@
     "item": "HELADO-GOURMET-DOBLE",
     "descripcion": "Helado Gourmet Doble",
     "precio": 70.0,
-    "stock": 99999999
+    "stock": 99999997
   },
   {
     "product_id": "28C3B90F",
@@ -823,7 +823,7 @@
     "item": "PALETAS-PERRO",
     "descripcion": "Paletas para Perro",
     "precio": 30.0,
-    "stock": 49
+    "stock": 48
   },
   {
     "product_id": "",
