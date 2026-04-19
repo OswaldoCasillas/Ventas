@@ -123,7 +123,7 @@
     "item": "HELADO-GOURMET-MEDIO-LITRO",
     "descripcion": "Helado Gourmet Medio Litro",
     "precio": 90.0,
-    "stock": 99999999
+    "stock": 99999998
   },
   {
     "product_id": "97EEAB91",
@@ -179,7 +179,7 @@
     "item": "HELADO-SIN-AZUCAR-MEDIO-LITRO",
     "descripcion": "Helado Sin Azucar Medio Litro",
     "precio": 95.0,
-    "stock": 99999999
+    "stock": 99999996
   },
   {
     "product_id": "9E69701A",
