@@ -1,19 +1,7 @@
 {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-  "generated_at": "2026-04-19T03:45:46.632844+00:00",
-  "general_items": 120,
-  "general_stock_total": 307330002755,
-=======
-  "generated_at": "2026-04-19T03:45:53.556029+00:00",
-  "general_items": 120,
-  "general_stock_total": 307330002757,
->>>>>>> Stashed changes
-=======
-  "generated_at": "2026-04-19T03:46:02.605884+00:00",
-  "general_items": 120,
-  "general_stock_total": 307330002756,
->>>>>>> Stashed changes
+  "generated_at": "2026-04-19T03:47:24.560106+00:00",
+  "general_items": 123,
+  "general_stock_total": 307330002748,
   "mercado_items": 93,
   "mercado_stock_total": 301400000164
 }

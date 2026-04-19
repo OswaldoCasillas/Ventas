@@ -1,5 +1,26 @@
 [
   {
+    "product_id": "",
+    "item": "<<<<<<< Updated upstream",
+    "descripcion": "",
+    "precio": "",
+    "stock": 0
+  },
+  {
+    "product_id": "",
+    "item": "=======",
+    "descripcion": "",
+    "precio": "",
+    "stock": 0
+  },
+  {
+    "product_id": "",
+    "item": ">>>>>>> Stashed changes",
+    "descripcion": "",
+    "precio": "",
+    "stock": 0
+  },
+  {
     "product_id": "74CEF70C",
     "item": "AGUA-FRESCA-CHICA",
     "descripcion": "AGUA FRESCA Chica",
@@ -158,11 +179,7 @@
     "item": "HELADO-NIEVE-SENCILLO",
     "descripcion": "Helado Nieve Sencillo",
     "precio": 25.0,
-<<<<<<< Updated upstream
-    "stock": 99999996
-=======
     "stock": 99999995
->>>>>>> Stashed changes
   },
   {
     "product_id": "93BBD957",
@@ -218,7 +235,7 @@
     "item": "PALETA-AGUA-FRESA",
     "descripcion": "PALETA AGUA Fresa",
     "precio": 25.0,
-    "stock": 28
+    "stock": 27
   },
   {
     "product_id": "81CEF3B7",
@@ -239,7 +256,7 @@
     "item": "PALETA-AGUA-GUAYABA",
     "descripcion": "PALETA AGUA Guayaba",
     "precio": 25.0,
-    "stock": 33
+    "stock": 32
   },
   {
     "product_id": "FRTO8948",
@@ -253,7 +270,7 @@
     "item": "PALETA-AGUA-LIMON",
     "descripcion": "PALETA AGUA Limon",
     "precio": 25.0,
-    "stock": 57
+    "stock": 56
   },
   {
     "product_id": "3D2B18C9",
@@ -274,7 +291,7 @@
     "item": "PALETA-AGUA-MARACUYA",
     "descripcion": "PALETA AGUA Maracuya",
     "precio": 25.0,
-    "stock": 61
+    "stock": 60
   },
   {
     "product_id": "5A40D3E3",
@@ -358,7 +375,7 @@
     "item": "PALETA-AGUA-TAMARINDO",
     "descripcion": "PALETA AGUA Tamarindo",
     "precio": 25.0,
-    "stock": 34
+    "stock": 33
   },
   {
     "product_id": "27D27C45",

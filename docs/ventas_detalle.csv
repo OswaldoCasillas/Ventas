@@ -13,21 +13,23 @@ S000018,2026-04-18,HELADO-GOURMET-DOBLE,2,70.0,140.0,https://github.com/OswaldoC
 S000019,2026-04-18,HELADO-GOURMET-MEDIO-LITRO,1,90.0,90.0,https://github.com/OswaldoCasillas/Ventas/issues/126,efectivo,client:64095a94-cb52-4857-8d2c-bc543b967f89#0,Helado Gourmet Medio Litro,2682D29D,efectivo
 S000002,2026-04-18,HELADO-GOURMET-SENCILLO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/106,tarjeta,client:00249f25-0747-4a67-b8e0-c8df2c7b22d6#1,Helado Gourmet Sencillo,97EEAB91,tarjeta
 S000011,2026-04-18,HELADO-GOURMET-SENCILLO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/118,efectivo,client:37d0a918-8902-48ff-96b9-0ebe4ec746f8#3,Helado Gourmet Sencillo,97EEAB91,efectivo
-<<<<<<< Updated upstream
 S000020,2026-04-18,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/128,efectivo,client:04f99846-fb53-4a1f-a4f3-767cc9ebfcf3#0,Helado Nieve Sencillo,641AA19F,efectivo
-=======
 S000020,2026-04-18,HELADO-NIEVE-SENCILLO,2,25.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/129,efectivo,client:f337a01c-8ac3-4c6d-b0f6-56155c3694db#0,Helado Nieve Sencillo,641AA19F,efectivo
->>>>>>> Stashed changes
 S000019,2026-04-18,HELADO-SIN-AZUCAR-MEDIO-LITRO,3,95.0,285.0,https://github.com/OswaldoCasillas/Ventas/issues/126,efectivo,client:64095a94-cb52-4857-8d2c-bc543b967f89#1,Helado Sin Azucar Medio Litro,DA2364A6,efectivo
 S000020,2026-04-18,HELADO-SIN-AZUCAR-SENCILLO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/127,efectivo,client:72335082-c4ac-4ef0-b4a7-1e1c4992e76e#2,Helado Sin Azucar Sencillo,9E69701A,efectivo
+S000021,2026-04-18,PALETA-AGUA-FRESA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/130,tarjeta,client:55e50021-4f49-4e16-b667-6dfebb7bd66d#4,PALETA AGUA Fresa,6D8A2D50,tarjeta
 S000015,2026-04-18,PALETA-AGUA-GUANABANA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/122,efectivo,client:e7156d36-4902-4cc1-8f5d-a14105bab1ed#2,PALETA AGUA Guanabana,K2F6E9F9,efectivo
+S000021,2026-04-18,PALETA-AGUA-GUAYABA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/130,tarjeta,client:55e50021-4f49-4e16-b667-6dfebb7bd66d#0,PALETA AGUA Guayaba,F2E6E9F9,tarjeta
 S000010,2026-04-18,PALETA-AGUA-LIMON,3,25.0,75.0,https://github.com/OswaldoCasillas/Ventas/issues/116,efectivo,client:4084cb20-ce60-4195-8835-95d21ea62ab7#0,PALETA AGUA Limon,FFFB8948,efectivo
+S000021,2026-04-18,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/130,tarjeta,client:55e50021-4f49-4e16-b667-6dfebb7bd66d#1,PALETA AGUA Limon,FFFB8948,tarjeta
 S000009,2026-04-18,PALETA-AGUA-MANDARINA,2,25.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/114,efectivo,client:71ee5115-0b41-40f6-bfc5-22fc76230177#1,PALETA AGUA Mandarina,3D2B18C9,efectivo
+S000021,2026-04-18,PALETA-AGUA-MARACUYA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/130,tarjeta,client:55e50021-4f49-4e16-b667-6dfebb7bd66d#3,PALETA AGUA Maracuya,4E1A8D0F,tarjeta
 S000016,2026-04-18,PALETA-AGUA-PINA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/123,efectivo,client:781bcf64-bc9d-42f6-aa6a-03de922108d0#3,PALETA AGUA Pina,BFE88BE3,efectivo
 S000013,2026-04-18,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/120,efectivo,client:4f5ddaa8-f02c-42b6-bbf4-2bb29f8b322f#0,PALETA AGUA PREMIUM Frutos Rojos,746FF175,efectivo
 S000009,2026-04-18,PALETA-AGUA-PREMIUM-PICAFRESA,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/114,efectivo,client:71ee5115-0b41-40f6-bfc5-22fc76230177#2,PALETA AGUA PREMIUM Picafresa,331378B8,efectivo
 S000002,2026-04-18,PALETA-AGUA-SANDIA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/106,tarjeta,client:00249f25-0747-4a67-b8e0-c8df2c7b22d6#0,PALETA AGUA Sandia,21BFA58F,tarjeta
 S000010,2026-04-18,PALETA-AGUA-SANDIA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/116,efectivo,client:4084cb20-ce60-4195-8835-95d21ea62ab7#1,PALETA AGUA Sandia,21BFA58F,efectivo
+S000021,2026-04-18,PALETA-AGUA-TAMARINDO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/130,tarjeta,client:55e50021-4f49-4e16-b667-6dfebb7bd66d#2,PALETA AGUA Tamarindo,98C5FF9E,tarjeta
 S000008,2026-04-18,PALETA-CREMA-ARROZ,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/113,tarjeta,client:8384de7b-c486-4bfd-8741-79fc31c507c8#1,PALETA CREMA Arroz,D24145B9,tarjeta
 S000012,2026-04-18,PALETA-CREMA-COCO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/119,efectivo,client:3a926586-deef-4a01-9ed2-cfb335748028#0,PALETA CREMA Coco,7B6778AE,efectivo
 S000016,2026-04-18,PALETA-CREMA-FRESA-CON-CREMA,2,35.0,70.0,https://github.com/OswaldoCasillas/Ventas/issues/123,efectivo,client:781bcf64-bc9d-42f6-aa6a-03de922108d0#2,PALETA CREMA Fresa con Crema,03C761CC,efectivo
@@ -62,5 +64,11 @@ S000020,2026-04-18,POSTRE-DANONINO-GRANDE,1,30.0,30.0,https://github.com/Oswaldo
 =======,,,0,,0.0,,efectivo,,,,efectivo
 >>>>>>> Stashed changes,,,0,,0.0,,efectivo,,,,efectivo
 <<<<<<< Updated upstream,,,0,,0.0,,efectivo,,,,efectivo
+=======,,,0,,0.0,,efectivo,,,,efectivo
+>>>>>>> Stashed changes,,,0,,0.0,,efectivo,,,,efectivo
+<<<<<<< Updated upstream,,,0,,0.0,,efectivo,,,,efectivo
+<<<<<<< Updated upstream,,,0,,0.0,,efectivo,,,,efectivo
+=======,,,0,,0.0,,efectivo,,,,efectivo
+>>>>>>> Stashed changes,,,0,,0.0,,efectivo,,,,efectivo
 =======,,,0,,0.0,,efectivo,,,,efectivo
 >>>>>>> Stashed changes,,,0,,0.0,,efectivo,,,,efectivo
