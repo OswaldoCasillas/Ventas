@@ -32,7 +32,7 @@
     "item": "AGUA-FRESCA-GRANDE",
     "descripcion": "AGUA FRESCA Grande",
     "precio": 35.0,
-    "stock": 9999994
+    "stock": 9999992
   },
   {
     "product_id": "1C271C39",
@@ -179,7 +179,7 @@
     "item": "HELADO-NIEVE-SENCILLO",
     "descripcion": "Helado Nieve Sencillo",
     "precio": 25.0,
-    "stock": 9999995
+    "stock": 9999994
   },
   {
     "product_id": "93BBD957",
