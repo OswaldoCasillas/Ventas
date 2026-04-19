@@ -3,6 +3,7 @@ S000014,2026-04-18,AGUA-FRESCA-CHICA,1,25.0,25.0,https://github.com/OswaldoCasil
 S000007,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/112,tarjeta,client:c946c4b7-f0e1-4a5f-9a56-581151debb47#1,AGUA FRESCA Grande,9C1B04E4,tarjeta
 S000010,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/117,efectivo,client:1941d9c4-35b5-49de-8994-d7a7c80dd30d#0,AGUA FRESCA Grande,9C1B04E4,efectivo
 S000027,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/137,efectivo,client:21a2fcf3-136f-4c18-8719-c67558a94bab#1,AGUA FRESCA Grande,9C1B04E4,efectivo
+S000030,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/141,efectivo,client:5e57bd8e-884e-4c27-86f6-5ec65454c3e7#2,AGUA FRESCA Grande,9C1B04E4,efectivo
 S000006,2026-04-18,BEBIDA-CHAMOYADA,2,60.0,120.0,https://github.com/OswaldoCasillas/Ventas/issues/111,efectivo,client:56833fab-f5a6-44b9-ae13-54ec6d3939ba#0,BEBIDA Chamoyada,1C271C39,efectivo
 S000027,2026-04-18,BEBIDA-CHAMOYADA,1,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/137,efectivo,client:21a2fcf3-136f-4c18-8719-c67558a94bab#0,BEBIDA Chamoyada,1C271C39,efectivo
 S000016,2026-04-18,EXTRA-COBERTURA-CON-TOPPING,4,15.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/123,efectivo,client:781bcf64-bc9d-42f6-aa6a-03de922108d0#4,EXTRA Cobertura con Topping,A9581B56,efectivo
@@ -29,6 +30,7 @@ S000020,2026-04-18,HELADO-SIN-AZUCAR-SENCILLO,1,45.0,45.0,https://github.com/Osw
 S000023,2026-04-18,HELADO-SIN-AZUCAR-SENCILLO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/132,efectivo,client:97f671fa-a0d9-4fa4-97c0-f67ccad14f70#1,Helado Sin Azucar Sencillo,9E69701A,efectivo
 S000028,2026-04-18,MALTEADA-CLASICA,1,65.0,65.0,https://github.com/OswaldoCasillas/Ventas/issues/139,efectivo,client:992b0ad3-dce7-4f56-9c70-068e55b1c5ad#0,MALTEADA Clasica,D7361A46,efectivo
 S000021,2026-04-18,PALETA-AGUA-FRESA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/130,tarjeta,client:55e50021-4f49-4e16-b667-6dfebb7bd66d#4,PALETA AGUA Fresa,6D8A2D50,tarjeta
+S000030,2026-04-18,PALETA-AGUA-GROSSELLA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/141,efectivo,client:5e57bd8e-884e-4c27-86f6-5ec65454c3e7#1,PALETA AGUA Grosella,81CEF3B7,efectivo
 S000015,2026-04-18,PALETA-AGUA-GUANABANA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/122,efectivo,client:e7156d36-4902-4cc1-8f5d-a14105bab1ed#2,PALETA AGUA Guanabana,K2F6E9F9,efectivo
 S000021,2026-04-18,PALETA-AGUA-GUAYABA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/130,tarjeta,client:55e50021-4f49-4e16-b667-6dfebb7bd66d#0,PALETA AGUA Guayaba,F2E6E9F9,tarjeta
 S000028,2026-04-18,PALETA-AGUA-GUAYABA,4,25.0,100.0,https://github.com/OswaldoCasillas/Ventas/issues/138,tarjeta,client:c23729d2-83a9-4996-8951-d6048585b90d#1,PALETA AGUA Guayaba,F2E6E9F9,tarjeta
@@ -40,6 +42,7 @@ S000016,2026-04-18,PALETA-AGUA-PINA,1,25.0,25.0,https://github.com/OswaldoCasill
 S000013,2026-04-18,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/120,efectivo,client:4f5ddaa8-f02c-42b6-bbf4-2bb29f8b322f#0,PALETA AGUA PREMIUM Frutos Rojos,746FF175,efectivo
 S000029,2026-04-18,PALETA-AGUA-PREMIUM-MANGO-CHAMOY,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/140,efectivo,client:ac26ca43-9481-419e-b5e9-5f8a3ed24b7d#0,PALETA AGUA PREMIUM Mango-Chamoy,331268B8,efectivo
 S000009,2026-04-18,PALETA-AGUA-PREMIUM-PICAFRESA,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/114,efectivo,client:71ee5115-0b41-40f6-bfc5-22fc76230177#2,PALETA AGUA PREMIUM Picafresa,331378B8,efectivo
+S000030,2026-04-18,PALETA-AGUA-PREMIUM-PICAPANDA,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/141,efectivo,client:5e57bd8e-884e-4c27-86f6-5ec65454c3e7#0,PALETA AGUA PREMIUM Picapanda,431378B8,efectivo
 S000002,2026-04-18,PALETA-AGUA-SANDIA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/106,tarjeta,client:00249f25-0747-4a67-b8e0-c8df2c7b22d6#0,PALETA AGUA Sandia,21BFA58F,tarjeta
 S000010,2026-04-18,PALETA-AGUA-SANDIA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/116,efectivo,client:4084cb20-ce60-4195-8835-95d21ea62ab7#1,PALETA AGUA Sandia,21BFA58F,efectivo
 S000021,2026-04-18,PALETA-AGUA-TAMARINDO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/130,tarjeta,client:55e50021-4f49-4e16-b667-6dfebb7bd66d#2,PALETA AGUA Tamarindo,98C5FF9E,tarjeta
