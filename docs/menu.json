@@ -123,7 +123,7 @@
     "item": "HELADO-CLASICO-SENCILLO",
     "descripcion": "Helado Clasico Sencillo",
     "precio": 35.0,
-    "stock": 99999994
+    "stock": 99999993
   },
   {
     "product_id": "7888486E",
@@ -683,14 +683,14 @@
     "item": "PALETA-MINI-MINI-AGUA",
     "descripcion": "PALETA MINI Mini Alcohol",
     "precio": 10.0,
-    "stock": 99999999979
+    "stock": 99999999975
   },
   {
     "product_id": "C371ED40",
     "item": "PALETA-MINI-MINI-CREMA",
     "descripcion": "PALETA MINI Mini Crema",
     "precio": 8.0,
-    "stock": 99999999996
+    "stock": 99999999993
   },
   {
     "product_id": "D189174D",
