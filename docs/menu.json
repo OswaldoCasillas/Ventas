@@ -620,7 +620,7 @@
     "item": "PALETA-CREMA-PREMIUM-SELVA-BLANCA",
     "descripcion": "PALETA CREMA PREMIUM Selva Blanca",
     "precio": 40.0,
-    "stock": 24
+    "stock": 23
   },
   {
     "product_id": "05833CE3",
@@ -683,14 +683,14 @@
     "item": "PALETA-MINI-MINI-AGUA",
     "descripcion": "PALETA MINI Mini Alcohol",
     "precio": 10.0,
-    "stock": 99999999975
+    "stock": 99999999970
   },
   {
     "product_id": "C371ED40",
     "item": "PALETA-MINI-MINI-CREMA",
     "descripcion": "PALETA MINI Mini Crema",
     "precio": 8.0,
-    "stock": 99999999993
+    "stock": 99999999986
   },
   {
     "product_id": "D189174D",
