@@ -74,5 +74,9 @@ S000021,2026-04-18,PALETA-AGUA-MARACUYA,1,25.00,25.00,https://github.com/Oswaldo
 S000021,2026-04-18,PALETA-AGUA-FRESA,1,25.00,25.00,https://github.com/OswaldoCasillas/Ventas/issues/130,tarjeta,client:55e50021-4f49-4e16-b667-6dfebb7bd66d#4,
 S000022,2026-04-18,HELADO-GOURMET-SENCILLO,5,40.00,200.00,https://github.com/OswaldoCasillas/Ventas/issues/131,efectivo,client:f053e2e4-4b6b-4048-9695-a099bb519315#0,
 S000022,2026-04-18,HELADO-NIEVE-SENCILLO,1,25.00,25.00,https://github.com/OswaldoCasillas/Ventas/issues/131,efectivo,client:f053e2e4-4b6b-4048-9695-a099bb519315#1,
+<<<<<<< Updated upstream
 S000023,2026-04-18,HELADO-GOURMET-SENCILLO,2,40.00,80.00,https://github.com/OswaldoCasillas/Ventas/issues/132,efectivo,client:97f671fa-a0d9-4fa4-97c0-f67ccad14f70#0,
 S000023,2026-04-18,HELADO-SIN-AZUCAR-SENCILLO,1,45.00,45.00,https://github.com/OswaldoCasillas/Ventas/issues/132,efectivo,client:97f671fa-a0d9-4fa4-97c0-f67ccad14f70#1,
+=======
+S000023,2026-04-18,HELADO-NIEVE-DOBLE,1,45.00,45.00,https://github.com/OswaldoCasillas/Ventas/issues/133,efectivo,client:5bd0e723-3650-470d-9399-a5788bd6a2d9#0,
+>>>>>>> Stashed changes
