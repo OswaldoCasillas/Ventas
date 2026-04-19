@@ -186,7 +186,7 @@
     "item": "HELADO-SIN-AZUCAR-DOBLE",
     "descripcion": "Helado Sin Azucar Doble",
     "precio": 75.0,
-    "stock": 99999999
+    "stock": 99999998
   },
   {
     "product_id": "9DC9D6D6",
@@ -739,7 +739,7 @@
     "item": "PALETA-SIN-AZUCAR-FERRERO",
     "descripcion": "PALETA SIN AZUCAR Ferreroketo",
     "precio": 45.0,
-    "stock": 30
+    "stock": 29
   },
   {
     "product_id": "498B2E60",
