@@ -326,7 +326,7 @@
     "item": "PALETA-AGUA-PREMIUM-MANGO-CHAMOY",
     "descripcion": "PALETA AGUA PREMIUM Mango-Chamoy",
     "precio": 30.0,
-    "stock": 32
+    "stock": 31
   },
   {
     "product_id": "331378B8",
@@ -683,7 +683,7 @@
     "item": "PALETA-MINI-MINI-AGUA",
     "descripcion": "PALETA MINI Mini Agua",
     "precio": 6.0,
-    "stock": 9999994
+    "stock": 9999989
   },
   {
     "product_id": "C371ED50",
@@ -697,7 +697,7 @@
     "item": "PALETA-MINI-MINI-CREMA",
     "descripcion": "PALETA MINI Mini Crema",
     "precio": 8.0,
-    "stock": 9999999
+    "stock": 9999993
   },
   {
     "product_id": "D189174D",
