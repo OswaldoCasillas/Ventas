@@ -58,9 +58,12 @@
     }
     .toolbar {
       display: grid;
-      grid-template-columns: 1.2fr .8fr .7fr;
+      grid-template-columns: minmax(220px,1.2fr) minmax(140px,.8fr) auto minmax(140px,.7fr);
       gap: 10px;
       margin-bottom: 14px;
+    }
+    .search-clear {
+      white-space: nowrap;
     }
     input, select, textarea, button {
       font: inherit;
@@ -215,7 +218,8 @@
     <div class="grid">
       <section class="card">
         <div class="toolbar">
-          <input id="search" type="text" placeholder="Buscar por nombre o SKU">
+          <input id="search" type="text" placeholder="Buscar por nombre, SKU o sabor">
+          <button id="clearSearch" class="ghost-btn search-clear" type="button">Limpiar búsqueda</button>
           <select id="category"></select>
           <input id="fecha" type="date">
         </div>
@@ -367,6 +371,23 @@
       return product.descripcion || product.item;
     }
 
+
+    function clearSearchInput({ focus = false } = {}) {
+      const searchInput = document.getElementById("search");
+      if (!searchInput) return;
+      searchInput.value = "";
+      if (focus) searchInput.focus();
+    }
+
+    function changeCategory(nextCategory) {
+      FILTER_CATEGORY = nextCategory;
+      const select = document.getElementById("category");
+      if (select) select.value = FILTER_CATEGORY;
+      clearSearchInput();
+      syncCategoryChips();
+      renderProducts();
+    }
+
     function buildCategoryUI() {
       const categories = Array.from(new Set(MENU.map((p) => getCategoryOf(p.item))))
         .sort((a, b) => (CAT_LABELS[a] || a).localeCompare(CAT_LABELS[b] || b));
@@ -379,9 +400,7 @@
         .join("");
       select.value = FILTER_CATEGORY;
       select.onchange = () => {
-        FILTER_CATEGORY = select.value;
-        syncCategoryChips();
-        renderProducts();
+        changeCategory(select.value);
       };
 
       const chips = document.getElementById("categoryChips");
@@ -391,10 +410,7 @@
 
       chips.querySelectorAll(".chip").forEach((chip) => {
         chip.onclick = () => {
-          FILTER_CATEGORY = chip.dataset.cat;
-          select.value = FILTER_CATEGORY;
-          syncCategoryChips();
-          renderProducts();
+          changeCategory(chip.dataset.cat);
         };
       });
 
@@ -407,12 +423,33 @@
       });
     }
 
+    function normalizeForSearch(value) {
+      return String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9]+/g, " ")
+        .toLowerCase()
+        .trim();
+    }
+
+    function matchesSearch(product, rawSearch) {
+      const search = normalizeForSearch(rawSearch);
+      if (!search) return true;
+
+      const hay = normalizeForSearch(`${product.item} ${product.descripcion}`);
+      const compactHay = hay.replace(/\s+/g, "");
+      const tokens = search.split(/\s+/).filter(Boolean);
+
+      return tokens.every((token) => {
+        return hay.includes(token) || compactHay.includes(token);
+      });
+    }
+
     function filteredProducts() {
-      const search = document.getElementById("search").value.trim().toLowerCase();
+      const search = document.getElementById("search").value;
       return MENU.filter((p) => {
         const byCat = FILTER_CATEGORY === "ALL" || getCategoryOf(p.item) === FILTER_CATEGORY;
-        const hay = `${p.item} ${p.descripcion}`.toLowerCase();
-        const bySearch = !search || hay.includes(search);
+        const bySearch = matchesSearch(p, search);
         return byCat && bySearch;
       });
     }
@@ -695,6 +732,10 @@
     }
 
     document.getElementById("search").addEventListener("input", renderProducts);
+    document.getElementById("clearSearch").onclick = () => {
+      clearSearchInput({ focus: true });
+      renderProducts();
+    };
     document.getElementById("clearCart").onclick = clearCart;
     document.getElementById("confirm").onclick = crearVentaViaAPI;
     document.getElementById("payCash").onclick = () => setMetodoPago("efectivo");
