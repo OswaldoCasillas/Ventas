@@ -679,6 +679,12 @@
     "stock": 99999999996
   },
   {
+  "product_id": "MINIAGUA6",
+  "item": "PALETA-MINI-MINI-AGUA",
+  "descripcion": "PALETA MINI Mini Agua",
+  "precio": 6.0
+  },
+  {
     "product_id": "68DJ885D",
     "item": "PALETA-SIN-AZUCAR-CAJETA",
     "descripcion": "PALETA SIN AZUCAR Cajeta",
@@ -830,7 +836,7 @@
     "item": "PALETAS-PERRO-MINI",
     "descripcion": "",
     "precio": "",
-    "stock": -1
+    "stock": 100000
   },
   {
     "product_id": "3B6B12C9",
