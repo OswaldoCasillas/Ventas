@@ -143,3 +143,6 @@ S000043,2026-04-18,PALETA-SIN-AZUCAR-VAINILLA,1,45.00,45.00,https://github.com/O
 S000043,2026-04-18,PALETA-SIN-AZUCAR-CAJETA,1,45.00,45.00,https://github.com/OswaldoCasillas/Ventas/issues/154,tarjeta,client:06a7b2d9-0553-4bbb-8528-c8e39a283180#1,
 S000044,2026-04-18,PALETA-SIN-AZUCAR-FERRERO,1,45.00,45.00,https://github.com/OswaldoCasillas/Ventas/issues/155,tarjeta,client:78a7c394-0d8b-498a-bb45-bc35e458c990#0,
 S000044,2026-04-18,HELADO-SIN-AZUCAR-DOBLE,1,75.00,75.00,https://github.com/OswaldoCasillas/Ventas/issues/155,tarjeta,client:78a7c394-0d8b-498a-bb45-bc35e458c990#1,
+S000045,2026-04-18,HELADO-GOURMET-SENCILLO,2,40.00,80.00,https://github.com/OswaldoCasillas/Ventas/issues/156,efectivo,client:a134ed07-5b29-43b0-bc77-9916c498ac59#0,
+S000045,2026-04-18,HELADO-CLASICO-SENCILLO,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/156,efectivo,client:a134ed07-5b29-43b0-bc77-9916c498ac59#1,
+S000045,2026-04-18,HELADO-NIEVE-SENCILLO,2,25.00,50.00,https://github.com/OswaldoCasillas/Ventas/issues/156,efectivo,client:a134ed07-5b29-43b0-bc77-9916c498ac59#2,

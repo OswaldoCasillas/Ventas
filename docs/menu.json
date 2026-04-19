@@ -123,7 +123,7 @@
     "item": "HELADO-CLASICO-SENCILLO",
     "descripcion": "Helado Clasico Sencillo",
     "precio": 35.0,
-    "stock": 99999993
+    "stock": 99999992
   },
   {
     "product_id": "7888486E",
@@ -151,7 +151,7 @@
     "item": "HELADO-GOURMET-SENCILLO",
     "descripcion": "Helado Gourmet Sencillo",
     "precio": 40.0,
-    "stock": 99999984
+    "stock": 99999982
   },
   {
     "product_id": "3021BE59",
@@ -179,7 +179,7 @@
     "item": "HELADO-NIEVE-SENCILLO",
     "descripcion": "Helado Nieve Sencillo",
     "precio": 25.0,
-    "stock": 99999994
+    "stock": 99999992
   },
   {
     "product_id": "93BBD957",
