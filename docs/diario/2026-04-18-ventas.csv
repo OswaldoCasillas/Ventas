@@ -13,7 +13,11 @@ S000018,2026-04-18,HELADO-GOURMET-DOBLE,2,70.0,140.0,https://github.com/OswaldoC
 S000019,2026-04-18,HELADO-GOURMET-MEDIO-LITRO,1,90.0,90.0,https://github.com/OswaldoCasillas/Ventas/issues/126,efectivo,client:64095a94-cb52-4857-8d2c-bc543b967f89#0,Helado Gourmet Medio Litro,2682D29D,efectivo
 S000002,2026-04-18,HELADO-GOURMET-SENCILLO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/106,tarjeta,client:00249f25-0747-4a67-b8e0-c8df2c7b22d6#1,Helado Gourmet Sencillo,97EEAB91,tarjeta
 S000011,2026-04-18,HELADO-GOURMET-SENCILLO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/118,efectivo,client:37d0a918-8902-48ff-96b9-0ebe4ec746f8#3,Helado Gourmet Sencillo,97EEAB91,efectivo
+<<<<<<< Updated upstream
 S000020,2026-04-18,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/128,efectivo,client:04f99846-fb53-4a1f-a4f3-767cc9ebfcf3#0,Helado Nieve Sencillo,641AA19F,efectivo
+=======
+S000020,2026-04-18,HELADO-NIEVE-SENCILLO,2,25.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/129,efectivo,client:f337a01c-8ac3-4c6d-b0f6-56155c3694db#0,Helado Nieve Sencillo,641AA19F,efectivo
+>>>>>>> Stashed changes
 S000019,2026-04-18,HELADO-SIN-AZUCAR-MEDIO-LITRO,3,95.0,285.0,https://github.com/OswaldoCasillas/Ventas/issues/126,efectivo,client:64095a94-cb52-4857-8d2c-bc543b967f89#1,Helado Sin Azucar Medio Litro,DA2364A6,efectivo
 S000020,2026-04-18,HELADO-SIN-AZUCAR-SENCILLO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/127,efectivo,client:72335082-c4ac-4ef0-b4a7-1e1c4992e76e#2,Helado Sin Azucar Sencillo,9E69701A,efectivo
 S000015,2026-04-18,PALETA-AGUA-GUANABANA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/122,efectivo,client:e7156d36-4902-4cc1-8f5d-a14105bab1ed#2,PALETA AGUA Guanabana,K2F6E9F9,efectivo

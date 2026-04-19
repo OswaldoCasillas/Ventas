@@ -158,7 +158,11 @@
     "item": "HELADO-NIEVE-SENCILLO",
     "descripcion": "Helado Nieve Sencillo",
     "precio": 25.0,
+<<<<<<< Updated upstream
     "stock": 99999996
+=======
+    "stock": 99999995
+>>>>>>> Stashed changes
   },
   {
     "product_id": "93BBD957",

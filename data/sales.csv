@@ -57,9 +57,13 @@ S000018,2026-04-18,HELADO-CLASICO-DOBLE,1,60.00,60.00,https://github.com/Oswaldo
 S000019,2026-04-18,HELADO-GOURMET-MEDIO-LITRO,1,90.00,90.00,https://github.com/OswaldoCasillas/Ventas/issues/126,efectivo,client:64095a94-cb52-4857-8d2c-bc543b967f89#0,
 S000019,2026-04-18,HELADO-SIN-AZUCAR-MEDIO-LITRO,3,95.00,285.00,https://github.com/OswaldoCasillas/Ventas/issues/126,efectivo,client:64095a94-cb52-4857-8d2c-bc543b967f89#1,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 S000020,2026-04-18,POSTRE-DANONINO-GRANDE,1,30.00,30.00,https://github.com/OswaldoCasillas/Ventas/issues/127,efectivo,client:72335082-c4ac-4ef0-b4a7-1e1c4992e76e#0,
 S000020,2026-04-18,EXTRA-COBERTURA-CON-TOPPING,1,15.00,15.00,https://github.com/OswaldoCasillas/Ventas/issues/127,efectivo,client:72335082-c4ac-4ef0-b4a7-1e1c4992e76e#1,
 S000020,2026-04-18,HELADO-SIN-AZUCAR-SENCILLO,1,45.00,45.00,https://github.com/OswaldoCasillas/Ventas/issues/127,efectivo,client:72335082-c4ac-4ef0-b4a7-1e1c4992e76e#2,
 =======
 S000020,2026-04-18,HELADO-NIEVE-SENCILLO,1,25.00,25.00,https://github.com/OswaldoCasillas/Ventas/issues/128,efectivo,client:04f99846-fb53-4a1f-a4f3-767cc9ebfcf3#0,
+>>>>>>> Stashed changes
+=======
+S000020,2026-04-18,HELADO-NIEVE-SENCILLO,2,25.00,50.00,https://github.com/OswaldoCasillas/Ventas/issues/129,efectivo,client:f337a01c-8ac3-4c6d-b0f6-56155c3694db#0,
 >>>>>>> Stashed changes
