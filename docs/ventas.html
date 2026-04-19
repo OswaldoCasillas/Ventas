@@ -6,155 +6,36 @@
   <title>Ventas del día</title>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    :root{
-      --bg:#f7f7fb;
-      --card:#ffffff;
-      --line:#e5e7eb;
-      --text:#1f2937;
-      --muted:#6b7280;
-      --shadow:0 8px 24px rgba(0,0,0,.05);
-    }
-
-    *{box-sizing:border-box}
-
-    body{
-      font-family:system-ui,Arial,sans-serif;
-      max-width:1100px;
-      margin:24px auto;
-      padding:0 16px;
-      background:var(--bg);
-      color:var(--text);
-    }
-
-    .card{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:16px;
-      box-shadow:var(--shadow);
-    }
-
-    .topbar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-bottom:16px;
-    }
-
-    .back-btn{
-      display:inline-block;
-      text-decoration:none;
-      padding:10px 12px;
-      border:1px solid #d1d5db;
-      border-radius:10px;
-      background:#fff;
-      color:var(--text);
-    }
-
-    .row{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      align-items:end;
-      margin-bottom:16px;
-    }
-
-    input,select,button{
-      font:inherit;
-      padding:10px 12px;
-      border:1px solid #d1d5db;
-      border-radius:10px;
-      background:#fff;
-    }
-
+    body{font-family:system-ui,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;background:#f7f7fb;color:#1f2937}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.05)}
+    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:16px}
+    input,select,button{font:inherit;padding:10px 12px;border:1px solid #d1d5db;border-radius:10px}
     button{cursor:pointer}
-
-    table{
-      width:100%;
-      border-collapse:collapse;
-      background:#fff;
-      font-size:14px;
-    }
-
-    th,td{
-      padding:10px;
-      border-bottom:1px solid var(--line);
-      text-align:left;
-      vertical-align:top;
-    }
-
-    th{
-      background:#fafafa;
-      position:sticky;
-      top:0;
-      z-index:1;
-    }
-
-    .muted{color:var(--muted)}
-
-    .totals{
-      display:flex;
-      gap:20px;
-      flex-wrap:wrap;
-      margin:12px 0 16px;
-    }
-
-    .table-wrap{
-      overflow:auto;
-      border:1px solid var(--line);
-      border-radius:12px;
-    }
-
-    @media print{
-      .topbar a,
-      .row button,
-      .row select,
-      .row input,
-      #status{
-        display:none !important;
-      }
-
-      body{
-        background:#fff;
-        margin:0;
-        max-width:none;
-      }
-
-      .card{
-        box-shadow:none;
-        border:none;
-        padding:0;
-      }
-    }
+    table{width:100%;border-collapse:collapse;background:#fff}
+    th,td{padding:10px;border-bottom:1px solid #e5e7eb;text-align:left}
+    .muted{color:#6b7280}
+    .totals{display:flex;gap:20px;flex-wrap:wrap;margin:12px 0}
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="topbar">
-      <h1 style="margin:0;">Ventas del día</h1>
-      <a class="back-btn" href="index.html">← Menú</a>
-    </div>
-
+    <h1>Ventas del día</h1>
     <div class="row">
       <div>
-        <label for="fecha">Fecha</label><br>
+        <label>Fecha</label><br>
         <input id="fecha" type="date">
       </div>
-
       <div>
-        <label for="metodo">Método de pago</label><br>
+        <label>Método de pago</label><br>
         <select id="metodo">
           <option value="todos">Todos</option>
           <option value="efectivo">Efectivo</option>
           <option value="tarjeta">Tarjeta</option>
         </select>
       </div>
-
-      <div><button id="cargar" type="button">Cargar</button></div>
-      <div><button id="imprimir" type="button">Imprimir</button></div>
-      <div><button id="excel" type="button">Excel del día</button></div>
+      <div><button id="cargar">Cargar</button></div>
+      <div><button id="imprimir">Imprimir</button></div>
+      <div><button id="excel">Excel del día</button></div>
     </div>
 
     <div class="totals">
@@ -164,39 +45,33 @@
     </div>
 
     <div class="muted" id="status">Selecciona una fecha y presiona Cargar.</div>
-
-    <div class="table-wrap" style="margin-top:12px;">
-      <table>
-        <thead>
-          <tr>
-            <th>Fecha</th>
-            <th>SKU</th>
-            <th>Producto</th>
-            <th>Cantidad</th>
-            <th>Precio unitario</th>
-            <th>Importe</th>
-            <th>Método</th>
-            <th>Issue</th>
-            <th>Txn</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>SKU</th>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Precio unitario</th>
+          <th>Importe</th>
+          <th>Método</th>
+          <th>Issue</th>
+          <th>Txn</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
   </div>
 
   <script>
     let _rowsFull = [];
     let _metodo = "todos";
 
-    function money(n){
-      return `$${Number(n || 0).toFixed(2)}`;
-    }
-
+    function money(n){ return `$${Number(n || 0).toFixed(2)}`; }
     function todayISO(){
       const d = new Date();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
+      const m = String(d.getMonth()+1).padStart(2,"0");
+      const day = String(d.getDate()).padStart(2,"0");
       return `${d.getFullYear()}-${m}-${day}`;
     }
 
@@ -207,74 +82,40 @@
     function parseCSV(text){
       const lines = text.trim().split(/\r?\n/);
       if (!lines.length) return [];
-
-      const headers = [];
-      let current = "";
-      let inQuotes = false;
-
-      for (let i = 0; i < lines[0].length; i++) {
-        const ch = lines[0][i];
-        if (ch === '"') {
-          inQuotes = !inQuotes;
-        } else if (ch === "," && !inQuotes) {
-          headers.push(current.trim());
-          current = "";
-        } else {
-          current += ch;
-        }
-      }
-      headers.push(current.trim());
-
+      const headers = lines[0].split(",").map(h => h.trim());
       const rows = [];
-
       for (let i = 1; i < lines.length; i++) {
         const line = lines[i];
-        if (!line.trim()) continue;
-
         const cols = [];
-        let value = "";
-        let quoted = false;
-
+        let cur = "", inQ = false;
         for (let j = 0; j < line.length; j++) {
           const ch = line[j];
-
           if (ch === '"') {
-            if (quoted && line[j + 1] === '"') {
-              value += '"';
-              j++;
-            } else {
-              quoted = !quoted;
-            }
-          } else if (ch === "," && !quoted) {
-            cols.push(value);
-            value = "";
+            if (inQ && line[j+1] === '"') { cur += '"'; j++; }
+            else inQ = !inQ;
+          } else if (ch === "," && !inQ) {
+            cols.push(cur); cur = "";
           } else {
-            value += ch;
+            cur += ch;
           }
         }
-
-        cols.push(value);
-
+        cols.push(cur);
         const row = {};
-        headers.forEach((h, idx) => {
-          row[h] = cols[idx] ?? "";
-        });
+        headers.forEach((h, idx) => row[h] = cols[idx] ?? "");
         rows.push(row);
       }
-
       return rows;
     }
 
     async function fetchText(url){
-      const r = await fetch(url + "?_=" + Date.now(), { cache: "no-store" });
-      if (!r.ok) throw new Error(`${r.status} ${url}`);
+      const r = await fetch(url + "?_=" + Date.now(), {cache:"no-store"});
+      if(!r.ok) throw new Error(`${r.status} ${url}`);
       return r.text();
     }
 
     async function loadRowsByDate(fecha){
       const dailyPath = `diario/${fecha}-ventas.csv`;
-
-      try {
+      try{
         const csv = await fetchText(dailyPath);
         return parseCSV(csv).map(r => ({
           fecha: r.fecha || r.Fecha || fecha,
@@ -283,11 +124,11 @@
           cantidad: Number(r.cantidad || r.Cantidad || 0),
           precio_unit: Number(r.precio_unit || r["Precio unitario"] || 0),
           importe: Number(r.importe || r.Importe || 0),
-          metodo_pago: String(r.metodo_pago || r["Método de pago"] || "efectivo").toLowerCase(),
+          metodo_pago: (r.metodo_pago || r["Método de pago"] || "efectivo").toLowerCase(),
           issue: r.issue || r.Issue || "",
           txn_id: r.txn_id || r.Txn || ""
         }));
-      } catch (_) {
+      }catch(_){
         const csv = await fetchText("ventas_detalle.csv");
         return parseCSV(csv)
           .map(r => ({
@@ -297,11 +138,11 @@
             cantidad: Number(r.cantidad || r.Cantidad || 0),
             precio_unit: Number(r.precio_unit || r["Precio unitario"] || 0),
             importe: Number(r.importe || r.Importe || 0),
-            metodo_pago: String(r.metodo_pago || r["Método de pago"] || "efectivo").toLowerCase(),
+            metodo_pago: (r.metodo_pago || r["Método de pago"] || "efectivo").toLowerCase(),
             issue: r.issue || r.Issue || "",
             txn_id: r.txn_id || r.Txn || ""
           }))
-          .filter(r => String(r.fecha || "").slice(0, 10) === fecha);
+          .filter(r => String(r.fecha || "").slice(0,10) === fecha);
       }
     }
 
@@ -314,7 +155,6 @@
     function render(){
       const rows = rowsForCurrentFilter();
       const tbody = document.getElementById("tbody");
-
       tbody.innerHTML = rows.map(r => `
         <tr>
           <td>${r.fecha || ""}</td>
@@ -322,40 +162,62 @@
           <td>${r.descripcion || skuToNice(r.item || "")}</td>
           <td>${Number(r.cantidad || 0)}</td>
           <td>${money(r.precio_unit)}</td>
-          <td>${money(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0)))}</td>
+          <td>${money(r.importe || (Number(r.cantidad||0)*Number(r.precio_unit||0)))}</td>
           <td>${r.metodo_pago || "efectivo"}</td>
           <td>${r.issue || ""}</td>
           <td>${r.txn_id || ""}</td>
         </tr>
       `).join("");
 
-      const units = rows.reduce((s, r) => s + Number(r.cantidad || 0), 0);
-      const total = rows.reduce(
-        (s, r) => s + Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0))),
-        0
-      );
+      const units = rows.reduce((s,r)=>s+Number(r.cantidad||0),0);
+      const total = rows.reduce((s,r)=>s+Number(r.importe || (Number(r.cantidad||0)*Number(r.precio_unit||0))),0);
 
       document.getElementById("count").textContent = String(rows.length);
       document.getElementById("units").textContent = String(units);
       document.getElementById("total").textContent = money(total);
-      document.getElementById("status").textContent = rows.length
-        ? "Ventas cargadas."
-        : "No hay ventas para ese filtro.";
+      document.getElementById("status").textContent = rows.length ? "Ventas cargadas." : "No hay ventas para ese filtro.";
+    }
+
+
+    function buildResumenPorProducto(rows){
+      const map = new Map();
+
+      rows.forEach((r) => {
+        const sku = String(r.item || "").trim();
+        const producto = String(r.descripcion || skuToNice(sku)).trim();
+        const precio = Number(r.precio_unit || 0);
+        const cantidad = Number(r.cantidad || 0);
+        const importe = Number(
+          r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0))
+        );
+
+        const key = sku || producto;
+        if (!map.has(key)) {
+          map.set(key, {
+            "SKU": sku,
+            "Producto": producto,
+            "Cantidad total": 0,
+            "Importe total": 0,
+            "Precio referencia": precio
+          });
+        }
+
+        const acc = map.get(key);
+        acc["Cantidad total"] += cantidad;
+        acc["Importe total"] += importe;
+        if (!acc["Precio referencia"] && precio) acc["Precio referencia"] = precio;
+      });
+
+      return Array.from(map.values()).sort((a, b) => {
+        if (b["Cantidad total"] !== a["Cantidad total"]) {
+          return b["Cantidad total"] - a["Cantidad total"];
+        }
+        return String(a["Producto"]).localeCompare(String(b["Producto"]));
+      });
     }
 
     function exportRowsToCsv(rows, fecha){
-      const headers = [
-        "Fecha",
-        "SKU",
-        "Producto",
-        "Cantidad",
-        "Precio unitario",
-        "Importe",
-        "Método de pago",
-        "Issue",
-        "Txn"
-      ];
-
+      const headers = ["Fecha","SKU","Producto","Cantidad","Precio unitario","Importe","Método de pago","Issue","Txn"];
       const escapeCsv = (value) => {
         const s = String(value ?? "");
         return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
@@ -392,10 +254,10 @@
 
     function exportExcelDelDia(){
       const fecha = document.getElementById("fecha").value;
-      if (!fecha) return alert("Selecciona una fecha");
+      if(!fecha) return alert("Selecciona una fecha");
 
       const rows = rowsForCurrentFilter();
-      if (!rows.length) return alert("No hay ventas para exportar");
+      if(!rows.length) return alert("No hay ventas para exportar");
 
       if (!window.XLSX) {
         exportRowsToCsv(rows, fecha);
@@ -414,29 +276,34 @@
         "Txn": r.txn_id || ""
       }));
 
+      const resumenProductos = buildResumenPorProducto(rows);
       const totalUnidades = detalle.reduce((s, r) => s + Number(r["Cantidad"] || 0), 0);
       const totalImporte = detalle.reduce((s, r) => s + Number(r["Importe"] || 0), 0);
 
       const wb = XLSX.utils.book_new();
 
+      const wsResumenProductos = XLSX.utils.json_to_sheet(resumenProductos);
+      wsResumenProductos["!cols"] = [
+        { wch: 28 },
+        { wch: 36 },
+        { wch: 14 },
+        { wch: 14 },
+        { wch: 16 }
+      ];
+      XLSX.utils.book_append_sheet(wb, wsResumenProductos, "Resumen por producto");
+
       const wsDetalle = XLSX.utils.json_to_sheet(detalle);
       wsDetalle["!cols"] = [
-        { wch: 12 },
-        { wch: 30 },
-        { wch: 36 },
-        { wch: 10 },
-        { wch: 14 },
-        { wch: 14 },
-        { wch: 16 },
-        { wch: 45 },
-        { wch: 18 }
+        { wch: 12 }, { wch: 30 }, { wch: 36 }, { wch: 10 }, { wch: 14 },
+        { wch: 14 }, { wch: 16 }, { wch: 45 }, { wch: 16 }
       ];
-      XLSX.utils.book_append_sheet(wb, wsDetalle, "Ventas");
+      XLSX.utils.book_append_sheet(wb, wsDetalle, "Detalle");
 
       const resumen = [
         ["Fecha", fecha],
         ["Filtro", _metodo],
-        ["Registros", detalle.length],
+        ["Productos únicos", resumenProductos.length],
+        ["Registros detalle", detalle.length],
         ["Unidades", totalUnidades],
         ["Importe", totalImporte]
       ];
@@ -451,30 +318,24 @@
     async function cargar(){
       const fecha = document.getElementById("fecha").value;
       _metodo = document.getElementById("metodo").value;
-
-      if (!fecha) return alert("Selecciona una fecha");
-
+      if(!fecha) return alert("Selecciona una fecha");
       document.getElementById("status").textContent = "Cargando…";
-
-      try {
+      try{
         _rowsFull = await loadRowsByDate(fecha);
         render();
-      } catch (error) {
+      }catch(error){
         console.error(error);
+        document.getElementById("status").textContent = "Error al cargar ventas.";
         _rowsFull = [];
         render();
-        document.getElementById("status").textContent = "Error al cargar ventas.";
       }
     }
 
     document.getElementById("fecha").value = todayISO();
     document.getElementById("cargar").onclick = cargar;
-    document.getElementById("metodo").onchange = () => {
-      _metodo = document.getElementById("metodo").value;
-      render();
-    };
-    document.getElementById("imprimir").onclick = () => window.print();
-    document.getElementById("excel").onclick = () => exportExcelDelDia();
+    document.getElementById("metodo").onchange = () => { _metodo = document.getElementById("metodo").value; render(); };
+    document.getElementById("imprimir").onclick = ()=>window.print();
+    document.getElementById("excel").onclick = ()=>exportExcelDelDia();
   </script>
 </body>
 </html>
