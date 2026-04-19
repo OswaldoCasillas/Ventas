@@ -32,14 +32,14 @@
     "item": "AGUA-FRESCA-GRANDE",
     "descripcion": "AGUA FRESCA Grande",
     "precio": 35.0,
-    "stock": 9999996
+    "stock": 9999995
   },
   {
     "product_id": "1C271C39",
     "item": "BEBIDA-CHAMOYADA",
     "descripcion": "BEBIDA Chamoyada",
     "precio": 60.0,
-    "stock": 99999997
+    "stock": 99999996
   },
   {
     "product_id": "F76E2099",

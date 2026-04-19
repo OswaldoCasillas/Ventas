@@ -2,7 +2,9 @@ txn_id,fecha,item,cantidad,precio_unit,importe,issue,metodo_pago,source_id,descr
 S000014,2026-04-18,AGUA-FRESCA-CHICA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/121,efectivo,client:60c91380-7d19-42d6-b221-4dfcf9c7cf4f#0,AGUA FRESCA Chica,74CEF70C,efectivo
 S000007,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/112,tarjeta,client:c946c4b7-f0e1-4a5f-9a56-581151debb47#1,AGUA FRESCA Grande,9C1B04E4,tarjeta
 S000010,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/117,efectivo,client:1941d9c4-35b5-49de-8994-d7a7c80dd30d#0,AGUA FRESCA Grande,9C1B04E4,efectivo
+S000027,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/137,efectivo,client:21a2fcf3-136f-4c18-8719-c67558a94bab#1,AGUA FRESCA Grande,9C1B04E4,efectivo
 S000006,2026-04-18,BEBIDA-CHAMOYADA,2,60.0,120.0,https://github.com/OswaldoCasillas/Ventas/issues/111,efectivo,client:56833fab-f5a6-44b9-ae13-54ec6d3939ba#0,BEBIDA Chamoyada,1C271C39,efectivo
+S000027,2026-04-18,BEBIDA-CHAMOYADA,1,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/137,efectivo,client:21a2fcf3-136f-4c18-8719-c67558a94bab#0,BEBIDA Chamoyada,1C271C39,efectivo
 S000016,2026-04-18,EXTRA-COBERTURA-CON-TOPPING,4,15.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/123,efectivo,client:781bcf64-bc9d-42f6-aa6a-03de922108d0#4,EXTRA Cobertura con Topping,A9581B56,efectivo
 S000020,2026-04-18,EXTRA-COBERTURA-CON-TOPPING,1,15.0,15.0,https://github.com/OswaldoCasillas/Ventas/issues/127,efectivo,client:72335082-c4ac-4ef0-b4a7-1e1c4992e76e#1,EXTRA Cobertura con Topping,A9581B56,efectivo
 S000017,2026-04-18,HELADO-CLASICO-DOBLE,1,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/124,tarjeta,client:34f90a0f-ed5f-4a2a-b9b5-3ce7a1251045#1,Helado Clasico Doble,BD4D8B7F,tarjeta
