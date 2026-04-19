@@ -473,7 +473,7 @@
     "item": "PALETA-CREMA-FRESA-CON-CREMA",
     "descripcion": "PALETA CREMA Fresa con Crema",
     "precio": 35.0,
-    "stock": 38
+    "stock": 36
   },
   {
     "product_id": "03C761EC",
@@ -487,7 +487,7 @@
     "item": "PALETA-CREMA-MAMEY",
     "descripcion": "PALETA CREMA Mamey",
     "precio": 35.0,
-    "stock": 22
+    "stock": 21
   },
   {
     "product_id": "07A7679E",
@@ -508,7 +508,7 @@
     "item": "PALETA-CREMA-OREO",
     "descripcion": "PALETA CREMA Oreo",
     "precio": 35.0,
-    "stock": 59
+    "stock": 58
   },
   {
     "product_id": "7B72DC7E",
