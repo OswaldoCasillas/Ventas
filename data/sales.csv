@@ -167,7 +167,11 @@ S000050,2026-04-18,PALETA-AGUA-TAMARINDO,1,25.00,25.00,https://github.com/Oswald
 S000050,2026-04-18,BEBIDA-CHAMOYADA,2,60.00,120.00,https://github.com/OswaldoCasillas/Ventas/issues/162,tarjeta,client:404b7b44-9bb6-4292-9f2b-fba9fbfa6a77#3,
 S000050,2026-04-18,HELADO-NIEVE-DOBLE,1,45.00,45.00,https://github.com/OswaldoCasillas/Ventas/issues/162,tarjeta,client:404b7b44-9bb6-4292-9f2b-fba9fbfa6a77#4,
 S000051,2026-04-19,AGUA-FRESCA-GRANDE,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/163,tarjeta,client:c04d1db3-1da4-4e7b-b10e-6d490d981c5e#0,
+<<<<<<< Updated upstream
 S000052,2026-04-19,PALETA-CREMA-ARROZ,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/165,efectivo,client:172dcdf4-fb76-40dc-9368-c2a9f2e54f22#0,
 S000052,2026-04-19,PALETA-AGUA-LIMON,1,25.00,25.00,https://github.com/OswaldoCasillas/Ventas/issues/165,efectivo,client:172dcdf4-fb76-40dc-9368-c2a9f2e54f22#1,
 S000052,2026-04-19,HELADO-CLASICO-SENCILLO,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/165,efectivo,client:172dcdf4-fb76-40dc-9368-c2a9f2e54f22#2,
 S000052,2026-04-19,PALETA-MINI-MINI-SIN-AZUCAR,2,10.00,20.00,https://github.com/OswaldoCasillas/Ventas/issues/165,efectivo,client:172dcdf4-fb76-40dc-9368-c2a9f2e54f22#3,
+=======
+S000052,2026-04-19,PALETA-CREMA-ARROZ,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/166,efectivo,client:f9faee1e-7295-40cc-8866-249ec1b3a32f#0,
+>>>>>>> Stashed changes

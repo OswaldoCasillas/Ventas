@@ -1,7 +1,13 @@
 {
+<<<<<<< Updated upstream
   "generated_at": "2026-04-19T19:01:14.337901+00:00",
   "general_items": 120,
   "general_stock_total": 480002050,
+=======
+  "generated_at": "2026-04-19T19:01:30.320391+00:00",
+  "general_items": 120,
+  "general_stock_total": 480002054,
+>>>>>>> Stashed changes
   "mercado_items": 93,
   "mercado_stock_total": 301400000164
 }
