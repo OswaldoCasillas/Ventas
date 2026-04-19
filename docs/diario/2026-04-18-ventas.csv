@@ -102,12 +102,14 @@ S000042,2026-04-18,PALETA-MINI-MINI-CREMA,1,8.0,8.0,https://github.com/OswaldoCa
 S000003,2026-04-18,PALETA-MINI-MINI-SIN-AZUCAR,2,10.0,20.0,https://github.com/OswaldoCasillas/Ventas/issues/108,efectivo,client:2fb60e78-24f2-4c28-9127-003bb2c8071c#0,PALETA MINI Sin Azucar,D189174D,efectivo
 S000007,2026-04-18,PALETA-MINI-MINI-SIN-AZUCAR,1,10.0,10.0,https://github.com/OswaldoCasillas/Ventas/issues/112,tarjeta,client:c946c4b7-f0e1-4a5f-9a56-581151debb47#2,PALETA MINI Sin Azucar,D189174D,tarjeta
 S000032,2026-04-18,PALETA-MINI-MINI-SIN-AZUCAR,3,10.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/143,efectivo,client:9cb33026-a90e-4099-8116-10b496122811#1,PALETA MINI Sin Azucar,D189174D,efectivo
+S000043,2026-04-18,PALETA-SIN-AZUCAR-CAJETA,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/154,tarjeta,client:06a7b2d9-0553-4bbb-8528-c8e39a283180#1,PALETA SIN AZUCAR Cajeta,68DJ885D,tarjeta
 S000015,2026-04-18,PALETA-SIN-AZUCAR-COCO,2,45.0,90.0,https://github.com/OswaldoCasillas/Ventas/issues/122,efectivo,client:e7156d36-4902-4cc1-8f5d-a14105bab1ed#0,PALETA SIN AZUCAR Cocoketo,68D4185D,efectivo
 S000033,2026-04-18,PALETA-SIN-AZUCAR-FERRERO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/144,efectivo,client:0cad00f4-c366-499c-812f-23dcde48a1bc#0,PALETA SIN AZUCAR Ferreroketo,0935F20F,efectivo
 S000008,2026-04-18,PALETA-SIN-AZUCAR-FRUTOS-ROJOS,3,45.0,135.0,https://github.com/OswaldoCasillas/Ventas/issues/113,tarjeta,client:8384de7b-c486-4bfd-8741-79fc31c507c8#0,PALETA SIN AZUCAR Ketofrutos,EE158D68,tarjeta
 S000028,2026-04-18,PALETA-SIN-AZUCAR-GUANABANA,4,45.0,180.0,https://github.com/OswaldoCasillas/Ventas/issues/138,tarjeta,client:c23729d2-83a9-4996-8951-d6048585b90d#0,PALETA SIN AZUCAR Guanabana,68DHRT5D,tarjeta
 S000015,2026-04-18,PALETA-SIN-AZUCAR-LIMON-MENTA,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/122,efectivo,client:e7156d36-4902-4cc1-8f5d-a14105bab1ed#1,PALETA SIN AZUCAR Limon-Menta,6B908D02,efectivo
 S000009,2026-04-18,PALETA-SIN-AZUCAR-NUEZ,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/115,efectivo,client:6e10d9dd-cc41-4a01-bd38-a1e8405687a0#0,PALETA SIN AZUCAR Nuez,24E6A7FD,efectivo
+S000043,2026-04-18,PALETA-SIN-AZUCAR-VAINILLA,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/154,tarjeta,client:06a7b2d9-0553-4bbb-8528-c8e39a283180#0,PALETA SIN AZUCAR Vainilla,6A09314A,tarjeta
 S000018,2026-04-18,PALETAS-PERRO,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/125,efectivo,client:aefec092-477f-43f0-84e9-7a07b39aa7aa#0,Paletas para Perro,6A3513FD,efectivo
 S000005,2026-04-18,PALETAS-PERRO-MINI,1,10.0,10.0,https://github.com/OswaldoCasillas/Ventas/issues/110,efectivo,client:7aa02c3a-1781-41be-a27a-e8d39424b5b0#0,,,efectivo
 S000020,2026-04-18,POSTRE-DANONINO-GRANDE,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/127,efectivo,client:72335082-c4ac-4ef0-b4a7-1e1c4992e76e#0,POSTRE Danonino Grande,3B6B12C9,efectivo
