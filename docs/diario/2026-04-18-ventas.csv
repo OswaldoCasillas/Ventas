@@ -4,7 +4,9 @@ S000007,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasi
 S000010,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/117,efectivo,client:1941d9c4-35b5-49de-8994-d7a7c80dd30d#0,AGUA FRESCA Grande,9C1B04E4,efectivo
 S000006,2026-04-18,BEBIDA-CHAMOYADA,2,60.0,120.0,https://github.com/OswaldoCasillas/Ventas/issues/111,efectivo,client:56833fab-f5a6-44b9-ae13-54ec6d3939ba#0,BEBIDA Chamoyada,1C271C39,efectivo
 S000016,2026-04-18,EXTRA-COBERTURA-CON-TOPPING,4,15.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/123,efectivo,client:781bcf64-bc9d-42f6-aa6a-03de922108d0#4,EXTRA Cobertura con Topping,A9581B56,efectivo
+S000017,2026-04-18,HELADO-CLASICO-DOBLE,1,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/124,tarjeta,client:34f90a0f-ed5f-4a2a-b9b5-3ce7a1251045#1,Helado Clasico Doble,BD4D8B7F,tarjeta
 S000001,2026-04-18,HELADO-CLASICO-SENCILLO,3,35.0,105.0,https://github.com/OswaldoCasillas/Ventas/issues/105,tarjeta,client:600e8a66-0582-4084-891b-ebfd838cabf4#0,Helado Clasico Sencillo,9D68612D,tarjeta
+S000017,2026-04-18,HELADO-CLASICO-SENCILLO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/124,tarjeta,client:34f90a0f-ed5f-4a2a-b9b5-3ce7a1251045#0,Helado Clasico Sencillo,9D68612D,tarjeta
 S000002,2026-04-18,HELADO-GOURMET-SENCILLO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/106,tarjeta,client:00249f25-0747-4a67-b8e0-c8df2c7b22d6#1,Helado Gourmet Sencillo,97EEAB91,tarjeta
 S000011,2026-04-18,HELADO-GOURMET-SENCILLO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/118,efectivo,client:37d0a918-8902-48ff-96b9-0ebe4ec746f8#3,Helado Gourmet Sencillo,97EEAB91,efectivo
 S000015,2026-04-18,PALETA-AGUA-GUANABANA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/122,efectivo,client:e7156d36-4902-4cc1-8f5d-a14105bab1ed#2,PALETA AGUA Guanabana,K2F6E9F9,efectivo
