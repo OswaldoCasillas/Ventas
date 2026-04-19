@@ -1,5 +1,26 @@
 [
   {
+    "product_id": "",
+    "item": "<<<<<<< Updated upstream",
+    "descripcion": "",
+    "precio": "",
+    "stock": 0
+  },
+  {
+    "product_id": "",
+    "item": "=======",
+    "descripcion": "",
+    "precio": "",
+    "stock": 0
+  },
+  {
+    "product_id": "",
+    "item": ">>>>>>> Stashed changes",
+    "descripcion": "",
+    "precio": "",
+    "stock": 0
+  },
+  {
     "product_id": "74CEF70C",
     "item": "AGUA-FRESCA-CHICA",
     "descripcion": "AGUA FRESCA Chica",
@@ -102,7 +123,7 @@
     "item": "HELADO-CLASICO-SENCILLO",
     "descripcion": "Helado Clasico Sencillo",
     "precio": 35.0,
-    "stock": 9999998
+    "stock": 9999997
   },
   {
     "product_id": "7888486E",
@@ -291,7 +312,7 @@
     "item": "PALETA-AGUA-PREMIUM-FRUTOS-ROJOS",
     "descripcion": "PALETA AGUA PREMIUM Frutos Rojos",
     "precio": 30.0,
-    "stock": 9999999
+    "stock": 9999998
   },
   {
     "product_id": "BBF0DD66",
@@ -305,11 +326,7 @@
     "item": "PALETA-AGUA-PREMIUM-MANGO-CHAMOY",
     "descripcion": "PALETA AGUA PREMIUM Mango-Chamoy",
     "precio": 30.0,
-<<<<<<< Updated upstream
-    "stock": 35
-=======
     "stock": 32
->>>>>>> Stashed changes
   },
   {
     "product_id": "331378B8",

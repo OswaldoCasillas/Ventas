@@ -209,9 +209,11 @@ S000063,2026-04-19,PALETA-CREMA-COCO,1,35.00,35.00,https://github.com/OswaldoCas
 S000063,2026-04-19,HELADO-NIEVE-DOBLE,1,45.00,45.00,https://github.com/OswaldoCasillas/Ventas/issues/178,tarjeta,client:ce84106b-2a6b-4ab2-9c15-660bb6eeb97b#2,
 S000063,2026-04-19,HELADO-CLASICO-DOBLE,1,60.00,60.00,https://github.com/OswaldoCasillas/Ventas/issues/178,tarjeta,client:ce84106b-2a6b-4ab2-9c15-660bb6eeb97b#3,
 S000064,2026-04-19,AGUA-FRESCA-GRANDE,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/179,efectivo,client:b78472b2-6856-4bb9-a85f-407b55874046#0,
-<<<<<<< Updated upstream
+<<<<<<< Updated upstream,,,,,,,,,
 S000065,2026-04-19,PALETA-AGUA-TAMARINDO,1,25.00,25.00,https://github.com/OswaldoCasillas/Ventas/issues/180,efectivo,client:c35a7437-a72d-4045-b814-f196531dc072#0,
 S000065,2026-04-19,PALETA-AGUA-PREMIUM-MANGO-CHAMOY,1,30.00,30.00,https://github.com/OswaldoCasillas/Ventas/issues/180,efectivo,client:c35a7437-a72d-4045-b814-f196531dc072#1,
-=======
+=======,,,,,,,,,
 S000065,2026-04-19,PALETA-AGUA-PREMIUM-MANGO-CHAMOY,4,30.00,120.00,https://github.com/OswaldoCasillas/Ventas/issues/181,efectivo,client:7417205c-b108-4bf7-bc2d-7ad3b98ed6c5#0,
->>>>>>> Stashed changes
+>>>>>>> Stashed changes,,,,,,,,,
+S000066,2026-04-19,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,1,30.00,30.00,https://github.com/OswaldoCasillas/Ventas/issues/182,tarjeta,client:2398cdb8-e502-4e69-ace4-b1dbfd417d50#0,
+S000066,2026-04-19,HELADO-CLASICO-SENCILLO,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/182,tarjeta,client:2398cdb8-e502-4e69-ace4-b1dbfd417d50#1,
