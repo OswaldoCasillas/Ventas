@@ -11,7 +11,7 @@
     "item": "AGUA-FRESCA-GRANDE",
     "descripcion": "AGUA FRESCA Grande",
     "precio": 35.0,
-    "stock": 9999996
+    "stock": 9999995
   },
   {
     "product_id": "1C271C39",
@@ -151,14 +151,14 @@
     "item": "HELADO-NIEVE-MEDIO-LITRO",
     "descripcion": "Helado Nieve Medio Litro",
     "precio": 75.0,
-    "stock": 9999999
+    "stock": 9999998
   },
   {
     "product_id": "641AA19F",
     "item": "HELADO-NIEVE-SENCILLO",
     "descripcion": "Helado Nieve Sencillo",
     "precio": 25.0,
-    "stock": 9999998
+    "stock": 9999997
   },
   {
     "product_id": "93BBD957",
@@ -473,7 +473,7 @@
     "item": "PALETA-CREMA-MAZAPAN",
     "descripcion": "PALETA CREMA Mazapan",
     "precio": 35.0,
-    "stock": 9999999
+    "stock": 9999998
   },
   {
     "product_id": "97A7679E",

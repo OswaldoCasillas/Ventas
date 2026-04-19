@@ -3,17 +3,21 @@ S000051,2026-04-19,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasi
 S000053,2026-04-19,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/167,tarjeta,client:e7b8f02c-94e8-4aff-ad92-12533fa11ef0#0,AGUA FRESCA Grande,9C1B04E4,tarjeta
 S000053,2026-04-19,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/168,efectivo,client:63ec7a28-e05d-4999-bc59-963a0a5d3160#0,AGUA FRESCA Grande,9C1B04E4,efectivo
 S000058,2026-04-19,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/173,tarjeta,client:2b38a754-56fe-4ea5-a634-52f27457a1ba#1,AGUA FRESCA Grande,9C1B04E4,tarjeta
+S000060,2026-04-19,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/175,tarjeta,client:cccb3645-b4fc-4db0-a5bb-83ef60bc019e#1,AGUA FRESCA Grande,9C1B04E4,tarjeta
 S000057,2026-04-19,EXTRA-COBERTURA-CON-TOPPING,1,15.0,15.0,https://github.com/OswaldoCasillas/Ventas/issues/172,efectivo,client:fea93239-3165-4ab8-9e87-1aea6a423e16#0,EXTRA Cobertura con Topping,A9581B56,efectivo
 S000052,2026-04-19,HELADO-CLASICO-SENCILLO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/165,efectivo,client:172dcdf4-fb76-40dc-9368-c2a9f2e54f22#2,Helado Clasico Sencillo,9D68612D,efectivo
 S000056,2026-04-19,HELADO-GOURMET-LITRO,1,170.0,170.0,https://github.com/OswaldoCasillas/Ventas/issues/171,efectivo,client:514a1023-bb98-4238-abec-a5700e83bffe#1,Helado Gourmet Litro,28C3B90F,efectivo
 S000059,2026-04-19,HELADO-NIEVE-DOBLE,2,45.0,90.0,https://github.com/OswaldoCasillas/Ventas/issues/174,tarjeta,client:b9c01d2d-dbbf-4f8a-aa2d-62732b3286cb#4,Helado Nieve Doble,3021BE59,tarjeta
+S000060,2026-04-19,HELADO-NIEVE-MEDIO-LITRO,1,75.0,75.0,https://github.com/OswaldoCasillas/Ventas/issues/175,tarjeta,client:cccb3645-b4fc-4db0-a5bb-83ef60bc019e#2,Helado Nieve Medio Litro,7081D5FB,tarjeta
 S000054,2026-04-19,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/169,efectivo,client:b123844a-58ed-409d-8308-ae0df4309625#0,Helado Nieve Sencillo,641AA19F,efectivo
+S000060,2026-04-19,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/175,tarjeta,client:cccb3645-b4fc-4db0-a5bb-83ef60bc019e#3,Helado Nieve Sencillo,641AA19F,tarjeta
 S000056,2026-04-19,HELADO-SIN-AZUCAR-LITRO,1,180.0,180.0,https://github.com/OswaldoCasillas/Ventas/issues/171,efectivo,client:514a1023-bb98-4238-abec-a5700e83bffe#0,Helado Sin Azucar Litro,9DC9D6D6,efectivo
 S000052,2026-04-19,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/165,efectivo,client:172dcdf4-fb76-40dc-9368-c2a9f2e54f22#1,PALETA AGUA Limon,FFFB8948,efectivo
 S000055,2026-04-19,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/170,efectivo,client:1481ccbd-e92d-48eb-b976-648f0b6e2b72#0,PALETA AGUA Limon,FFFB8948,efectivo
 S000052,2026-04-19,PALETA-CREMA-ARROZ,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/165,efectivo,client:172dcdf4-fb76-40dc-9368-c2a9f2e54f22#0,PALETA CREMA Arroz,D24145B9,efectivo
 S000052,2026-04-19,PALETA-CREMA-ARROZ,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/166,efectivo,client:f9faee1e-7295-40cc-8866-249ec1b3a32f#0,PALETA CREMA Arroz,D24145B9,efectivo
 S000058,2026-04-19,PALETA-CREMA-DURAZNOS-CON-CREMA,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/173,tarjeta,client:2b38a754-56fe-4ea5-a634-52f27457a1ba#0,PALETA CREMA Duraznos con Crema,C8A28FAC,tarjeta
+S000060,2026-04-19,PALETA-CREMA-MAZAPAN,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/175,tarjeta,client:cccb3645-b4fc-4db0-a5bb-83ef60bc019e#0,PALETA CREMA Mazapan,07A7679E,tarjeta
 S000057,2026-04-19,PALETA-CREMA-PREMIUM-NUEZ,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/172,efectivo,client:fea93239-3165-4ab8-9e87-1aea6a423e16#1,PALETA CREMA PREMIUM Nuez,92CFB2A5,efectivo
 S000059,2026-04-19,PALETA-CREMA-PREMIUM-PINON,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/174,tarjeta,client:b9c01d2d-dbbf-4f8a-aa2d-62732b3286cb#1,PALETA CREMA PREMIUM Pinon,F6F917A9,tarjeta
 S000059,2026-04-19,PALETA-CREMA-PREMIUM-VINO-TINTO-RELLENO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/174,tarjeta,client:b9c01d2d-dbbf-4f8a-aa2d-62732b3286cb#0,PALETA CREMA PREMIUM Vino Tinto,6DF1F449,tarjeta
