@@ -154,6 +154,10 @@ S000047,2026-04-18,AGUA-FRESCA-GRANDE,1,35.00,35.00,https://github.com/OswaldoCa
 S000048,2026-04-18,PALETA-SIN-AZUCAR-CHOCOLATE-CON-FRESA,1,45.00,45.00,https://github.com/OswaldoCasillas/Ventas/issues/159,tarjeta,client:c5ee8ea1-847f-45e0-8309-a097624e45bd#0,
 S000048,2026-04-18,HELADO-SIN-AZUCAR-MEDIO-LITRO,2,95.00,190.00,https://github.com/OswaldoCasillas/Ventas/issues/159,tarjeta,client:c5ee8ea1-847f-45e0-8309-a097624e45bd#1,
 S000048,2026-04-18,HELADO-SIN-AZUCAR-SENCILLO,1,45.00,45.00,https://github.com/OswaldoCasillas/Ventas/issues/159,tarjeta,client:c5ee8ea1-847f-45e0-8309-a097624e45bd#2,
+<<<<<<< Updated upstream
 S000049,2026-04-18,AGUA-FRESCA-GRANDE,2,35.00,70.00,https://github.com/OswaldoCasillas/Ventas/issues/160,efectivo,client:a5c5da8b-e7ed-4dfa-85d3-fbbb6fb4e1ed#0,
 S000049,2026-04-18,HELADO-CLASICO-SENCILLO,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/160,efectivo,client:a5c5da8b-e7ed-4dfa-85d3-fbbb6fb4e1ed#1,
 S000049,2026-04-18,PALETA-MINI-MINI-CREMA,1,8.00,8.00,https://github.com/OswaldoCasillas/Ventas/issues/160,efectivo,client:a5c5da8b-e7ed-4dfa-85d3-fbbb6fb4e1ed#2,
+=======
+S000049,2026-04-18,PALETA-MINI-MINI-SIN-AZUCAR,4,10.00,40.00,https://github.com/OswaldoCasillas/Ventas/issues/161,efectivo,client:47deab3d-dc6a-4c65-a509-1b680bf7dc2f#0,
+>>>>>>> Stashed changes
