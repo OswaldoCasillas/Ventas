@@ -39,7 +39,7 @@
     "item": "BEBIDA-CHAMOYADA",
     "descripcion": "BEBIDA Chamoyada",
     "precio": 60.0,
-    "stock": 9999999
+    "stock": 9999998
   },
   {
     "product_id": "F76E2099",
@@ -851,7 +851,7 @@
     "item": "PALETAS-PERRO",
     "descripcion": "Paletas para Perro",
     "precio": 30.0,
-    "stock": 138
+    "stock": 137
   },
   {
     "product_id": "3B6B12C9",
