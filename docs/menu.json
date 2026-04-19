@@ -116,7 +116,7 @@
     "item": "HELADO-GOURMET-LITRO",
     "descripcion": "Helado Gourmet Litro",
     "precio": 170.0,
-    "stock": 9999999
+    "stock": 9999998
   },
   {
     "product_id": "2682D29D",
@@ -172,7 +172,7 @@
     "item": "HELADO-SIN-AZUCAR-LITRO",
     "descripcion": "Helado Sin Azucar Litro",
     "precio": 180.0,
-    "stock": 9999999
+    "stock": 9999998
   },
   {
     "product_id": "DA2364A6",
