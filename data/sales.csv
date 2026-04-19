@@ -19,6 +19,10 @@ S000007,2026-04-18,AGUA-FRESCA-GRANDE,1,35.00,35.00,https://github.com/OswaldoCa
 S000007,2026-04-18,PALETA-MINI-MINI-SIN-AZUCAR,1,10.00,10.00,https://github.com/OswaldoCasillas/Ventas/issues/112,tarjeta,client:c946c4b7-f0e1-4a5f-9a56-581151debb47#2,
 S000008,2026-04-18,PALETA-SIN-AZUCAR-FRUTOS-ROJOS,3,45.00,135.00,https://github.com/OswaldoCasillas/Ventas/issues/113,tarjeta,client:8384de7b-c486-4bfd-8741-79fc31c507c8#0,
 S000008,2026-04-18,PALETA-CREMA-ARROZ,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/113,tarjeta,client:8384de7b-c486-4bfd-8741-79fc31c507c8#1,
+<<<<<<< Updated upstream
 S000009,2026-04-18,PALETA-CREMA-MAMEY,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/114,efectivo,client:71ee5115-0b41-40f6-bfc5-22fc76230177#0,
 S000009,2026-04-18,PALETA-AGUA-MANDARINA,2,25.00,50.00,https://github.com/OswaldoCasillas/Ventas/issues/114,efectivo,client:71ee5115-0b41-40f6-bfc5-22fc76230177#1,
 S000009,2026-04-18,PALETA-AGUA-PREMIUM-PICAFRESA,1,30.00,30.00,https://github.com/OswaldoCasillas/Ventas/issues/114,efectivo,client:71ee5115-0b41-40f6-bfc5-22fc76230177#2,
+=======
+S000009,2026-04-18,PALETA-SIN-AZUCAR-NUEZ,1,45.00,45.00,https://github.com/OswaldoCasillas/Ventas/issues/115,efectivo,client:6e10d9dd-cc41-4a01-bd38-a1e8405687a0#0,
+>>>>>>> Stashed changes
