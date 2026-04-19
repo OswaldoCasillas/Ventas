@@ -15,9 +15,11 @@ S000063,2026-04-19,HELADO-NIEVE-DOBLE,1,45.0,45.0,https://github.com/OswaldoCasi
 S000060,2026-04-19,HELADO-NIEVE-MEDIO-LITRO,1,75.0,75.0,https://github.com/OswaldoCasillas/Ventas/issues/175,tarjeta,client:cccb3645-b4fc-4db0-a5bb-83ef60bc019e#2,Helado Nieve Medio Litro,7081D5FB,tarjeta
 S000054,2026-04-19,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/169,efectivo,client:b123844a-58ed-409d-8308-ae0df4309625#0,Helado Nieve Sencillo,641AA19F,efectivo
 S000060,2026-04-19,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/175,tarjeta,client:cccb3645-b4fc-4db0-a5bb-83ef60bc019e#3,Helado Nieve Sencillo,641AA19F,tarjeta
+S000067,2026-04-19,HELADO-NIEVE-SENCILLO,2,25.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/183,efectivo,client:36da91da-3f01-423d-ad92-c3246d6c6f30#1,Helado Nieve Sencillo,641AA19F,efectivo
 S000056,2026-04-19,HELADO-SIN-AZUCAR-LITRO,1,180.0,180.0,https://github.com/OswaldoCasillas/Ventas/issues/171,efectivo,client:514a1023-bb98-4238-abec-a5700e83bffe#0,Helado Sin Azucar Litro,9DC9D6D6,efectivo
 S000052,2026-04-19,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/165,efectivo,client:172dcdf4-fb76-40dc-9368-c2a9f2e54f22#1,PALETA AGUA Limon,FFFB8948,efectivo
 S000055,2026-04-19,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/170,efectivo,client:1481ccbd-e92d-48eb-b976-648f0b6e2b72#0,PALETA AGUA Limon,FFFB8948,efectivo
+S000067,2026-04-19,PALETA-AGUA-MANDARINA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/183,efectivo,client:36da91da-3f01-423d-ad92-c3246d6c6f30#0,PALETA AGUA Mandarina,3D2B18C9,efectivo
 S000066,2026-04-19,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/182,tarjeta,client:2398cdb8-e502-4e69-ace4-b1dbfd417d50#0,PALETA AGUA PREMIUM Frutos Rojos,746FF175,tarjeta
 S000065,2026-04-19,PALETA-AGUA-PREMIUM-MANGO-CHAMOY,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/180,efectivo,client:c35a7437-a72d-4045-b814-f196531dc072#1,PALETA AGUA PREMIUM Mango-Chamoy,331268B8,efectivo
 S000065,2026-04-19,PALETA-AGUA-PREMIUM-MANGO-CHAMOY,4,30.0,120.0,https://github.com/OswaldoCasillas/Ventas/issues/181,efectivo,client:7417205c-b108-4bf7-bc2d-7ad3b98ed6c5#0,PALETA AGUA PREMIUM Mango-Chamoy,331268B8,efectivo

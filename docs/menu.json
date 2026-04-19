@@ -179,7 +179,7 @@
     "item": "HELADO-NIEVE-SENCILLO",
     "descripcion": "Helado Nieve Sencillo",
     "precio": 25.0,
-    "stock": 9999997
+    "stock": 9999995
   },
   {
     "product_id": "93BBD957",
@@ -277,7 +277,7 @@
     "item": "PALETA-AGUA-MANDARINA",
     "descripcion": "PALETA AGUA Mandarina",
     "precio": 25.0,
-    "stock": 32
+    "stock": 31
   },
   {
     "product_id": "6263D0A1",
