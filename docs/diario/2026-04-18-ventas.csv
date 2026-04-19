@@ -7,6 +7,7 @@ S000030,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasi
 S000006,2026-04-18,BEBIDA-CHAMOYADA,2,60.0,120.0,https://github.com/OswaldoCasillas/Ventas/issues/111,efectivo,client:56833fab-f5a6-44b9-ae13-54ec6d3939ba#0,BEBIDA Chamoyada,1C271C39,efectivo
 S000027,2026-04-18,BEBIDA-CHAMOYADA,1,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/137,efectivo,client:21a2fcf3-136f-4c18-8719-c67558a94bab#0,BEBIDA Chamoyada,1C271C39,efectivo
 S000031,2026-04-18,BEBIDA-CHAMOYADA,2,60.0,120.0,https://github.com/OswaldoCasillas/Ventas/issues/142,efectivo,client:52c52d35-f816-4227-ba38-af59ae217ed1#0,BEBIDA Chamoyada,1C271C39,efectivo
+S000032,2026-04-18,BEBIDA-CHAMOYADA,3,60.0,180.0,https://github.com/OswaldoCasillas/Ventas/issues/143,efectivo,client:9cb33026-a90e-4099-8116-10b496122811#0,BEBIDA Chamoyada,1C271C39,efectivo
 S000016,2026-04-18,EXTRA-COBERTURA-CON-TOPPING,4,15.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/123,efectivo,client:781bcf64-bc9d-42f6-aa6a-03de922108d0#4,EXTRA Cobertura con Topping,A9581B56,efectivo
 S000020,2026-04-18,EXTRA-COBERTURA-CON-TOPPING,1,15.0,15.0,https://github.com/OswaldoCasillas/Ventas/issues/127,efectivo,client:72335082-c4ac-4ef0-b4a7-1e1c4992e76e#1,EXTRA Cobertura con Topping,A9581B56,efectivo
 S000017,2026-04-18,HELADO-CLASICO-DOBLE,1,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/124,tarjeta,client:34f90a0f-ed5f-4a2a-b9b5-3ce7a1251045#1,Helado Clasico Doble,BD4D8B7F,tarjeta
@@ -70,6 +71,7 @@ S000002,2026-04-18,PALETA-MINI-MINI-CREMA,1,8.0,8.0,https://github.com/OswaldoCa
 S000014,2026-04-18,PALETA-MINI-MINI-CREMA,2,8.0,16.0,https://github.com/OswaldoCasillas/Ventas/issues/121,efectivo,client:60c91380-7d19-42d6-b221-4dfcf9c7cf4f#2,PALETA MINI Mini Crema,C371ED40,efectivo
 S000003,2026-04-18,PALETA-MINI-MINI-SIN-AZUCAR,2,10.0,20.0,https://github.com/OswaldoCasillas/Ventas/issues/108,efectivo,client:2fb60e78-24f2-4c28-9127-003bb2c8071c#0,PALETA MINI Sin Azucar,D189174D,efectivo
 S000007,2026-04-18,PALETA-MINI-MINI-SIN-AZUCAR,1,10.0,10.0,https://github.com/OswaldoCasillas/Ventas/issues/112,tarjeta,client:c946c4b7-f0e1-4a5f-9a56-581151debb47#2,PALETA MINI Sin Azucar,D189174D,tarjeta
+S000032,2026-04-18,PALETA-MINI-MINI-SIN-AZUCAR,3,10.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/143,efectivo,client:9cb33026-a90e-4099-8116-10b496122811#1,PALETA MINI Sin Azucar,D189174D,efectivo
 S000015,2026-04-18,PALETA-SIN-AZUCAR-COCO,2,45.0,90.0,https://github.com/OswaldoCasillas/Ventas/issues/122,efectivo,client:e7156d36-4902-4cc1-8f5d-a14105bab1ed#0,PALETA SIN AZUCAR Cocoketo,68D4185D,efectivo
 S000008,2026-04-18,PALETA-SIN-AZUCAR-FRUTOS-ROJOS,3,45.0,135.0,https://github.com/OswaldoCasillas/Ventas/issues/113,tarjeta,client:8384de7b-c486-4bfd-8741-79fc31c507c8#0,PALETA SIN AZUCAR Ketofrutos,EE158D68,tarjeta
 S000028,2026-04-18,PALETA-SIN-AZUCAR-GUANABANA,4,45.0,180.0,https://github.com/OswaldoCasillas/Ventas/issues/138,tarjeta,client:c23729d2-83a9-4996-8951-d6048585b90d#0,PALETA SIN AZUCAR Guanabana,68DHRT5D,tarjeta

@@ -39,7 +39,7 @@
     "item": "BEBIDA-CHAMOYADA",
     "descripcion": "BEBIDA Chamoyada",
     "precio": 60.0,
-    "stock": 99999994
+    "stock": 99999991
   },
   {
     "product_id": "F76E2099",
@@ -697,7 +697,7 @@
     "item": "PALETA-MINI-MINI-SIN-AZUCAR",
     "descripcion": "PALETA MINI Sin Azucar",
     "precio": 10.0,
-    "stock": 99999999996
+    "stock": 99999999993
   },
   {
     "product_id": "68DJ885D",
