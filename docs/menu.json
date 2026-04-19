@@ -228,7 +228,7 @@
     "item": "PALETA-AGUA-GUANABANA",
     "descripcion": "PALETA AGUA Guanabana",
     "precio": 25.0,
-    "stock": 40
+    "stock": 39
   },
   {
     "product_id": "F2E6E9F9",
@@ -711,7 +711,7 @@
     "item": "PALETA-SIN-AZUCAR-COCO",
     "descripcion": "PALETA SIN AZUCAR Cocoketo",
     "precio": 45.0,
-    "stock": 27
+    "stock": 25
   },
   {
     "product_id": "0935F20F",
@@ -760,7 +760,7 @@
     "item": "PALETA-SIN-AZUCAR-LIMON-MENTA",
     "descripcion": "PALETA SIN AZUCAR Limon-Menta",
     "precio": 45.0,
-    "stock": 21
+    "stock": 20
   },
   {
     "product_id": "43F5B285",
