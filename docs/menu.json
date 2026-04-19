@@ -599,7 +599,7 @@
     "item": "PALETA-CREMA-PREMIUM-QUESO-CON-ZARZAMORA",
     "descripcion": "PALETA CREMA PREMIUM Queso con Zarzamora",
     "precio": 40.0,
-    "stock": 14
+    "stock": 13
   },
   {
     "product_id": "216G1BCF",
@@ -620,7 +620,7 @@
     "item": "PALETA-CREMA-PREMIUM-SELVA-BLANCA",
     "descripcion": "PALETA CREMA PREMIUM Selva Blanca",
     "precio": 40.0,
-    "stock": 26
+    "stock": 25
   },
   {
     "product_id": "05833CE3",
@@ -739,7 +739,7 @@
     "item": "PALETA-SIN-AZUCAR-FERRERO",
     "descripcion": "PALETA SIN AZUCAR Ferreroketo",
     "precio": 45.0,
-    "stock": 31
+    "stock": 30
   },
   {
     "product_id": "498B2E60",
