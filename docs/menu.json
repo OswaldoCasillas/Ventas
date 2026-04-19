@@ -3,714 +3,833 @@
     "product_id": "74CEF70C",
     "item": "AGUA-FRESCA-CHICA",
     "descripcion": "AGUA FRESCA Chica",
-    "precio": 25.0
+    "precio": 25.0,
+    "stock": 99999999
   },
   {
     "product_id": "9C1B04E4",
     "item": "AGUA-FRESCA-GRANDE",
     "descripcion": "AGUA FRESCA Grande",
-    "precio": 35.0
+    "precio": 35.0,
+    "stock": 9999998
   },
   {
     "product_id": "1C271C39",
     "item": "BEBIDA-CHAMOYADA",
     "descripcion": "BEBIDA Chamoyada",
-    "precio": 60.0
+    "precio": 60.0,
+    "stock": 99999999
   },
   {
     "product_id": "F76E2099",
     "item": "BEBIDA-CHOCOLATE-CALIENTE",
     "descripcion": "BEBIDA Chocolate Caliente",
-    "precio": 35.0
+    "precio": 35.0,
+    "stock": 999999998
   },
   {
     "product_id": "1DD9CEE1",
     "item": "BEBIDA-CHOCOLATE-CALIENTE-VEGANO",
     "descripcion": "BEBIDA Chocolate Caliente Vegano",
-    "precio": 40.0
+    "precio": 40.0,
+    "stock": 99999999
   },
   {
     "product_id": "2188FC39",
     "item": "BEBIDA-FRAPUCHINO",
     "descripcion": "BEBIDA Frapuchino",
-    "precio": 60.0
+    "precio": 60.0,
+    "stock": 999999999
   },
   {
     "product_id": "CFCEA938",
     "item": "BOTANA-DORILOCOS",
     "descripcion": "BOTANA Dorilocos",
-    "precio": 50.0
+    "precio": 50.0,
+    "stock": 999999998
   },
   {
     "product_id": "7E9B8EC2",
     "item": "BOTANA-PLATANITOS",
     "descripcion": "BOTANA Platanitos",
-    "precio": 15.0
-  },
-  {
-    "product_id": "7E9B8EC1",
-    "item": "EXTRA-CONO",
-    "descripcion": "EXTRA Cono",
-    "precio": 5.0
+    "precio": 15.0,
+    "stock": 99999999
   },
   {
     "product_id": "062CFB68",
     "item": "EXTRA-COBERTURA-CHOCOLATE",
     "descripcion": "EXTRA Cobertura Chocolate",
-    "precio": 10.0
+    "precio": 10.0,
+    "stock": 999999999
   },
   {
     "product_id": "A9581B56",
     "item": "EXTRA-COBERTURA-CON-TOPPING",
     "descripcion": "EXTRA Cobertura con Topping",
-    "precio": 15.0
+    "precio": 15.0,
+    "stock": 999999998
   },
   {
-    "product_id": "6A3513FD",
-    "item": "PALETAS-PERRO",
-    "descripcion": "Paletas para Perro",
-    "precio": 30.0
+    "product_id": "7E9B8EC1",
+    "item": "EXTRA-CONO",
+    "descripcion": "EXTRA Cono",
+    "precio": 5.0,
+    "stock": 9999999
   },
   {
     "product_id": "BD4D8B7F",
     "item": "HELADO-CLASICO-DOBLE",
     "descripcion": "Helado Clasico Doble",
-    "precio": 60.0
+    "precio": 60.0,
+    "stock": 99999996
   },
   {
     "product_id": "7968996E",
     "item": "HELADO-CLASICO-LITRO",
     "descripcion": "Helado Clasico Litro",
-    "precio": 160.0
+    "precio": 160.0,
+    "stock": 99999999
   },
   {
     "product_id": "AA40C33B",
     "item": "HELADO-CLASICO-MEDIO-LITRO",
     "descripcion": "Helado Clasico Medio Litro",
-    "precio": 85.0
+    "precio": 85.0,
+    "stock": 99999999
   },
   {
     "product_id": "9D68612D",
     "item": "HELADO-CLASICO-SENCILLO",
     "descripcion": "Helado Clasico Sencillo",
-    "precio": 35.0
+    "precio": 35.0,
+    "stock": 99999998
   },
   {
     "product_id": "7888486E",
     "item": "HELADO-GOURMET-DOBLE",
     "descripcion": "Helado Gourmet Doble",
-    "precio": 70.0
+    "precio": 70.0,
+    "stock": 99999999
   },
   {
     "product_id": "28C3B90F",
     "item": "HELADO-GOURMET-LITRO",
     "descripcion": "Helado Gourmet Litro",
-    "precio": 170.0
+    "precio": 170.0,
+    "stock": 99999999
   },
   {
     "product_id": "2682D29D",
     "item": "HELADO-GOURMET-MEDIO-LITRO",
     "descripcion": "Helado Gourmet Medio Litro",
-    "precio": 90.0
+    "precio": 90.0,
+    "stock": 99999999
   },
   {
     "product_id": "97EEAB91",
     "item": "HELADO-GOURMET-SENCILLO",
     "descripcion": "Helado Gourmet Sencillo",
-    "precio": 40.0
+    "precio": 40.0,
+    "stock": 99999998
   },
   {
     "product_id": "3021BE59",
     "item": "HELADO-NIEVE-DOBLE",
     "descripcion": "Helado Nieve Doble",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 99999999
   },
   {
     "product_id": "D6B795F8",
     "item": "HELADO-NIEVE-LITRO",
     "descripcion": "Helado Nieve Litro",
-    "precio": 150.0
+    "precio": 150.0,
+    "stock": 99999999
   },
   {
     "product_id": "7081D5FB",
     "item": "HELADO-NIEVE-MEDIO-LITRO",
     "descripcion": "Helado Nieve Medio Litro",
-    "precio": 75.0
+    "precio": 75.0,
+    "stock": 99999999
   },
   {
     "product_id": "641AA19F",
     "item": "HELADO-NIEVE-SENCILLO",
     "descripcion": "Helado Nieve Sencillo",
-    "precio": 25.0
+    "precio": 25.0,
+    "stock": 99999997
   },
   {
     "product_id": "93BBD957",
     "item": "HELADO-SIN-AZUCAR-DOBLE",
     "descripcion": "Helado Sin Azucar Doble",
-    "precio": 75.0
+    "precio": 75.0,
+    "stock": 99999999
   },
   {
     "product_id": "9DC9D6D6",
     "item": "HELADO-SIN-AZUCAR-LITRO",
     "descripcion": "Helado Sin Azucar Litro",
-    "precio": 180.0
+    "precio": 180.0,
+    "stock": 99999999
   },
   {
     "product_id": "DA2364A6",
     "item": "HELADO-SIN-AZUCAR-MEDIO-LITRO",
     "descripcion": "Helado Sin Azucar Medio Litro",
-    "precio": 95.0
+    "precio": 95.0,
+    "stock": 99999999
   },
   {
     "product_id": "9E69701A",
     "item": "HELADO-SIN-AZUCAR-SENCILLO",
     "descripcion": "Helado Sin Azucar Sencillo",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 99999997
   },
   {
     "product_id": "D7361A46",
     "item": "MALTEADA-CLASICA",
     "descripcion": "MALTEADA Clasica",
-    "precio": 65.0
+    "precio": 65.0,
+    "stock": 99999999
   },
   {
     "product_id": "F63212B1",
     "item": "MALTEADA-GOURMET",
     "descripcion": "MALTEADA Gourmet",
-    "precio": 70.0
+    "precio": 70.0,
+    "stock": 99999999
   },
   {
     "product_id": "8E1F2139",
     "item": "MALTEADA-SIN-AZUCAR",
     "descripcion": "MALTEADA Sin Azucar",
-    "precio": 75.0
+    "precio": 75.0,
+    "stock": 99999999
   },
   {
     "product_id": "6D8A2D50",
     "item": "PALETA-AGUA-FRESA",
     "descripcion": "PALETA AGUA Fresa",
-    "precio": 25.0
+    "precio": 25.0,
+    "stock": 28
   },
   {
     "product_id": "81CEF3B7",
     "item": "PALETA-AGUA-GROSSELLA",
     "descripcion": "PALETA AGUA Grosella",
-    "precio": 25.0
+    "precio": 25.0,
+    "stock": 53
   },
   {
     "product_id": "K2F6E9F9",
     "item": "PALETA-AGUA-GUANABANA",
     "descripcion": "PALETA AGUA Guanabana",
-    "precio": 25.0
+    "precio": 25.0,
+    "stock": 40
   },
   {
     "product_id": "F2E6E9F9",
     "item": "PALETA-AGUA-GUAYABA",
     "descripcion": "PALETA AGUA Guayaba",
-    "precio": 25.0
+    "precio": 25.0,
+    "stock": 33
   },
   {
     "product_id": "FRTO8948",
     "item": "PALETA-AGUA-KIWI",
     "descripcion": "PALETA AGUA Kiwi",
-    "precio": 25.0
+    "precio": 25.0,
+    "stock": 15
   },
   {
     "product_id": "FFFB8948",
     "item": "PALETA-AGUA-LIMON",
     "descripcion": "PALETA AGUA Limon",
-    "precio": 25.0
+    "precio": 25.0,
+    "stock": 60
   },
   {
     "product_id": "3D2B18C9",
     "item": "PALETA-AGUA-MANDARINA",
     "descripcion": "PALETA AGUA Mandarina",
-    "precio": 25.0
+    "precio": 25.0,
+    "stock": 41
   },
   {
     "product_id": "6263D0A1",
     "item": "PALETA-AGUA-MANGO",
     "descripcion": "PALETA AGUA Mango",
-    "precio": 25.0
+    "precio": 25.0,
+    "stock": 48
   },
   {
     "product_id": "4E1A8D0F",
     "item": "PALETA-AGUA-MARACUYA",
     "descripcion": "PALETA AGUA Maracuya",
-    "precio": 25.0
+    "precio": 25.0,
+    "stock": 61
   },
   {
     "product_id": "5A40D3E3",
     "item": "PALETA-AGUA-MELON",
     "descripcion": "PALETA AGUA Melon",
-    "precio": 25.0
+    "precio": 25.0,
+    "stock": 22
   },
   {
     "product_id": "BFE88BE3",
     "item": "PALETA-AGUA-PINA",
     "descripcion": "PALETA AGUA Pina",
-    "precio": 25.0
+    "precio": 25.0,
+    "stock": 37
   },
   {
     "product_id": "746FF175",
     "item": "PALETA-AGUA-PREMIUM-FRUTOS-ROJOS",
     "descripcion": "PALETA AGUA PREMIUM Frutos Rojos",
-    "precio": 30.0
+    "precio": 30.0,
+    "stock": 54
   },
   {
     "product_id": "BBF0DD66",
     "item": "PALETA-AGUA-PREMIUM-LIMON-CHAMOY",
     "descripcion": "PALETA AGUA PREMIUM Limon-Chamoy",
-    "precio": 30.0
+    "precio": 30.0,
+    "stock": 7
   },
   {
     "product_id": "331268B8",
     "item": "PALETA-AGUA-PREMIUM-MANGO-CHAMOY",
     "descripcion": "PALETA AGUA PREMIUM Mango-Chamoy",
-    "precio": 30.0
+    "precio": 30.0,
+    "stock": 45
   },
   {
     "product_id": "331378B8",
     "item": "PALETA-AGUA-PREMIUM-PICAFRESA",
     "descripcion": "PALETA AGUA PREMIUM Picafresa",
-    "precio": 30.0
+    "precio": 30.0,
+    "stock": 51
   },
   {
     "product_id": "431378B8",
     "item": "PALETA-AGUA-PREMIUM-PICAPANDA",
     "descripcion": "PALETA AGUA PREMIUM Picapanda",
-    "precio": 30.0
+    "precio": 30.0,
+    "stock": 53
   },
   {
     "product_id": "BFE99BE3",
     "item": "PALETA-AGUA-PREMIUM-PINA-CHAMOY",
     "descripcion": "PALETA AGUA PREMIUM Pina-Chamoy",
-    "precio": 30.0
+    "precio": 30.0,
+    "stock": 19
   },
   {
     "product_id": "430P78B8",
     "item": "PALETA-AGUA-PREMIUM-PULPARINDO",
     "descripcion": "PALETA AGUA PREMIUM Pulparindo",
-    "precio": 30.0
+    "precio": 30.0,
+    "stock": 50
   },
   {
     "product_id": "BFE99PL3",
     "item": "PALETA-AGUA-PREMIUM-SANDIA-CHAMOY",
     "descripcion": "PALETA AGUA PREMIUM Sandia-Chamoy",
-    "precio": 30.0
+    "precio": 30.0,
+    "stock": 40
   },
   {
     "product_id": "21BFA58F",
     "item": "PALETA-AGUA-SANDIA",
     "descripcion": "PALETA AGUA Sandia",
-    "precio": 25.0
+    "precio": 25.0,
+    "stock": 19
   },
   {
     "product_id": "98C5FF9E",
     "item": "PALETA-AGUA-TAMARINDO",
     "descripcion": "PALETA AGUA Tamarindo",
-    "precio": 25.0
+    "precio": 25.0,
+    "stock": 34
   },
   {
     "product_id": "27D27C45",
     "item": "PALETA-AGUA-UVA",
     "descripcion": "PALETA AGUA Uva",
-    "precio": 25.0
+    "precio": 25.0,
+    "stock": 27
   },
   {
     "product_id": "B4564A9B",
     "item": "PALETA-AGUA-ZAPOTE",
     "descripcion": "PALETA AGUA Zapote",
-    "precio": 25.0
+    "precio": 25.0,
+    "stock": 46
   },
   {
     "product_id": "BJK64A9B",
     "item": "PALETA-ALCOHOL-PERLA-NEGRA",
     "descripcion": "PALETA ALCOHOL Perla Negra",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 5
   },
   {
     "product_id": "BJK6PPLB",
     "item": "PALETA-ALCOHOL-PINA-COLADA",
     "descripcion": "PALETA ALCOHOL Pina Colada",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 3
   },
   {
     "product_id": "BJK345LB",
     "item": "PALETA-ALCOHOL-TEQUILA",
     "descripcion": "PALETA ALCOHOL Tequila",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 7
   },
   {
     "product_id": "EBCA445D",
     "item": "PALETA-CREMA-ALGODON",
     "descripcion": "PALETA CREMA Algodon",
-    "precio": 35.0
+    "precio": 35.0,
+    "stock": 48
   },
   {
     "product_id": "D24145B9",
     "item": "PALETA-CREMA-ARROZ",
     "descripcion": "PALETA CREMA Arroz",
-    "precio": 35.0
+    "precio": 35.0,
+    "stock": 26
   },
   {
     "product_id": "0F878660",
     "item": "PALETA-CREMA-BESO-DE-ANGEL",
     "descripcion": "PALETA CREMA Beso de Angel",
-    "precio": 35.0
+    "precio": 35.0,
+    "stock": 47
   },
   {
     "product_id": "13A74508",
     "item": "PALETA-CREMA-CAPUCHINO",
     "descripcion": "PALETA CREMA Capuchino",
-    "precio": 35.0
+    "precio": 35.0,
+    "stock": 20
   },
   {
     "product_id": "053D0623",
     "item": "PALETA-CREMA-CHICLE",
     "descripcion": "PALETA CREMA Chicle",
-    "precio": 35.0
+    "precio": 35.0,
+    "stock": 27
   },
   {
     "product_id": "3D836156",
     "item": "PALETA-CREMA-CHOCOLATE",
     "descripcion": "PALETA CREMA Chocolate",
-    "precio": 35.0
+    "precio": 35.0,
+    "stock": 33
   },
   {
     "product_id": "7B6778AE",
     "item": "PALETA-CREMA-COCO",
     "descripcion": "PALETA CREMA Coco",
-    "precio": 35.0
+    "precio": 35.0,
+    "stock": 56
   },
   {
     "product_id": "C8A28FAC",
     "item": "PALETA-CREMA-DURAZNOS-CON-CREMA",
     "descripcion": "PALETA CREMA Duraznos con Crema",
-    "precio": 35.0
-  },
-  {
-    "product_id": "03C761EC",
-    "item": "PALETA-CREMA-FRESA-CREMA",
-    "descripcion": "PALETA CREMA Fresa Crema",
-    "precio": 35.0
+    "precio": 35.0,
+    "stock": 31
   },
   {
     "product_id": "03C761CC",
     "item": "PALETA-CREMA-FRESA-CON-CREMA",
     "descripcion": "PALETA CREMA Fresa con Crema",
-    "precio": 35.0
+    "precio": 35.0,
+    "stock": 40
+  },
+  {
+    "product_id": "03C761EC",
+    "item": "PALETA-CREMA-FRESA-CREMA",
+    "descripcion": "PALETA CREMA Fresa Crema",
+    "precio": 35.0,
+    "stock": 29
   },
   {
     "product_id": "07A7670E",
     "item": "PALETA-CREMA-MAMEY",
     "descripcion": "PALETA CREMA Mamey",
-    "precio": 35.0
+    "precio": 35.0,
+    "stock": 24
   },
   {
     "product_id": "07A7679E",
     "item": "PALETA-CREMA-MAZAPAN",
     "descripcion": "PALETA CREMA Mazapan",
-    "precio": 35.0
+    "precio": 35.0,
+    "stock": 27
   },
   {
     "product_id": "97A7679E",
     "item": "PALETA-CREMA-MENTA-CHOCOLATE",
     "descripcion": "PALETA CREMA Menta con Chocolate",
-    "precio": 35.0
+    "precio": 35.0,
+    "stock": 46
   },
   {
     "product_id": "02298874",
     "item": "PALETA-CREMA-OREO",
     "descripcion": "PALETA CREMA Oreo",
-    "precio": 35.0
+    "precio": 35.0,
+    "stock": 59
   },
   {
     "product_id": "7B72DC7E",
     "item": "PALETA-CREMA-PAY-DE-LIMON",
     "descripcion": "PALETA CREMA Pay de Limon",
-    "precio": 35.0
-  },
-  {
-    "product_id": "05908024",
-    "item": "PALETA-CREMA-SALTED-CARAMEL",
-    "descripcion": "PALETA CREMA Salted Caramel",
-    "precio": 35.0
-  },
-  {
-    "product_id": "F6F917A9",
-    "item": "PALETA-CREMA-PREMIUM-PINON",
-    "descripcion": "PALETA CREMA PREMIUM Pinon",
-    "precio": 40.0
-  },
-  {
-    "product_id": "E4F287A9",
-    "item": "PALETA-CREMA-PREMIUM-PISTACHE",
-    "descripcion": "PALETA CREMA PREMIUM Pistache",
-    "precio": 40.0
+    "precio": 35.0,
+    "stock": 42
   },
   {
     "product_id": "71F27465",
     "item": "PALETA-CREMA-PREMIUM-BAILEYS",
     "descripcion": "PALETA CREMA PREMIUM Baileys",
-    "precio": 40.0
+    "precio": 40.0,
+    "stock": 22
   },
   {
     "product_id": "6AD82AE1",
     "item": "PALETA-CREMA-PREMIUM-CAJETA",
     "descripcion": "PALETA CREMA PREMIUM Cajeta",
-    "precio": 40.0
+    "precio": 40.0,
+    "stock": 41
   },
   {
     "product_id": "884118CA",
     "item": "PALETA-CREMA-PREMIUM-CHONGOS",
     "descripcion": "PALETA CREMA PREMIUM Chongos",
-    "precio": 40.0
+    "precio": 40.0,
+    "stock": 16
   },
   {
     "product_id": "516E1BCF",
     "item": "PALETA-CREMA-PREMIUM-FERRERO",
     "descripcion": "PALETA CREMA PREMIUM Ferrero",
-    "precio": 40.0
+    "precio": 40.0,
+    "stock": 24
   },
   {
     "product_id": "2CF84FBA",
     "item": "PALETA-CREMA-PREMIUM-KAHLUA",
     "descripcion": "PALETA CREMA PREMIUM Kahlua",
-    "precio": 40.0
+    "precio": 40.0,
+    "stock": 28
   },
   {
     "product_id": "2CF72FBA",
     "item": "PALETA-CREMA-PREMIUM-MOCTEZUMA",
     "descripcion": "PALETA CREMA PREMIUM Moctezuma",
-    "precio": 40.0
+    "precio": 40.0,
+    "stock": 14
   },
   {
     "product_id": "92CFB2A5",
     "item": "PALETA-CREMA-PREMIUM-NUEZ",
     "descripcion": "PALETA CREMA PREMIUM Nuez",
-    "precio": 40.0
+    "precio": 40.0,
+    "stock": 35
   },
   {
     "product_id": "92CFB2A5",
     "item": "PALETA-CREMA-PREMIUM-NUTELLA",
     "descripcion": "PALETA CREMA PREMIUM Nutella",
-    "precio": 40.0
+    "precio": 40.0,
+    "stock": 39
+  },
+  {
+    "product_id": "F6F917A9",
+    "item": "PALETA-CREMA-PREMIUM-PINON",
+    "descripcion": "PALETA CREMA PREMIUM Pinon",
+    "precio": 40.0,
+    "stock": 43
+  },
+  {
+    "product_id": "E4F287A9",
+    "item": "PALETA-CREMA-PREMIUM-PISTACHE",
+    "descripcion": "PALETA CREMA PREMIUM Pistache",
+    "precio": 40.0,
+    "stock": 36
   },
   {
     "product_id": "02298024",
     "item": "PALETA-CREMA-PREMIUM-QUESO",
     "descripcion": "PALETA CREMA PREMIUM Queso",
-    "precio": 40.0
+    "precio": 40.0,
+    "stock": 10
   },
   {
     "product_id": "000CCCFD",
     "item": "PALETA-CREMA-PREMIUM-QUESO-CON-ZARZAMORA",
     "descripcion": "PALETA CREMA PREMIUM Queso con Zarzamora",
-    "precio": 40.0
+    "precio": 40.0,
+    "stock": 14
   },
   {
     "product_id": "216G1BCF",
     "item": "PALETA-CREMA-PREMIUM-RAFFAELLO",
     "descripcion": "PALETA CREMA PREMIUM Raffaello",
-    "precio": 40.0
+    "precio": 40.0,
+    "stock": 43
   },
   {
     "product_id": "92BA8FD0",
     "item": "PALETA-CREMA-PREMIUM-RON-CON-PASAS",
     "descripcion": "PALETA CREMA PREMIUM Ron con Pasas",
-    "precio": 40.0
-  },
-  {
-    "product_id": "3A0CCE07",
-    "item": "PALETA-CREMA-PREMIUM-SNICKERS",
-    "descripcion": "PALETA CREMA PREMIUM Snickers",
-    "precio": 40.0
-  },
-  {
-    "product_id": "6DF1F449",
-    "item": "PALETA-CREMA-PREMIUM-VINO-TINTO-RELLENO",
-    "descripcion": "PALETA CREMA PREMIUM Vino Tinto",
-    "precio": 40.0
-  },
-  {
-    "product_id": "ACF8DA00",
-    "item": "PALETA-CREMA-ROMPOPE",
-    "descripcion": "PALETA CREMA Rompope",
-    "precio": 35.0
+    "precio": 40.0,
+    "stock": 12
   },
   {
     "product_id": "05833dE3",
     "item": "PALETA-CREMA-PREMIUM-SELVA-BLANCA",
     "descripcion": "PALETA CREMA PREMIUM Selva Blanca",
-    "precio": 40.0
+    "precio": 40.0,
+    "stock": 26
   },
   {
     "product_id": "05833CE3",
     "item": "PALETA-CREMA-PREMIUM-SELVA-NEGRA",
     "descripcion": "PALETA CREMA PREMIUM Selva Negra",
-    "precio": 40.0
+    "precio": 40.0,
+    "stock": 50
+  },
+  {
+    "product_id": "3A0CCE07",
+    "item": "PALETA-CREMA-PREMIUM-SNICKERS",
+    "descripcion": "PALETA CREMA PREMIUM Snickers",
+    "precio": 40.0,
+    "stock": 45
+  },
+  {
+    "product_id": "6DF1F449",
+    "item": "PALETA-CREMA-PREMIUM-VINO-TINTO-RELLENO",
+    "descripcion": "PALETA CREMA PREMIUM Vino Tinto",
+    "precio": 40.0,
+    "stock": 27
+  },
+  {
+    "product_id": "ACF8DA00",
+    "item": "PALETA-CREMA-ROMPOPE",
+    "descripcion": "PALETA CREMA Rompope",
+    "precio": 35.0,
+    "stock": 24
+  },
+  {
+    "product_id": "05908024",
+    "item": "PALETA-CREMA-SALTED-CARAMEL",
+    "descripcion": "PALETA CREMA Salted Caramel",
+    "precio": 35.0,
+    "stock": 17
   },
   {
     "product_id": "866B8AED",
     "item": "PALETA-CREMA-TARO",
     "descripcion": "PALETA CREMA Taro",
-    "precio": 35.0
+    "precio": 35.0,
+    "stock": 47
   },
   {
     "product_id": "866K9AED",
     "item": "PALETA-CREMA-TRIX",
     "descripcion": "PALETA CREMA Trix",
-    "precio": 35.0
+    "precio": 35.0,
+    "stock": 24
   },
   {
     "product_id": "F6AEC245",
     "item": "PALETA-CREMA-VAINILLA",
     "descripcion": "PALETA CREMA Vainilla",
-    "precio": 35.0
-  },
-  {
-    "product_id": "C371ED40",
-    "item": "PALETA-MINI-MINI-CREMA",
-    "descripcion": "PALETA MINI Mini Crema",
-    "precio": 8.0
+    "precio": 35.0,
+    "stock": 42
   },
   {
     "product_id": "C371ED50",
     "item": "PALETA-MINI-MINI-AGUA",
     "descripcion": "PALETA MINI Mini Alcohol",
-    "precio": 10.0
+    "precio": 10.0,
+    "stock": 99999999983
+  },
+  {
+    "product_id": "C371ED40",
+    "item": "PALETA-MINI-MINI-CREMA",
+    "descripcion": "PALETA MINI Mini Crema",
+    "precio": 8.0,
+    "stock": 99999999999
   },
   {
     "product_id": "D189174D",
     "item": "PALETA-MINI-MINI-SIN-AZUCAR",
     "descripcion": "PALETA MINI Sin Azucar",
-    "precio": 10.0
+    "precio": 10.0,
+    "stock": 99999999999
   },
   {
     "product_id": "68DJ885D",
     "item": "PALETA-SIN-AZUCAR-CAJETA",
     "descripcion": "PALETA SIN AZUCAR Cajeta",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 38
   },
   {
     "product_id": "68DJ808D",
     "item": "PALETA-SIN-AZUCAR-CAPUCHINO",
     "descripcion": "PALETA SIN AZUCAR Capuchino",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 24
   },
   {
     "product_id": "03390F0A",
     "item": "PALETA-SIN-AZUCAR-CHOCOLATE",
     "descripcion": "PALETA SIN AZUCAR Chocoketo",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 31
   },
   {
     "product_id": "03400F0A",
     "item": "PALETA-SIN-AZUCAR-CHOCOLATE-CON-FRESA",
     "descripcion": "PALETA Chocofresa",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 25
   },
   {
     "product_id": "68D4185D",
     "item": "PALETA-SIN-AZUCAR-COCO",
     "descripcion": "PALETA SIN AZUCAR Cocoketo",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 27
   },
   {
     "product_id": "0935F20F",
     "item": "PALETA-SIN-AZUCAR-FERRERO",
     "descripcion": "PALETA SIN AZUCAR Ferreroketo",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 31
   },
   {
     "product_id": "498B2E60",
     "item": "PALETA-SIN-AZUCAR-FRESA-CHAMOY",
     "descripcion": "PALETA SIN AZUCAR Fresa-Chamoy",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 30
   },
   {
     "product_id": "EE158D68",
     "item": "PALETA-SIN-AZUCAR-FRUTOS-ROJOS",
     "descripcion": "PALETA SIN AZUCAR Ketofrutos",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 30
   },
   {
     "product_id": "68DDFR5D",
     "item": "PALETA-SIN-AZUCAR-GROSELLA",
     "descripcion": "PALETA SIN AZUCAR Grosella",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 53
   },
   {
     "product_id": "68DHRT5D",
     "item": "PALETA-SIN-AZUCAR-GUANABANA",
     "descripcion": "PALETA SIN AZUCAR Guanabana",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 44
   },
   {
     "product_id": "6B274D02",
     "item": "PALETA-SIN-AZUCAR-LIMON-CHAMOY",
     "descripcion": "PALETA SIN AZUCAR Limon-Chamoy",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 52
   },
   {
     "product_id": "6B908D02",
     "item": "PALETA-SIN-AZUCAR-LIMON-MENTA",
     "descripcion": "PALETA SIN AZUCAR Limon-Menta",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 21
   },
   {
     "product_id": "43F5B285",
     "item": "PALETA-SIN-AZUCAR-MAMEY",
     "descripcion": "PALETA SIN AZUCAR Mamey",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 44
   },
   {
     "product_id": "DC109062",
     "item": "PALETA-SIN-AZUCAR-MANGO",
     "descripcion": "PALETA SIN AZUCAR Mango",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 17
   },
   {
     "product_id": "CD42C696",
     "item": "PALETA-SIN-AZUCAR-MAZAPAN",
     "descripcion": "PALETA SIN AZUCAR Mazapan",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 41
   },
   {
     "product_id": "CD98C696",
     "item": "PALETA-SIN-AZUCAR-MENTA",
     "descripcion": "PALETA SIN AZUCAR Menta",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 24
   },
   {
     "product_id": "24E6A7FD",
     "item": "PALETA-SIN-AZUCAR-NUEZ",
     "descripcion": "PALETA SIN AZUCAR Nuez",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 56
   },
   {
     "product_id": "F797E587",
     "item": "PALETA-SIN-AZUCAR-PINON",
     "descripcion": "PALETA SIN AZUCAR Pinon",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 54
   },
   {
     "product_id": "66B31F3E",
     "item": "PALETA-SIN-AZUCAR-PISTACHE",
     "descripcion": "PALETA Pistaketo",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 44
   },
   {
     "product_id": "6A09314A",
     "item": "PALETA-SIN-AZUCAR-VAINILLA",
     "descripcion": "PALETA SIN AZUCAR Vainilla",
-    "precio": 45.0
+    "precio": 45.0,
+    "stock": 25
+  },
+  {
+    "product_id": "6A3513FD",
+    "item": "PALETAS-PERRO",
+    "descripcion": "Paletas para Perro",
+    "precio": 30.0,
+    "stock": 49
   },
   {
     "product_id": "3B6B12C9",
     "item": "POSTRE-DANONINO-GRANDE",
     "descripcion": "POSTRE Danonino Grande",
-    "precio": 30.0
+    "precio": 30.0,
+    "stock": 9999997
   }
 ]
