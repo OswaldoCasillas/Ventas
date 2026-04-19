@@ -67,7 +67,7 @@
     "item": "EXTRA-COBERTURA-CON-TOPPING",
     "descripcion": "EXTRA Cobertura con Topping",
     "precio": 15.0,
-    "stock": 999999994
+    "stock": 999999993
   },
   {
     "product_id": "7E9B8EC1",
@@ -186,7 +186,7 @@
     "item": "HELADO-SIN-AZUCAR-SENCILLO",
     "descripcion": "Helado Sin Azucar Sencillo",
     "precio": 45.0,
-    "stock": 99999997
+    "stock": 99999996
   },
   {
     "product_id": "D7361A46",
@@ -837,6 +837,6 @@
     "item": "POSTRE-DANONINO-GRANDE",
     "descripcion": "POSTRE Danonino Grande",
     "precio": 30.0,
-    "stock": 9999997
+    "stock": 9999996
   }
 ]
