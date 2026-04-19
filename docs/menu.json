@@ -81,7 +81,7 @@
     "item": "HELADO-CLASICO-DOBLE",
     "descripcion": "Helado Clasico Doble",
     "precio": 60.0,
-    "stock": 9999999
+    "stock": 9999998
   },
   {
     "product_id": "7968996E",
@@ -137,7 +137,7 @@
     "item": "HELADO-NIEVE-DOBLE",
     "descripcion": "Helado Nieve Doble",
     "precio": 45.0,
-    "stock": 9999997
+    "stock": 9999996
   },
   {
     "product_id": "D6B795F8",
@@ -403,7 +403,7 @@
     "item": "PALETA-CREMA-ARROZ",
     "descripcion": "PALETA CREMA Arroz",
     "precio": 35.0,
-    "stock": 9999998
+    "stock": 9999997
   },
   {
     "product_id": "0F878660",
@@ -438,7 +438,7 @@
     "item": "PALETA-CREMA-COCO",
     "descripcion": "PALETA CREMA Coco",
     "precio": 35.0,
-    "stock": 9999999
+    "stock": 9999998
   },
   {
     "product_id": "C8A28FAC",
