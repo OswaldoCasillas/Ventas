@@ -11,7 +11,7 @@
     "item": "AGUA-FRESCA-GRANDE",
     "descripcion": "AGUA FRESCA Grande",
     "precio": 35.0,
-    "stock": 9999997
+    "stock": 9999996
   },
   {
     "product_id": "1C271C39",
@@ -445,7 +445,7 @@
     "item": "PALETA-CREMA-DURAZNOS-CON-CREMA",
     "descripcion": "PALETA CREMA Duraznos con Crema",
     "precio": 35.0,
-    "stock": 32
+    "stock": 31
   },
   {
     "product_id": "03C761CC",
