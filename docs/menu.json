@@ -39,7 +39,7 @@
     "item": "BEBIDA-CHAMOYADA",
     "descripcion": "BEBIDA Chamoyada",
     "precio": 60.0,
-    "stock": 9999998
+    "stock": 9999999
   },
   {
     "product_id": "F76E2099",
@@ -81,7 +81,7 @@
     "item": "EXTRA-COBERTURA-CHOCOLATE",
     "descripcion": "EXTRA Cobertura Chocolate",
     "precio": 10.0,
-    "stock": 9999999
+    "stock": 9999998
   },
   {
     "product_id": "A9581B56",
@@ -445,7 +445,7 @@
     "item": "PALETA-CREMA-CHICLE",
     "descripcion": "PALETA CREMA Chicle",
     "precio": 35.0,
-    "stock": 39
+    "stock": 38
   },
   {
     "product_id": "3D836156",
