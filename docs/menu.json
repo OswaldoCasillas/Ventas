@@ -172,7 +172,7 @@
     "item": "HELADO-NIEVE-MEDIO-LITRO",
     "descripcion": "Helado Nieve Medio Litro",
     "precio": 75.0,
-    "stock": 99999998
+    "stock": 99999995
   },
   {
     "product_id": "641AA19F",
@@ -361,7 +361,7 @@
     "item": "PALETA-AGUA-PREMIUM-SANDIA-CHAMOY",
     "descripcion": "PALETA AGUA PREMIUM Sandia-Chamoy",
     "precio": 30.0,
-    "stock": 40
+    "stock": 39
   },
   {
     "product_id": "21BFA58F",

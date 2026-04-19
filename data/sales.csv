@@ -146,3 +146,5 @@ S000044,2026-04-18,HELADO-SIN-AZUCAR-DOBLE,1,75.00,75.00,https://github.com/Oswa
 S000045,2026-04-18,HELADO-GOURMET-SENCILLO,2,40.00,80.00,https://github.com/OswaldoCasillas/Ventas/issues/156,efectivo,client:a134ed07-5b29-43b0-bc77-9916c498ac59#0,
 S000045,2026-04-18,HELADO-CLASICO-SENCILLO,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/156,efectivo,client:a134ed07-5b29-43b0-bc77-9916c498ac59#1,
 S000045,2026-04-18,HELADO-NIEVE-SENCILLO,2,25.00,50.00,https://github.com/OswaldoCasillas/Ventas/issues/156,efectivo,client:a134ed07-5b29-43b0-bc77-9916c498ac59#2,
+S000046,2026-04-18,PALETA-AGUA-PREMIUM-SANDIA-CHAMOY,1,30.00,30.00,https://github.com/OswaldoCasillas/Ventas/issues/157,tarjeta,client:16d2f1c1-dc7a-494d-ab71-b447b51d66f2#0,
+S000046,2026-04-18,HELADO-NIEVE-MEDIO-LITRO,3,75.00,225.00,https://github.com/OswaldoCasillas/Ventas/issues/157,tarjeta,client:16d2f1c1-dc7a-494d-ab71-b447b51d66f2#1,
