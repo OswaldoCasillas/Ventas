@@ -229,9 +229,13 @@ S000067,2026-04-19,PALETAS-PERRO,1,30.00,30.00,https://github.com/OswaldoCasilla
 S000068,2026-04-19,AGUA-FRESCA-GRANDE,2,35.00,70.00,https://github.com/OswaldoCasillas/Ventas/issues/185,efectivo,client:3feacaa4-bb81-48f0-9e3d-1e0803a118a4#0,
 S000068,2026-04-19,HELADO-NIEVE-SENCILLO,1,25.00,25.00,https://github.com/OswaldoCasillas/Ventas/issues/185,efectivo,client:3feacaa4-bb81-48f0-9e3d-1e0803a118a4#1,
 >>>>>>> Stashed changes,,,,,,,,,
-<<<<<<< Updated upstream
+<<<<<<< Updated upstream,,,,,,,,,
 S000069,2026-04-19,PALETA-CREMA-CHICLE,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/186,efectivo,client:18e9f5f6-72c0-4000-971a-b2b22906f8a5#0,
 S000069,2026-04-19,EXTRA-COBERTURA-CHOCOLATE,1,10.00,10.00,https://github.com/OswaldoCasillas/Ventas/issues/186,efectivo,client:18e9f5f6-72c0-4000-971a-b2b22906f8a5#1,
-=======
+=======,,,,,,,,,
 S000069,2026-04-19,PALETA-CREMA-ARROZ,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/187,efectivo,client:42595a6f-1e6b-4165-9cf2-390041120570#0,
->>>>>>> Stashed changes
+>>>>>>> Stashed changes,,,,,,,,,
+S000070,2026-04-19,PALETA-CREMA-PAY-DE-LIMON,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/188,tarjeta,client:5d244c60-6e80-46cd-bcb2-a2a52e9a553a#0,
+S000070,2026-04-19,PALETA-CREMA-DURAZNOS-CON-CREMA,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/188,tarjeta,client:5d244c60-6e80-46cd-bcb2-a2a52e9a553a#1,
+S000070,2026-04-19,PALETA-CREMA-PREMIUM-CAJETA,1,40.00,40.00,https://github.com/OswaldoCasillas/Ventas/issues/188,tarjeta,client:5d244c60-6e80-46cd-bcb2-a2a52e9a553a#2,
+S000070,2026-04-19,PALETA-SIN-AZUCAR-CHOCOLATE,1,45.00,45.00,https://github.com/OswaldoCasillas/Ventas/issues/188,tarjeta,client:5d244c60-6e80-46cd-bcb2-a2a52e9a553a#3,
