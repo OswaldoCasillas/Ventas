@@ -87,9 +87,16 @@
     function skuToNice(sku){ return String(sku || "").replaceAll("-", " "); }
 
     function isValidSaleRow(r){
-      const badTokens = ["<<<<<<<", "=======", ">>>>>>>", "Updated upstream", "Stashed changes"];
-      const hay = `${String(r.item || "")} ${String(r.descripcion || "")} ${String(r.txn_id || "")} ${String(r.issue || "")}`;
-      if (badTokens.some(token => hay.includes(token))) return false;
+      const fields = [
+        String(r.fecha || ""),
+        String(r.item || ""),
+        String(r.descripcion || ""),
+        String(r.issue || ""),
+        String(r.txn_id || "")
+      ].join(" ");
+
+      const bad = ["<<<<<<<", "=======", ">>>>>>>", "Updated upstream", "Stashed changes"];
+      if (bad.some(x => fields.includes(x))) return false;
 
       const item = String(r.item || "").trim();
       const descripcion = String(r.descripcion || "").trim();
@@ -101,12 +108,12 @@
     }
 
     function parseCSV(text){
-      const lines = text.trim().split(/\r?\n/);
+      const lines = text.trim().split(/\\r?\\n/);
       if (!lines.length) return [];
+
       const headers = [];
       let current = "";
       let inQuotes = false;
-
       for (let i = 0; i < lines[0].length; i++) {
         const ch = lines[0][i];
         if (ch === '"') inQuotes = !inQuotes;
@@ -220,7 +227,6 @@
       const rows = rowsForCurrentFilter();
       if (!fecha) return alert("Selecciona una fecha");
       if (!rows.length) return alert("No hay ventas para exportar");
-
       if (!window.XLSX) return;
 
       const detalle = rows.map(r => ({
