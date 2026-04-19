@@ -818,24 +818,20 @@
     "precio": 45.0,
     "stock": 25
   },
-{
-  "product_id": "DOGMINI10",
-  "item": "PALETAS-PERRO-MINI",
-  "descripcion": "Paleta para Perro Mini",
-  "precio": 10.0
-},
-{
-  "product_id": "6A3513FD",
-  "item": "PALETAS-PERRO",
-  "descripcion": "Paletas para Perro",
-  "precio": 30.0
-},
-{
-  "product_id": "DOGPOLLO30",
-  "item": "PALETAS-PERRO-POLLO-GRANDE",
-  "descripcion": "Paleta para Perro Pollo Grande",
-  "precio": 30.0
-},
+  {
+    "product_id": "6A3513FD",
+    "item": "PALETAS-PERRO",
+    "descripcion": "Paletas para Perro",
+    "precio": 30.0,
+    "stock": 49
+  },
+  {
+    "product_id": "",
+    "item": "PALETAS-PERRO-MINI",
+    "descripcion": "",
+    "precio": "",
+    "stock": -1
+  },
   {
     "product_id": "3B6B12C9",
     "item": "POSTRE-DANONINO-GRANDE",
