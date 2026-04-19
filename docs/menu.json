@@ -32,7 +32,7 @@
     "item": "AGUA-FRESCA-GRANDE",
     "descripcion": "AGUA FRESCA Grande",
     "precio": 35.0,
-    "stock": 9999994
+    "stock": 9999993
   },
   {
     "product_id": "1C271C39",
@@ -382,7 +382,7 @@
     "item": "PALETA-AGUA-UVA",
     "descripcion": "PALETA AGUA Uva",
     "precio": 25.0,
-    "stock": 27
+    "stock": 26
   },
   {
     "product_id": "B4564A9B",
@@ -592,7 +592,7 @@
     "item": "PALETA-CREMA-PREMIUM-QUESO",
     "descripcion": "PALETA CREMA PREMIUM Queso",
     "precio": 40.0,
-    "stock": 10
+    "stock": 9
   },
   {
     "product_id": "000CCCFD",

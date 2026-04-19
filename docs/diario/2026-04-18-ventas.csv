@@ -4,6 +4,7 @@ S000007,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasi
 S000010,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/117,efectivo,client:1941d9c4-35b5-49de-8994-d7a7c80dd30d#0,AGUA FRESCA Grande,9C1B04E4,efectivo
 S000027,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/137,efectivo,client:21a2fcf3-136f-4c18-8719-c67558a94bab#1,AGUA FRESCA Grande,9C1B04E4,efectivo
 S000030,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/141,efectivo,client:5e57bd8e-884e-4c27-86f6-5ec65454c3e7#2,AGUA FRESCA Grande,9C1B04E4,efectivo
+S000047,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/158,efectivo,client:cdc9929c-e9ff-443c-b200-eaf5e8e9e9c9#2,AGUA FRESCA Grande,9C1B04E4,efectivo
 S000006,2026-04-18,BEBIDA-CHAMOYADA,2,60.0,120.0,https://github.com/OswaldoCasillas/Ventas/issues/111,efectivo,client:56833fab-f5a6-44b9-ae13-54ec6d3939ba#0,BEBIDA Chamoyada,1C271C39,efectivo
 S000027,2026-04-18,BEBIDA-CHAMOYADA,1,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/137,efectivo,client:21a2fcf3-136f-4c18-8719-c67558a94bab#0,BEBIDA Chamoyada,1C271C39,efectivo
 S000031,2026-04-18,BEBIDA-CHAMOYADA,2,60.0,120.0,https://github.com/OswaldoCasillas/Ventas/issues/142,efectivo,client:52c52d35-f816-4227-ba38-af59ae217ed1#0,BEBIDA Chamoyada,1C271C39,efectivo
@@ -63,6 +64,7 @@ S000046,2026-04-18,PALETA-AGUA-PREMIUM-SANDIA-CHAMOY,1,30.0,30.0,https://github.
 S000002,2026-04-18,PALETA-AGUA-SANDIA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/106,tarjeta,client:00249f25-0747-4a67-b8e0-c8df2c7b22d6#0,PALETA AGUA Sandia,21BFA58F,tarjeta
 S000010,2026-04-18,PALETA-AGUA-SANDIA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/116,efectivo,client:4084cb20-ce60-4195-8835-95d21ea62ab7#1,PALETA AGUA Sandia,21BFA58F,efectivo
 S000021,2026-04-18,PALETA-AGUA-TAMARINDO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/130,tarjeta,client:55e50021-4f49-4e16-b667-6dfebb7bd66d#2,PALETA AGUA Tamarindo,98C5FF9E,tarjeta
+S000047,2026-04-18,PALETA-AGUA-UVA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/158,efectivo,client:cdc9929c-e9ff-443c-b200-eaf5e8e9e9c9#1,PALETA AGUA Uva,27D27C45,efectivo
 S000040,2026-04-18,PALETA-AGUA-ZAPOTE,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/151,efectivo,client:e6f082ab-aac6-48ba-84f0-806df9e41bbe#4,PALETA AGUA Zapote,B4564A9B,efectivo
 S000008,2026-04-18,PALETA-CREMA-ARROZ,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/113,tarjeta,client:8384de7b-c486-4bfd-8741-79fc31c507c8#1,PALETA CREMA Arroz,D24145B9,tarjeta
 S000040,2026-04-18,PALETA-CREMA-ARROZ,3,35.0,105.0,https://github.com/OswaldoCasillas/Ventas/issues/151,efectivo,client:e6f082ab-aac6-48ba-84f0-806df9e41bbe#0,PALETA CREMA Arroz,D24145B9,efectivo
@@ -89,6 +91,7 @@ S000004,2026-04-18,PALETA-CREMA-PREMIUM-FERRERO,1,40.0,40.0,https://github.com/O
 S000004,2026-04-18,PALETA-CREMA-PREMIUM-PISTACHE,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/109,efectivo,client:4e4e374f-a18e-4c57-af82-9465659308e5#1,PALETA CREMA PREMIUM Pistache,E4F287A9,efectivo
 S000016,2026-04-18,PALETA-CREMA-PREMIUM-PISTACHE,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/123,efectivo,client:781bcf64-bc9d-42f6-aa6a-03de922108d0#1,PALETA CREMA PREMIUM Pistache,E4F287A9,efectivo
 S000040,2026-04-18,PALETA-CREMA-PREMIUM-PISTACHE,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/151,efectivo,client:e6f082ab-aac6-48ba-84f0-806df9e41bbe#3,PALETA CREMA PREMIUM Pistache,E4F287A9,efectivo
+S000047,2026-04-18,PALETA-CREMA-PREMIUM-QUESO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/158,efectivo,client:cdc9929c-e9ff-443c-b200-eaf5e8e9e9c9#0,PALETA CREMA PREMIUM Queso,02298024,efectivo
 S000033,2026-04-18,PALETA-CREMA-PREMIUM-QUESO-CON-ZARZAMORA,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/144,efectivo,client:0cad00f4-c366-499c-812f-23dcde48a1bc#2,PALETA CREMA PREMIUM Queso con Zarzamora,000CCCFD,efectivo
 S000033,2026-04-18,PALETA-CREMA-PREMIUM-SELVA-BLANCA,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/144,efectivo,client:0cad00f4-c366-499c-812f-23dcde48a1bc#1,PALETA CREMA PREMIUM Selva Blanca,05833dE3,efectivo
 S000036,2026-04-18,PALETA-CREMA-PREMIUM-SELVA-BLANCA,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/147,tarjeta,client:fee67117-ea9e-4423-8131-d2cdf9d6c8d5#1,PALETA CREMA PREMIUM Selva Blanca,05833dE3,tarjeta
