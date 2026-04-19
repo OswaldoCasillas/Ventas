@@ -67,7 +67,7 @@
     "item": "EXTRA-COBERTURA-CON-TOPPING",
     "descripcion": "EXTRA Cobertura con Topping",
     "precio": 15.0,
-    "stock": 9999999
+    "stock": 9999998
   },
   {
     "product_id": "7E9B8EC1",
@@ -543,7 +543,7 @@
     "item": "PALETA-CREMA-PREMIUM-NUEZ",
     "descripcion": "PALETA CREMA PREMIUM Nuez",
     "precio": 40.0,
-    "stock": 4
+    "stock": 3
   },
   {
     "product_id": "92CFB2A5",
