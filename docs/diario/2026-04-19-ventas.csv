@@ -21,6 +21,7 @@ S000054,2026-04-19,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoC
 S000060,2026-04-19,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/175,tarjeta,client:cccb3645-b4fc-4db0-a5bb-83ef60bc019e#3,Helado Nieve Sencillo,641AA19F,tarjeta
 S000067,2026-04-19,HELADO-NIEVE-SENCILLO,2,25.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/183,efectivo,client:36da91da-3f01-423d-ad92-c3246d6c6f30#1,Helado Nieve Sencillo,641AA19F,efectivo
 S000068,2026-04-19,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/185,efectivo,client:3feacaa4-bb81-48f0-9e3d-1e0803a118a4#1,Helado Nieve Sencillo,641AA19F,efectivo
+S000072,2026-04-19,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/191,efectivo,client:afd2fc80-3f97-47c7-b62f-1dd696ee051b#0,Helado Nieve Sencillo,641AA19F,efectivo
 S000056,2026-04-19,HELADO-SIN-AZUCAR-LITRO,1,180.0,180.0,https://github.com/OswaldoCasillas/Ventas/issues/171,efectivo,client:514a1023-bb98-4238-abec-a5700e83bffe#0,Helado Sin Azucar Litro,9DC9D6D6,efectivo
 S000052,2026-04-19,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/165,efectivo,client:172dcdf4-fb76-40dc-9368-c2a9f2e54f22#1,PALETA AGUA Limon,FFFB8948,efectivo
 S000055,2026-04-19,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/170,efectivo,client:1481ccbd-e92d-48eb-b976-648f0b6e2b72#0,PALETA AGUA Limon,FFFB8948,efectivo
@@ -50,9 +51,11 @@ S000062,2026-04-19,PALETA-CREMA-PREMIUM-SELVA-NEGRA,1,40.0,40.0,https://github.c
 S000062,2026-04-19,PALETA-CREMA-PREMIUM-SNICKERS,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/177,tarjeta,client:e1c7c403-0327-44c0-bf16-a91b38b90ad4#1,PALETA CREMA PREMIUM Snickers,3A0CCE07,tarjeta
 S000059,2026-04-19,PALETA-CREMA-PREMIUM-VINO-TINTO-RELLENO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/174,tarjeta,client:b9c01d2d-dbbf-4f8a-aa2d-62732b3286cb#0,PALETA CREMA PREMIUM Vino Tinto,6DF1F449,tarjeta
 S000054,2026-04-19,PALETA-MINI-MINI-AGUA,4,6.0,24.0,https://github.com/OswaldoCasillas/Ventas/issues/169,efectivo,client:b123844a-58ed-409d-8308-ae0df4309625#1,PALETA MINI Mini Agua,MINIAGUA6,efectivo
+S000072,2026-04-19,PALETA-MINI-MINI-AGUA,1,6.0,6.0,https://github.com/OswaldoCasillas/Ventas/issues/191,efectivo,client:afd2fc80-3f97-47c7-b62f-1dd696ee051b#2,PALETA MINI Mini Agua,MINIAGUA6,efectivo
 S000052,2026-04-19,PALETA-MINI-MINI-SIN-AZUCAR,2,10.0,20.0,https://github.com/OswaldoCasillas/Ventas/issues/165,efectivo,client:172dcdf4-fb76-40dc-9368-c2a9f2e54f22#3,PALETA MINI Sin Azucar,D189174D,efectivo
 S000059,2026-04-19,PALETA-SIN-AZUCAR-CAJETA,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/174,tarjeta,client:b9c01d2d-dbbf-4f8a-aa2d-62732b3286cb#3,PALETA SIN AZUCAR Cajeta,68DJ885D,tarjeta
 S000070,2026-04-19,PALETA-SIN-AZUCAR-CHOCOLATE,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/188,tarjeta,client:5d244c60-6e80-46cd-bcb2-a2a52e9a553a#3,PALETA SIN AZUCAR Chocoketo,03390F0A,tarjeta
 S000071,2026-04-19,PALETA-SIN-AZUCAR-LIMON-MENTA,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/189,efectivo,client:a773abff-24fb-4b78-9f59-17fa4990ecbe#0,PALETA SIN AZUCAR Limon-Menta,6B908D02,efectivo
 S000059,2026-04-19,PALETA-SIN-AZUCAR-PINON,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/174,tarjeta,client:b9c01d2d-dbbf-4f8a-aa2d-62732b3286cb#2,PALETA SIN AZUCAR Pinon,F797E587,tarjeta
 S000067,2026-04-19,PALETAS-PERRO,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/184,efectivo,client:677e1e53-1ed9-477b-a5ce-268e68afdc56#1,Paletas para Perro,6A3513FD,efectivo
+S000072,2026-04-19,POSTRE-DANONINO-GRANDE,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/191,efectivo,client:afd2fc80-3f97-47c7-b62f-1dd696ee051b#1,POSTRE Danonino Grande,3B6B12C9,efectivo

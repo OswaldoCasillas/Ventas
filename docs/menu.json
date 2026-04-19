@@ -179,7 +179,7 @@
     "item": "HELADO-NIEVE-SENCILLO",
     "descripcion": "Helado Nieve Sencillo",
     "precio": 25.0,
-    "stock": 9999994
+    "stock": 9999993
   },
   {
     "product_id": "93BBD957",
@@ -683,7 +683,7 @@
     "item": "PALETA-MINI-MINI-AGUA",
     "descripcion": "PALETA MINI Mini Agua",
     "precio": 6.0,
-    "stock": 9999995
+    "stock": 9999994
   },
   {
     "product_id": "C371ED50",
@@ -858,6 +858,6 @@
     "item": "POSTRE-DANONINO-GRANDE",
     "descripcion": "POSTRE Danonino Grande",
     "precio": 30.0,
-    "stock": 9999999
+    "stock": 9999998
   }
 ]
