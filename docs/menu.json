@@ -130,7 +130,7 @@
     "item": "HELADO-GOURMET-SENCILLO",
     "descripcion": "Helado Gourmet Sencillo",
     "precio": 40.0,
-    "stock": 99999998
+    "stock": 99999997
   },
   {
     "product_id": "3021BE59",
@@ -347,7 +347,7 @@
     "item": "PALETA-AGUA-SANDIA",
     "descripcion": "PALETA AGUA Sandia",
     "precio": 25.0,
-    "stock": 19
+    "stock": 18
   },
   {
     "product_id": "98C5FF9E",
