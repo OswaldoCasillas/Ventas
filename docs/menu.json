@@ -102,7 +102,7 @@
     "item": "HELADO-CLASICO-SENCILLO",
     "descripcion": "Helado Clasico Sencillo",
     "precio": 35.0,
-    "stock": 9999999
+    "stock": 9999998
   },
   {
     "product_id": "7888486E",
@@ -249,7 +249,7 @@
     "item": "PALETA-AGUA-LIMON",
     "descripcion": "PALETA AGUA Limon",
     "precio": 25.0,
-    "stock": 19
+    "stock": 18
   },
   {
     "product_id": "3D2B18C9",
@@ -403,7 +403,7 @@
     "item": "PALETA-CREMA-ARROZ",
     "descripcion": "PALETA CREMA Arroz",
     "precio": 35.0,
-    "stock": 9999999
+    "stock": 9999998
   },
   {
     "product_id": "0F878660",
@@ -683,7 +683,7 @@
     "item": "PALETA-MINI-MINI-SIN-AZUCAR",
     "descripcion": "PALETA MINI Sin Azucar",
     "precio": 10.0,
-    "stock": 9999999
+    "stock": 9999997
   },
   {
     "product_id": "68DJ885D",
