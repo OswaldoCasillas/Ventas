@@ -67,7 +67,7 @@
     "item": "EXTRA-COBERTURA-CON-TOPPING",
     "descripcion": "EXTRA Cobertura con Topping",
     "precio": 15.0,
-    "stock": 999999998
+    "stock": 999999994
   },
   {
     "product_id": "7E9B8EC1",
@@ -284,7 +284,7 @@
     "item": "PALETA-AGUA-PINA",
     "descripcion": "PALETA AGUA Pina",
     "precio": 25.0,
-    "stock": 37
+    "stock": 36
   },
   {
     "product_id": "746FF175",
@@ -452,14 +452,14 @@
     "item": "PALETA-CREMA-FRESA-CON-CREMA",
     "descripcion": "PALETA CREMA Fresa con Crema",
     "precio": 35.0,
-    "stock": 40
+    "stock": 38
   },
   {
     "product_id": "03C761EC",
     "item": "PALETA-CREMA-FRESA-CREMA",
     "descripcion": "PALETA CREMA Fresa Crema",
     "precio": 35.0,
-    "stock": 28
+    "stock": 27
   },
   {
     "product_id": "07A7670E",
@@ -564,7 +564,7 @@
     "item": "PALETA-CREMA-PREMIUM-PISTACHE",
     "descripcion": "PALETA CREMA PREMIUM Pistache",
     "precio": 40.0,
-    "stock": 35
+    "stock": 34
   },
   {
     "product_id": "02298024",
