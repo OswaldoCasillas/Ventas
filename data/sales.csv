@@ -90,5 +90,9 @@ S000026,2026-04-18,PALETA-CREMA-COCO,1,35.00,35.00,https://github.com/OswaldoCas
 S000026,2026-04-18,HELADO-GOURMET-SENCILLO,2,40.00,80.00,https://github.com/OswaldoCasillas/Ventas/issues/136,efectivo,client:b6076a87-468d-4a42-ba22-424c1992b044#1,
 S000027,2026-04-18,BEBIDA-CHAMOYADA,1,60.00,60.00,https://github.com/OswaldoCasillas/Ventas/issues/137,efectivo,client:21a2fcf3-136f-4c18-8719-c67558a94bab#0,
 S000027,2026-04-18,AGUA-FRESCA-GRANDE,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/137,efectivo,client:21a2fcf3-136f-4c18-8719-c67558a94bab#1,
+<<<<<<< Updated upstream
 S000028,2026-04-18,PALETA-SIN-AZUCAR-GUANABANA,4,45.00,180.00,https://github.com/OswaldoCasillas/Ventas/issues/138,tarjeta,client:c23729d2-83a9-4996-8951-d6048585b90d#0,
 S000028,2026-04-18,PALETA-AGUA-GUAYABA,4,25.00,100.00,https://github.com/OswaldoCasillas/Ventas/issues/138,tarjeta,client:c23729d2-83a9-4996-8951-d6048585b90d#1,
+=======
+S000028,2026-04-18,MALTEADA-CLASICA,1,65.00,65.00,https://github.com/OswaldoCasillas/Ventas/issues/139,efectivo,client:992b0ad3-dce7-4f56-9c70-068e55b1c5ad#0,
+>>>>>>> Stashed changes
