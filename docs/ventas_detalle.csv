@@ -14,15 +14,10 @@ S000019,2026-04-18,HELADO-GOURMET-MEDIO-LITRO,1,90.0,90.0,https://github.com/Osw
 S000002,2026-04-18,HELADO-GOURMET-SENCILLO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/106,tarjeta,client:00249f25-0747-4a67-b8e0-c8df2c7b22d6#1,Helado Gourmet Sencillo,97EEAB91,tarjeta
 S000011,2026-04-18,HELADO-GOURMET-SENCILLO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/118,efectivo,client:37d0a918-8902-48ff-96b9-0ebe4ec746f8#3,Helado Gourmet Sencillo,97EEAB91,efectivo
 S000022,2026-04-18,HELADO-GOURMET-SENCILLO,5,40.0,200.0,https://github.com/OswaldoCasillas/Ventas/issues/131,efectivo,client:f053e2e4-4b6b-4048-9695-a099bb519315#0,Helado Gourmet Sencillo,97EEAB91,efectivo
-<<<<<<< Updated upstream
 S000023,2026-04-18,HELADO-GOURMET-SENCILLO,2,40.0,80.0,https://github.com/OswaldoCasillas/Ventas/issues/132,efectivo,client:97f671fa-a0d9-4fa4-97c0-f67ccad14f70#0,Helado Gourmet Sencillo,97EEAB91,efectivo
-<<<<<<< Updated upstream
-=======
+S000025,2026-04-18,HELADO-GOURMET-SENCILLO,5,40.0,200.0,https://github.com/OswaldoCasillas/Ventas/issues/135,efectivo,client:bdbac969-a192-44f8-acbd-83253e5e0a28#1,Helado Gourmet Sencillo,97EEAB91,efectivo
 S000023,2026-04-18,HELADO-NIEVE-DOBLE,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/133,efectivo,client:5bd0e723-3650-470d-9399-a5788bd6a2d9#0,Helado Nieve Doble,3021BE59,efectivo
->>>>>>> Stashed changes
-=======
 S000024,2026-04-18,HELADO-NIEVE-MEDIO-LITRO,1,75.0,75.0,https://github.com/OswaldoCasillas/Ventas/issues/134,efectivo,client:85d7964d-da7c-43ab-bb11-79b549b8432c#0,Helado Nieve Medio Litro,7081D5FB,efectivo
->>>>>>> Stashed changes
 S000020,2026-04-18,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/128,efectivo,client:04f99846-fb53-4a1f-a4f3-767cc9ebfcf3#0,Helado Nieve Sencillo,641AA19F,efectivo
 S000020,2026-04-18,HELADO-NIEVE-SENCILLO,2,25.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/129,efectivo,client:f337a01c-8ac3-4c6d-b0f6-56155c3694db#0,Helado Nieve Sencillo,641AA19F,efectivo
 S000022,2026-04-18,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/131,efectivo,client:f053e2e4-4b6b-4048-9695-a099bb519315#1,Helado Nieve Sencillo,641AA19F,efectivo
@@ -44,6 +39,7 @@ S000010,2026-04-18,PALETA-AGUA-SANDIA,1,25.0,25.0,https://github.com/OswaldoCasi
 S000021,2026-04-18,PALETA-AGUA-TAMARINDO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/130,tarjeta,client:55e50021-4f49-4e16-b667-6dfebb7bd66d#2,PALETA AGUA Tamarindo,98C5FF9E,tarjeta
 S000008,2026-04-18,PALETA-CREMA-ARROZ,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/113,tarjeta,client:8384de7b-c486-4bfd-8741-79fc31c507c8#1,PALETA CREMA Arroz,D24145B9,tarjeta
 S000012,2026-04-18,PALETA-CREMA-COCO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/119,efectivo,client:3a926586-deef-4a01-9ed2-cfb335748028#0,PALETA CREMA Coco,7B6778AE,efectivo
+S000025,2026-04-18,PALETA-CREMA-COCO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/135,efectivo,client:bdbac969-a192-44f8-acbd-83253e5e0a28#0,PALETA CREMA Coco,7B6778AE,efectivo
 S000016,2026-04-18,PALETA-CREMA-FRESA-CON-CREMA,2,35.0,70.0,https://github.com/OswaldoCasillas/Ventas/issues/123,efectivo,client:781bcf64-bc9d-42f6-aa6a-03de922108d0#2,PALETA CREMA Fresa con Crema,03C761CC,efectivo
 S000011,2026-04-18,PALETA-CREMA-FRESA-CREMA,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/118,efectivo,client:37d0a918-8902-48ff-96b9-0ebe4ec746f8#2,PALETA CREMA Fresa Crema,03C761EC,efectivo
 S000016,2026-04-18,PALETA-CREMA-FRESA-CREMA,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/123,efectivo,client:781bcf64-bc9d-42f6-aa6a-03de922108d0#0,PALETA CREMA Fresa Crema,03C761EC,efectivo
@@ -76,6 +72,12 @@ S000020,2026-04-18,POSTRE-DANONINO-GRANDE,1,30.0,30.0,https://github.com/Oswaldo
 =======,,,0,,0.0,,efectivo,,,,efectivo
 >>>>>>> Stashed changes,,,0,,0.0,,efectivo,,,,efectivo
 <<<<<<< Updated upstream,,,0,,0.0,,efectivo,,,,efectivo
+=======,,,0,,0.0,,efectivo,,,,efectivo
+>>>>>>> Stashed changes,,,0,,0.0,,efectivo,,,,efectivo
+<<<<<<< Updated upstream,,,0,,0.0,,efectivo,,,,efectivo
+<<<<<<< Updated upstream,,,0,,0.0,,efectivo,,,,efectivo
+=======,,,0,,0.0,,efectivo,,,,efectivo
+>>>>>>> Stashed changes,,,0,,0.0,,efectivo,,,,efectivo
 =======,,,0,,0.0,,efectivo,,,,efectivo
 >>>>>>> Stashed changes,,,0,,0.0,,efectivo,,,,efectivo
 <<<<<<< Updated upstream,,,0,,0.0,,efectivo,,,,efectivo
