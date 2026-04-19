@@ -4,7 +4,7 @@
     "item": "AGUA-FRESCA-CHICA",
     "descripcion": "AGUA FRESCA Chica",
     "precio": 25.0,
-    "stock": 99999999
+    "stock": 99999998
   },
   {
     "product_id": "9C1B04E4",
@@ -659,17 +659,17 @@
   },
   {
     "product_id": "C371ED50",
-    "item": "PALETA-MINI-MINI-ALCOHOL",
+    "item": "PALETA-MINI-MINI-AGUA",
     "descripcion": "PALETA MINI Mini Alcohol",
     "precio": 10.0,
-    "stock": 99999999982
+    "stock": 99999999979
   },
   {
     "product_id": "C371ED40",
     "item": "PALETA-MINI-MINI-CREMA",
     "descripcion": "PALETA MINI Mini Crema",
     "precio": 8.0,
-    "stock": 99999999998
+    "stock": 99999999996
   },
   {
     "product_id": "D189174D",
@@ -677,12 +677,6 @@
     "descripcion": "PALETA MINI Sin Azucar",
     "precio": 10.0,
     "stock": 99999999996
-  },
-  {
-  "product_id": "MINIAGUA6",
-  "item": "PALETA-MINI-MINI-AGUA",
-  "descripcion": "PALETA MINI Mini Agua",
-  "precio": 6.0
   },
   {
     "product_id": "68DJ885D",
@@ -836,7 +830,7 @@
     "item": "PALETAS-PERRO-MINI",
     "descripcion": "",
     "precio": "",
-    "stock": 100000
+    "stock": -1
   },
   {
     "product_id": "3B6B12C9",

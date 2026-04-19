@@ -1,4 +1,5 @@
 txn_id,fecha,item,cantidad,precio_unit,importe,issue,metodo_pago,source_id,descripcion,product_id,payment
+S000014,2026-04-18,AGUA-FRESCA-CHICA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/121,efectivo,client:60c91380-7d19-42d6-b221-4dfcf9c7cf4f#0,AGUA FRESCA Chica,74CEF70C,efectivo
 S000007,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/112,tarjeta,client:c946c4b7-f0e1-4a5f-9a56-581151debb47#1,AGUA FRESCA Grande,9C1B04E4,tarjeta
 S000010,2026-04-18,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/117,efectivo,client:1941d9c4-35b5-49de-8994-d7a7c80dd30d#0,AGUA FRESCA Grande,9C1B04E4,efectivo
 S000006,2026-04-18,BEBIDA-CHAMOYADA,2,60.0,120.0,https://github.com/OswaldoCasillas/Ventas/issues/111,efectivo,client:56833fab-f5a6-44b9-ae13-54ec6d3939ba#0,BEBIDA Chamoyada,1C271C39,efectivo
@@ -23,7 +24,9 @@ S000004,2026-04-18,PALETA-CREMA-PREMIUM-PISTACHE,1,40.0,40.0,https://github.com/
 S000004,2026-04-18,PALETA-CREMA-PREMIUM-SNICKERS,2,40.0,80.0,https://github.com/OswaldoCasillas/Ventas/issues/109,efectivo,client:4e4e374f-a18e-4c57-af82-9465659308e5#0,PALETA CREMA PREMIUM Snickers,3A0CCE07,efectivo
 S000011,2026-04-18,PALETA-CREMA-VAINILLA,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/118,efectivo,client:37d0a918-8902-48ff-96b9-0ebe4ec746f8#1,PALETA CREMA Vainilla,F6AEC245,efectivo
 S000007,2026-04-18,PALETA-MINI-MINI-AGUA,1,6.0,6.0,https://github.com/OswaldoCasillas/Ventas/issues/112,tarjeta,client:c946c4b7-f0e1-4a5f-9a56-581151debb47#0,PALETA MINI Mini Alcohol,C371ED50,tarjeta
+S000014,2026-04-18,PALETA-MINI-MINI-AGUA,3,6.0,18.0,https://github.com/OswaldoCasillas/Ventas/issues/121,efectivo,client:60c91380-7d19-42d6-b221-4dfcf9c7cf4f#1,PALETA MINI Mini Alcohol,C371ED50,efectivo
 S000002,2026-04-18,PALETA-MINI-MINI-CREMA,1,8.0,8.0,https://github.com/OswaldoCasillas/Ventas/issues/107,efectivo,client:5d755750-b731-4489-be59-1109fff6556b#0,PALETA MINI Mini Crema,C371ED40,efectivo
+S000014,2026-04-18,PALETA-MINI-MINI-CREMA,2,8.0,16.0,https://github.com/OswaldoCasillas/Ventas/issues/121,efectivo,client:60c91380-7d19-42d6-b221-4dfcf9c7cf4f#2,PALETA MINI Mini Crema,C371ED40,efectivo
 S000003,2026-04-18,PALETA-MINI-MINI-SIN-AZUCAR,2,10.0,20.0,https://github.com/OswaldoCasillas/Ventas/issues/108,efectivo,client:2fb60e78-24f2-4c28-9127-003bb2c8071c#0,PALETA MINI Sin Azucar,D189174D,efectivo
 S000007,2026-04-18,PALETA-MINI-MINI-SIN-AZUCAR,1,10.0,10.0,https://github.com/OswaldoCasillas/Ventas/issues/112,tarjeta,client:c946c4b7-f0e1-4a5f-9a56-581151debb47#2,PALETA MINI Sin Azucar,D189174D,tarjeta
 S000008,2026-04-18,PALETA-SIN-AZUCAR-FRUTOS-ROJOS,3,45.0,135.0,https://github.com/OswaldoCasillas/Ventas/issues/113,tarjeta,client:8384de7b-c486-4bfd-8741-79fc31c507c8#0,PALETA SIN AZUCAR Ketofrutos,EE158D68,tarjeta
