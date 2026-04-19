@@ -270,7 +270,7 @@
     "item": "PALETA-AGUA-LIMON",
     "descripcion": "PALETA AGUA Limon",
     "precio": 25.0,
-    "stock": 56
+    "stock": 55
   },
   {
     "product_id": "3D2B18C9",
@@ -858,6 +858,6 @@
     "item": "POSTRE-DANONINO-GRANDE",
     "descripcion": "POSTRE Danonino Grande",
     "precio": 30.0,
-    "stock": 9999996
+    "stock": 9999995
   }
 ]

@@ -39,6 +39,7 @@ S000021,2026-04-18,PALETA-AGUA-GUAYABA,1,25.0,25.0,https://github.com/OswaldoCas
 S000028,2026-04-18,PALETA-AGUA-GUAYABA,4,25.0,100.0,https://github.com/OswaldoCasillas/Ventas/issues/138,tarjeta,client:c23729d2-83a9-4996-8951-d6048585b90d#1,PALETA AGUA Guayaba,F2E6E9F9,tarjeta
 S000010,2026-04-18,PALETA-AGUA-LIMON,3,25.0,75.0,https://github.com/OswaldoCasillas/Ventas/issues/116,efectivo,client:4084cb20-ce60-4195-8835-95d21ea62ab7#0,PALETA AGUA Limon,FFFB8948,efectivo
 S000021,2026-04-18,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/130,tarjeta,client:55e50021-4f49-4e16-b667-6dfebb7bd66d#1,PALETA AGUA Limon,FFFB8948,tarjeta
+S000035,2026-04-18,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/146,tarjeta,client:13bc8fcc-90f2-488b-a9a5-ce9c7b60377e#0,PALETA AGUA Limon,FFFB8948,tarjeta
 S000009,2026-04-18,PALETA-AGUA-MANDARINA,2,25.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/114,efectivo,client:71ee5115-0b41-40f6-bfc5-22fc76230177#1,PALETA AGUA Mandarina,3D2B18C9,efectivo
 S000021,2026-04-18,PALETA-AGUA-MARACUYA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/130,tarjeta,client:55e50021-4f49-4e16-b667-6dfebb7bd66d#3,PALETA AGUA Maracuya,4E1A8D0F,tarjeta
 S000016,2026-04-18,PALETA-AGUA-PINA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/123,efectivo,client:781bcf64-bc9d-42f6-aa6a-03de922108d0#3,PALETA AGUA Pina,BFE88BE3,efectivo
@@ -86,6 +87,7 @@ S000009,2026-04-18,PALETA-SIN-AZUCAR-NUEZ,1,45.0,45.0,https://github.com/Oswaldo
 S000018,2026-04-18,PALETAS-PERRO,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/125,efectivo,client:aefec092-477f-43f0-84e9-7a07b39aa7aa#0,Paletas para Perro,6A3513FD,efectivo
 S000005,2026-04-18,PALETAS-PERRO-MINI,1,10.0,10.0,https://github.com/OswaldoCasillas/Ventas/issues/110,efectivo,client:7aa02c3a-1781-41be-a27a-e8d39424b5b0#0,,,efectivo
 S000020,2026-04-18,POSTRE-DANONINO-GRANDE,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/127,efectivo,client:72335082-c4ac-4ef0-b4a7-1e1c4992e76e#0,POSTRE Danonino Grande,3B6B12C9,efectivo
+S000035,2026-04-18,POSTRE-DANONINO-GRANDE,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/146,tarjeta,client:13bc8fcc-90f2-488b-a9a5-ce9c7b60377e#1,POSTRE Danonino Grande,3B6B12C9,tarjeta
 <<<<<<< Updated upstream,,,0,,0.0,,efectivo,,,,efectivo
 =======,,,0,,0.0,,efectivo,,,,efectivo
 >>>>>>> Stashed changes,,,0,,0.0,,efectivo,,,,efectivo
