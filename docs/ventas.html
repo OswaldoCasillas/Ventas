@@ -108,7 +108,7 @@
     }
 
     function parseCSV(text){
-      const lines = text.trim().split(/\\r?\\n/);
+      const lines = text.trim().split(/\r\n|\n|\r/);
       if (!lines.length) return [];
 
       const headers = [];
