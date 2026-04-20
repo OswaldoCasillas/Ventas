@@ -221,7 +221,7 @@
     "item": "PALETA-AGUA-GROSSELLA",
     "descripcion": "PALETA AGUA Grosella",
     "precio": 25.0,
-    "stock": 36
+    "stock": 35
   },
   {
     "product_id": "K2F6E9F9",
@@ -249,7 +249,7 @@
     "item": "PALETA-AGUA-LIMON",
     "descripcion": "PALETA AGUA Limon",
     "precio": 25.0,
-    "stock": 16
+    "stock": 15
   },
   {
     "product_id": "3D2B18C9",
@@ -837,6 +837,6 @@
     "item": "POSTRE-DANONINO-GRANDE",
     "descripcion": "POSTRE Danonino Grande",
     "precio": 30.0,
-    "stock": 9999997
+    "stock": 9999996
   }
 ]
