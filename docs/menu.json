@@ -214,7 +214,7 @@
     "item": "PALETA-AGUA-FRESA",
     "descripcion": "PALETA AGUA Fresa",
     "precio": 25.0,
-    "stock": 56
+    "stock": 55
   },
   {
     "product_id": "81CEF3B7",
@@ -319,7 +319,7 @@
     "item": "PALETA-AGUA-PREMIUM-PICAPANDA",
     "descripcion": "PALETA AGUA PREMIUM Picapanda",
     "precio": 30.0,
-    "stock": 10
+    "stock": 9
   },
   {
     "product_id": "BFE99BE3",

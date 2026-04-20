@@ -170,6 +170,7 @@ S000056,2026-04-19,HELADO-SIN-AZUCAR-LITRO,1,180.0,180.0,https://github.com/Oswa
 S000075,2026-04-19,MALTEADA-CLASICA,2,65.0,130.0,https://github.com/OswaldoCasillas/Ventas/issues/195,efectivo,client:e01dfeff-ae7b-407b-b83f-3e469b2af6b8#0,MALTEADA Clasica,D7361A46,efectivo
 S000075,2026-04-19,PALETA-AGUA-FRESA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/196,efectivo,client:b3476221-f221-462a-81f1-8c5086a76a71#0,PALETA AGUA Fresa,6D8A2D50,efectivo
 S000075,2026-04-19,PALETA-AGUA-FRESA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/196,efectivo,client:b3476221-f221-462a-81f1-8c5086a76a71#0,PALETA AGUA Fresa,6D8A2D50,efectivo
+S000081,2026-04-19,PALETA-AGUA-FRESA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/203,efectivo,client:6ab14726-e14b-4141-9436-91907b5763f2#1,PALETA AGUA Fresa,6D8A2D50,efectivo
 S000080,2026-04-19,PALETA-AGUA-GROSSELLA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/202,efectivo,client:e67ea3b0-4bc9-4d55-aa6d-01464d884fe7#1,PALETA AGUA Grosella,81CEF3B7,efectivo
 S000077,2026-04-19,PALETA-AGUA-GUANABANA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/199,efectivo,client:8e374c65-66c9-40bd-8dbf-71b6986eab50#0,PALETA AGUA Guanabana,K2F6E9F9,efectivo
 S000052,2026-04-19,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/165,efectivo,client:172dcdf4-fb76-40dc-9368-c2a9f2e54f22#1,PALETA AGUA Limon,FFFB8948,efectivo
@@ -182,6 +183,7 @@ S000065,2026-04-19,PALETA-AGUA-PREMIUM-MANGO-CHAMOY,1,30.0,30.0,https://github.c
 S000065,2026-04-19,PALETA-AGUA-PREMIUM-MANGO-CHAMOY,4,30.0,120.0,https://github.com/OswaldoCasillas/Ventas/issues/181,efectivo,client:7417205c-b108-4bf7-bc2d-7ad3b98ed6c5#0,PALETA AGUA PREMIUM Mango-Chamoy,331268B8,efectivo
 S000073,2026-04-19,PALETA-AGUA-PREMIUM-MANGO-CHAMOY,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/193,efectivo,client:92cb6022-6cfb-420e-85af-8dfaba3dd4a6#0,PALETA AGUA PREMIUM Mango-Chamoy,331268B8,efectivo
 S000074,2026-04-19,PALETA-AGUA-PREMIUM-PICAPANDA,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/194,efectivo,client:6f09cfd1-0c9b-4420-a75c-e5aa29fe4c14#0,PALETA AGUA PREMIUM Picapanda,431378B8,efectivo
+S000081,2026-04-19,PALETA-AGUA-PREMIUM-PICAPANDA,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/203,efectivo,client:6ab14726-e14b-4141-9436-91907b5763f2#0,PALETA AGUA PREMIUM Picapanda,431378B8,efectivo
 S000065,2026-04-19,PALETA-AGUA-TAMARINDO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/180,efectivo,client:c35a7437-a72d-4045-b814-f196531dc072#0,PALETA AGUA Tamarindo,98C5FF9E,efectivo
 S000077,2026-04-19,PALETA-AGUA-TAMARINDO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/199,efectivo,client:8e374c65-66c9-40bd-8dbf-71b6986eab50#2,PALETA AGUA Tamarindo,98C5FF9E,efectivo
 S000062,2026-04-19,PALETA-AGUA-ZAPOTE,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/177,tarjeta,client:e1c7c403-0327-44c0-bf16-a91b38b90ad4#0,PALETA AGUA Zapote,B4564A9B,tarjeta
