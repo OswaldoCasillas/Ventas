@@ -210,7 +210,11 @@ S000074,2026-04-19,HELADO-GOURMET-DOBLE,1,70.00,70.00,https://github.com/Oswaldo
 <<<<<<< Updated upstream
 S000075,2026-04-19,MALTEADA-CLASICA,2,65.00,130.00,https://github.com/OswaldoCasillas/Ventas/issues/195,efectivo,client:e01dfeff-ae7b-407b-b83f-3e469b2af6b8#0,
 S000075,2026-04-19,AGUA-FRESCA-CHICA,1,25.00,25.00,https://github.com/OswaldoCasillas/Ventas/issues/195,efectivo,client:e01dfeff-ae7b-407b-b83f-3e469b2af6b8#1,
+<<<<<<< Updated upstream
 =======
 S000075,2026-04-19,PALETA-AGUA-FRESA,1,25.00,25.00,https://github.com/OswaldoCasillas/Ventas/issues/196,efectivo,client:b3476221-f221-462a-81f1-8c5086a76a71#0,
 S000075,2026-04-19,PALETA-CREMA-FRESA-CON-CREMA,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/196,efectivo,client:b3476221-f221-462a-81f1-8c5086a76a71#1,
+>>>>>>> Stashed changes
+=======
+S000076,2026-04-19,PALETA-MINI-MINI-AGUA,2,6.00,12.00,https://github.com/OswaldoCasillas/Ventas/issues/197,efectivo,client:35b67bb2-c7d7-4a47-a855-343e40fb50d2#0,
 >>>>>>> Stashed changes
