@@ -1,26 +1,5 @@
 [
   {
-    "product_id": "",
-    "item": "<<<<<<< Updated upstream",
-    "descripcion": "",
-    "precio": "",
-    "stock": 0
-  },
-  {
-    "product_id": "",
-    "item": "=======",
-    "descripcion": "",
-    "precio": "",
-    "stock": 0
-  },
-  {
-    "product_id": "",
-    "item": ">>>>>>> Stashed changes",
-    "descripcion": "",
-    "precio": "",
-    "stock": 0
-  },
-  {
     "product_id": "74CEF70C",
     "item": "AGUA-FRESCA-CHICA",
     "descripcion": "AGUA FRESCA Chica",
