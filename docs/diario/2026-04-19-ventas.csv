@@ -1,4 +1,5 @@
 txn_id,fecha,item,cantidad,precio_unit,importe,issue,metodo_pago,source_id,descripcion,product_id,payment
+S000075,2026-04-19,AGUA-FRESCA-CHICA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/195,efectivo,client:e01dfeff-ae7b-407b-b83f-3e469b2af6b8#1,AGUA FRESCA Chica,74CEF70C,efectivo
 S000051,2026-04-19,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/163,tarjeta,client:c04d1db3-1da4-4e7b-b10e-6d490d981c5e#0,AGUA FRESCA Grande,9C1B04E4,tarjeta
 S000053,2026-04-19,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/167,tarjeta,client:e7b8f02c-94e8-4aff-ad92-12533fa11ef0#0,AGUA FRESCA Grande,9C1B04E4,tarjeta
 S000053,2026-04-19,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/168,efectivo,client:63ec7a28-e05d-4999-bc59-963a0a5d3160#0,AGUA FRESCA Grande,9C1B04E4,efectivo
@@ -27,6 +28,7 @@ S000067,2026-04-19,HELADO-NIEVE-SENCILLO,2,25.0,50.0,https://github.com/OswaldoC
 S000068,2026-04-19,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/185,efectivo,client:3feacaa4-bb81-48f0-9e3d-1e0803a118a4#1,Helado Nieve Sencillo,641AA19F,efectivo
 S000072,2026-04-19,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/191,efectivo,client:afd2fc80-3f97-47c7-b62f-1dd696ee051b#0,Helado Nieve Sencillo,641AA19F,efectivo
 S000056,2026-04-19,HELADO-SIN-AZUCAR-LITRO,1,180.0,180.0,https://github.com/OswaldoCasillas/Ventas/issues/171,efectivo,client:514a1023-bb98-4238-abec-a5700e83bffe#0,Helado Sin Azucar Litro,9DC9D6D6,efectivo
+S000075,2026-04-19,MALTEADA-CLASICA,2,65.0,130.0,https://github.com/OswaldoCasillas/Ventas/issues/195,efectivo,client:e01dfeff-ae7b-407b-b83f-3e469b2af6b8#0,MALTEADA Clasica,D7361A46,efectivo
 S000052,2026-04-19,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/165,efectivo,client:172dcdf4-fb76-40dc-9368-c2a9f2e54f22#1,PALETA AGUA Limon,FFFB8948,efectivo
 S000055,2026-04-19,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/170,efectivo,client:1481ccbd-e92d-48eb-b976-648f0b6e2b72#0,PALETA AGUA Limon,FFFB8948,efectivo
 S000067,2026-04-19,PALETA-AGUA-MANDARINA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/183,efectivo,client:36da91da-3f01-423d-ad92-c3246d6c6f30#0,PALETA AGUA Mandarina,3D2B18C9,efectivo

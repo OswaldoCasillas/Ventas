@@ -4,7 +4,7 @@
     "item": "AGUA-FRESCA-CHICA",
     "descripcion": "AGUA FRESCA Chica",
     "precio": 25.0,
-    "stock": 9999999
+    "stock": 9999998
   },
   {
     "product_id": "9C1B04E4",
@@ -193,7 +193,7 @@
     "item": "MALTEADA-CLASICA",
     "descripcion": "MALTEADA Clasica",
     "precio": 65.0,
-    "stock": 9999999
+    "stock": 9999997
   },
   {
     "product_id": "F63212B1",
