@@ -144,6 +144,7 @@ S000058,2026-04-19,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasi
 S000060,2026-04-19,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/175,tarjeta,client:cccb3645-b4fc-4db0-a5bb-83ef60bc019e#1,AGUA FRESCA Grande,9C1B04E4,tarjeta
 S000064,2026-04-19,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/179,efectivo,client:b78472b2-6856-4bb9-a85f-407b55874046#0,AGUA FRESCA Grande,9C1B04E4,efectivo
 S000068,2026-04-19,AGUA-FRESCA-GRANDE,2,35.0,70.0,https://github.com/OswaldoCasillas/Ventas/issues/185,efectivo,client:3feacaa4-bb81-48f0-9e3d-1e0803a118a4#0,AGUA FRESCA Grande,9C1B04E4,efectivo
+S000076,2026-04-19,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/198,efectivo,client:bb16bb96-5759-412d-bcb4-1f2d1775d3e4#0,AGUA FRESCA Grande,9C1B04E4,efectivo
 S000067,2026-04-19,BEBIDA-CHAMOYADA,1,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/184,efectivo,client:677e1e53-1ed9-477b-a5ce-268e68afdc56#0,BEBIDA Chamoyada,1C271C39,efectivo
 S000069,2026-04-19,EXTRA-COBERTURA-CHOCOLATE,1,10.0,10.0,https://github.com/OswaldoCasillas/Ventas/issues/186,efectivo,client:18e9f5f6-72c0-4000-971a-b2b22906f8a5#1,EXTRA Cobertura Chocolate,062CFB68,efectivo
 S000074,2026-04-19,EXTRA-COBERTURA-CHOCOLATE,1,10.0,10.0,https://github.com/OswaldoCasillas/Ventas/issues/194,efectivo,client:6f09cfd1-0c9b-4420-a75c-e5aa29fe4c14#5,EXTRA Cobertura Chocolate,062CFB68,efectivo
@@ -165,11 +166,8 @@ S000067,2026-04-19,HELADO-NIEVE-SENCILLO,2,25.0,50.0,https://github.com/OswaldoC
 S000068,2026-04-19,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/185,efectivo,client:3feacaa4-bb81-48f0-9e3d-1e0803a118a4#1,Helado Nieve Sencillo,641AA19F,efectivo
 S000072,2026-04-19,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/191,efectivo,client:afd2fc80-3f97-47c7-b62f-1dd696ee051b#0,Helado Nieve Sencillo,641AA19F,efectivo
 S000056,2026-04-19,HELADO-SIN-AZUCAR-LITRO,1,180.0,180.0,https://github.com/OswaldoCasillas/Ventas/issues/171,efectivo,client:514a1023-bb98-4238-abec-a5700e83bffe#0,Helado Sin Azucar Litro,9DC9D6D6,efectivo
-<<<<<<< Updated upstream
 S000075,2026-04-19,MALTEADA-CLASICA,2,65.0,130.0,https://github.com/OswaldoCasillas/Ventas/issues/195,efectivo,client:e01dfeff-ae7b-407b-b83f-3e469b2af6b8#0,MALTEADA Clasica,D7361A46,efectivo
-=======
 S000075,2026-04-19,PALETA-AGUA-FRESA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/196,efectivo,client:b3476221-f221-462a-81f1-8c5086a76a71#0,PALETA AGUA Fresa,6D8A2D50,efectivo
->>>>>>> Stashed changes
 S000052,2026-04-19,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/165,efectivo,client:172dcdf4-fb76-40dc-9368-c2a9f2e54f22#1,PALETA AGUA Limon,FFFB8948,efectivo
 S000055,2026-04-19,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/170,efectivo,client:1481ccbd-e92d-48eb-b976-648f0b6e2b72#0,PALETA AGUA Limon,FFFB8948,efectivo
 S000067,2026-04-19,PALETA-AGUA-MANDARINA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/183,efectivo,client:36da91da-3f01-423d-ad92-c3246d6c6f30#0,PALETA AGUA Mandarina,3D2B18C9,efectivo
@@ -215,3 +213,6 @@ S000059,2026-04-19,PALETA-SIN-AZUCAR-PINON,1,45.0,45.0,https://github.com/Oswald
 S000067,2026-04-19,PALETAS-PERRO,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/184,efectivo,client:677e1e53-1ed9-477b-a5ce-268e68afdc56#1,Paletas para Perro,6A3513FD,efectivo
 S000072,2026-04-19,POSTRE-DANONINO-GRANDE,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/191,efectivo,client:afd2fc80-3f97-47c7-b62f-1dd696ee051b#1,POSTRE Danonino Grande,3B6B12C9,efectivo
 S000074,2026-04-19,POSTRE-DANONINO-GRANDE,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/194,efectivo,client:6f09cfd1-0c9b-4420-a75c-e5aa29fe4c14#2,POSTRE Danonino Grande,3B6B12C9,efectivo
+<<<<<<< Updated upstream,,,0,,0.0,,efectivo,,,,efectivo
+=======,,,0,,0.0,,efectivo,,,,efectivo
+>>>>>>> Stashed changes,,,0,,0.0,,efectivo,,,,efectivo
