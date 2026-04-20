@@ -15,7 +15,6 @@
       --brand-soft: #eaf1ff;
       --danger: #b42318;
       --danger-soft:#fff2f1;
-      --ok: #067647;
       --shadow: 0 10px 30px rgba(15, 35, 95, .08);
       --radius: 18px;
     }
@@ -100,7 +99,6 @@
       border-color: var(--brand);
       color: #fff;
     }
-    .ghost-btn:hover, .clear-btn:hover { background:#f8fafc; }
     .categories {
       display: flex;
       flex-wrap: wrap;
@@ -235,10 +233,7 @@
       color: var(--muted);
       text-align: center;
     }
-    .hint {
-      font-size:13px;
-      color:var(--muted);
-    }
+    .hint { font-size:13px; color:var(--muted); }
     @media (max-width: 980px) {
       .grid { grid-template-columns: 1fr; }
       .toolbar { grid-template-columns: 1fr 1fr; }
@@ -257,7 +252,7 @@
     <div class="top">
       <div>
         <h1 class="title">Registrar venta</h1>
-        <div class="muted">Catálogo desde <code>menu.json</code>, búsqueda flexible y descuentos rápidos de $5 / $10.</div>
+        <div class="muted">Catálogo desde <code>menu.json</code>, con filtro para ignorar basura de conflictos Git.</div>
       </div>
       <a class="back-btn" href="index.html">← Menú</a>
     </div>
@@ -277,7 +272,7 @@
 
       <aside class="card">
         <h2 style="margin:0 0 6px;">Carrito</h2>
-        <div class="muted">Los descuentos rápidos agregan el mismo producto con precio rebajado.</div>
+        <div class="muted">Los productos basura con <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code> o <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> se ignoran automáticamente.</div>
 
         <table class="cart-table">
           <thead>
@@ -309,7 +304,7 @@
           <div>
             <div style="margin-bottom:8px;"><strong>Notas</strong></div>
             <textarea id="notas" placeholder="Opcional"></textarea>
-            <div class="hint">Tip: si cambias de categoría, la búsqueda se limpia sola para que sea más rápido navegar.</div>
+            <div class="hint">Si cambias de categoría, la búsqueda se limpia sola para que sea más rápido navegar.</div>
           </div>
         </div>
 
@@ -358,28 +353,22 @@
     let metodoPago = "efectivo";
     const cart = [];
 
-    function money(value) {
-      return `$${Number(value || 0).toFixed(2)}`;
-    }
-
+    function money(value) { return `$${Number(value || 0).toFixed(2)}`; }
     function todayISO() {
       const d = new Date();
       const month = `${d.getMonth() + 1}`.padStart(2, "0");
       const day = `${d.getDate()}`.padStart(2, "0");
       return `${d.getFullYear()}-${month}-${day}`;
     }
-
     function round2(value) {
       return Math.round((Number(value || 0) + Number.EPSILON) * 100) / 100;
     }
-
     function fetchJSON(url) {
       return fetch(url + "?_=" + Date.now(), { cache: "no-store" }).then((r) => {
         if (!r.ok) throw new Error(`${r.status} ${url}`);
         return r.json();
       });
     }
-
     function normalizeText(value) {
       return String(value || "")
         .normalize("NFD")
@@ -393,11 +382,24 @@
 
     function normalizeProduct(raw) {
       const item = String(raw?.item || "").trim();
+      const descripcion = String(raw?.descripcion || "").trim();
+
+      const invalidTokens = [
+        "<<<<<<<",
+        "=======",
+        ">>>>>>>",
+        "Updated upstream",
+        "Stashed changes"
+      ];
+
+      const joined = `${item} ${descripcion}`;
       if (!item) return null;
+      if (invalidTokens.some(token => joined.includes(token))) return null;
+
       const precioNum = Number(raw?.precio);
       return {
         item,
-        descripcion: String(raw?.descripcion || "").trim(),
+        descripcion,
         precio: Number.isFinite(precioNum) ? precioNum : 0,
         product_id: String(raw?.product_id || "").trim(),
         stock: Number(raw?.stock || 0)
@@ -428,10 +430,7 @@
       return "EXTRA";
     }
 
-    function niceLabel(product) {
-      return product.descripcion || product.item;
-    }
-
+    function niceLabel(product) { return product.descripcion || product.item; }
     function resetSearch() {
       const input = document.getElementById("search");
       input.value = "";
@@ -442,11 +441,8 @@
         .sort((a, b) => (CAT_LABELS[a] || a).localeCompare(CAT_LABELS[b] || b));
 
       const allCategories = ["ALL", ...categories];
-
       const select = document.getElementById("category");
-      select.innerHTML = allCategories
-        .map((key) => `<option value="${key}">${CAT_LABELS[key] || key}</option>`)
-        .join("");
+      select.innerHTML = allCategories.map((key) => `<option value="${key}">${CAT_LABELS[key] || key}</option>`).join("");
       select.value = FILTER_CATEGORY;
       select.onchange = () => {
         FILTER_CATEGORY = select.value;
@@ -456,10 +452,7 @@
       };
 
       const chips = document.getElementById("categoryChips");
-      chips.innerHTML = allCategories
-        .map((key) => `<button type="button" class="chip" data-cat="${key}">${CAT_LABELS[key] || key}</button>`)
-        .join("");
-
+      chips.innerHTML = allCategories.map((key) => `<button type="button" class="chip" data-cat="${key}">${CAT_LABELS[key] || key}</button>`).join("");
       chips.querySelectorAll(".chip").forEach((chip) => {
         chip.onclick = () => {
           FILTER_CATEGORY = chip.dataset.cat;
@@ -486,7 +479,6 @@
       return MENU.filter((p) => {
         const byCat = FILTER_CATEGORY === "ALL" || getCategoryOf(p.item) === FILTER_CATEGORY;
         if (!byCat) return false;
-
         if (!terms.length) return true;
 
         const hay = normalizeText(`${p.item} ${p.descripcion} ${CAT_LABELS[getCategoryOf(p.item)] || ""}`);
@@ -544,23 +536,21 @@
         return;
       }
 
-      container.innerHTML = list
-        .map((p) => `
-          <article class="product">
-            <div>
-              <h3>${niceLabel(p)}</h3>
-              <div class="sku">${p.item}</div>
-            </div>
-            <div class="muted">${CAT_LABELS[getCategoryOf(p.item)] || "Sin categoría"}</div>
-            <div class="price">${money(p.precio)}</div>
-            <div class="product-actions">
-              <button class="main-add" type="button" data-add="${p.item}">Agregar</button>
-              <button class="discount-btn" type="button" data-discount5="${p.item}">-$5</button>
-              <button class="discount-btn" type="button" data-discount10="${p.item}">-$10</button>
-            </div>
-          </article>
-        `)
-        .join("");
+      container.innerHTML = list.map((p) => `
+        <article class="product">
+          <div>
+            <h3>${niceLabel(p)}</h3>
+            <div class="sku">${p.item}</div>
+          </div>
+          <div class="muted">${CAT_LABELS[getCategoryOf(p.item)] || "Sin categoría"}</div>
+          <div class="price">${money(p.precio)}</div>
+          <div class="product-actions">
+            <button class="main-add" type="button" data-add="${p.item}">Agregar</button>
+            <button class="discount-btn" type="button" data-discount5="${p.item}">-$5</button>
+            <button class="discount-btn" type="button" data-discount10="${p.item}">-$10</button>
+          </div>
+        </article>
+      `).join("");
 
       container.querySelectorAll("[data-add]").forEach((btn) => {
         btn.onclick = () => {
@@ -568,14 +558,12 @@
           if (product) addToCart(product, 0);
         };
       });
-
       container.querySelectorAll("[data-discount5]").forEach((btn) => {
         btn.onclick = () => {
           const product = MENU.find((p) => p.item === btn.dataset.discount5);
           if (product) addToCart(product, 5);
         };
       });
-
       container.querySelectorAll("[data-discount10]").forEach((btn) => {
         btn.onclick = () => {
           const product = MENU.find((p) => p.item === btn.dataset.discount10);
@@ -593,26 +581,24 @@
         empty.style.display = "block";
       } else {
         empty.style.display = "none";
-        body.innerHTML = cart
-          .map((row) => `
-            <tr>
-              <td>
-                <strong>${row.descripcion || row.item}${row.variantLabel || ""}</strong>
-                <div class="sku">${row.item}</div>
-              </td>
-              <td>
-                <div class="cart-controls">
-                  <button type="button" class="qty-btn" data-minus="${row.item}" data-price="${row.precio}">−</button>
-                  <strong>${row.cantidad}</strong>
-                  <button type="button" class="qty-btn" data-plus="${row.item}" data-price="${row.precio}">+</button>
-                </div>
-              </td>
-              <td>${money(row.precio)}</td>
-              <td>${money(row.precio * row.cantidad)}</td>
-              <td><button type="button" class="remove-btn" data-remove="${row.item}" data-price="${row.precio}">Quitar</button></td>
-            </tr>
-          `)
-          .join("");
+        body.innerHTML = cart.map((row) => `
+          <tr>
+            <td>
+              <strong>${row.descripcion || row.item}${row.variantLabel || ""}</strong>
+              <div class="sku">${row.item}</div>
+            </td>
+            <td>
+              <div class="cart-controls">
+                <button type="button" class="qty-btn" data-minus="${row.item}" data-price="${row.precio}">−</button>
+                <strong>${row.cantidad}</strong>
+                <button type="button" class="qty-btn" data-plus="${row.item}" data-price="${row.precio}">+</button>
+              </div>
+            </td>
+            <td>${money(row.precio)}</td>
+            <td>${money(row.precio * row.cantidad)}</td>
+            <td><button type="button" class="remove-btn" data-remove="${row.item}" data-price="${row.precio}">Quitar</button></td>
+          </tr>
+        `).join("");
       }
 
       body.querySelectorAll("[data-minus]").forEach((btn) => btn.onclick = () => updateQty(btn.dataset.minus, btn.dataset.price, -1));
@@ -635,7 +621,7 @@
       const fecha = document.getElementById("fecha").value;
       const notas = document.getElementById("notas").value;
       const base = `https://github.com/${ORG}/${REPO}/issues/new`;
-      const title = `Venta: ${cart.length} items @ ${fecha}`;
+      const title = "Venta: ${cart.length} items @ ${fecha}";
 
       let body = `**Fecha**: ${fecha}\n**Método de pago**: ${metodoPago}\n**Notas**: ${notas || ""}\n\n**Items**\nSKU | Cantidad | Precio\n--- | --- | ---\n`;
       cart.forEach((c) => {
@@ -708,15 +694,12 @@
     }
 
     function clearPendingSale() {
-      try {
-        localStorage.removeItem(PENDING_SALE_KEY);
-      } catch (_) {}
+      try { localStorage.removeItem(PENDING_SALE_KEY); } catch (_) {}
     }
 
     async function submitSale() {
       const btn = document.getElementById("confirm");
       if (btn.dataset.sending === "1") return;
-
       btn.dataset.sending = "1";
       btn.disabled = true;
 
@@ -724,15 +707,8 @@
         const fecha = document.getElementById("fecha").value;
         const notas = document.getElementById("notas").value;
 
-        if (!fecha) {
-          alert("Falta la fecha");
-          return;
-        }
-
-        if (cart.length === 0) {
-          alert("Agrega al menos un producto");
-          return;
-        }
+        if (!fecha) return alert("Falta la fecha");
+        if (cart.length === 0) return alert("Agrega al menos un producto");
 
         if (!API_URL) {
           location.href = buildIssueUrlFallback();
@@ -787,10 +763,7 @@
     }
 
     document.getElementById("search").addEventListener("input", renderProducts);
-    document.getElementById("clearSearch").onclick = () => {
-      resetSearch();
-      renderProducts();
-    };
+    document.getElementById("clearSearch").onclick = () => { resetSearch(); renderProducts(); };
     document.getElementById("clearCart").onclick = clearCart;
     document.getElementById("confirm").onclick = submitSale;
     document.getElementById("payCash").onclick = () => setMetodoPago("efectivo");
