@@ -28,7 +28,11 @@ S000067,2026-04-19,HELADO-NIEVE-SENCILLO,2,25.0,50.0,https://github.com/OswaldoC
 S000068,2026-04-19,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/185,efectivo,client:3feacaa4-bb81-48f0-9e3d-1e0803a118a4#1,Helado Nieve Sencillo,641AA19F,efectivo
 S000072,2026-04-19,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/191,efectivo,client:afd2fc80-3f97-47c7-b62f-1dd696ee051b#0,Helado Nieve Sencillo,641AA19F,efectivo
 S000056,2026-04-19,HELADO-SIN-AZUCAR-LITRO,1,180.0,180.0,https://github.com/OswaldoCasillas/Ventas/issues/171,efectivo,client:514a1023-bb98-4238-abec-a5700e83bffe#0,Helado Sin Azucar Litro,9DC9D6D6,efectivo
+<<<<<<< Updated upstream
 S000075,2026-04-19,MALTEADA-CLASICA,2,65.0,130.0,https://github.com/OswaldoCasillas/Ventas/issues/195,efectivo,client:e01dfeff-ae7b-407b-b83f-3e469b2af6b8#0,MALTEADA Clasica,D7361A46,efectivo
+=======
+S000075,2026-04-19,PALETA-AGUA-FRESA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/196,efectivo,client:b3476221-f221-462a-81f1-8c5086a76a71#0,PALETA AGUA Fresa,6D8A2D50,efectivo
+>>>>>>> Stashed changes
 S000052,2026-04-19,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/165,efectivo,client:172dcdf4-fb76-40dc-9368-c2a9f2e54f22#1,PALETA AGUA Limon,FFFB8948,efectivo
 S000055,2026-04-19,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/170,efectivo,client:1481ccbd-e92d-48eb-b976-648f0b6e2b72#0,PALETA AGUA Limon,FFFB8948,efectivo
 S000067,2026-04-19,PALETA-AGUA-MANDARINA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/183,efectivo,client:36da91da-3f01-423d-ad92-c3246d6c6f30#0,PALETA AGUA Mandarina,3D2B18C9,efectivo
@@ -49,6 +53,7 @@ S000061,2026-04-19,PALETA-CREMA-CHOCOLATE,1,35.0,35.0,https://github.com/Oswaldo
 S000063,2026-04-19,PALETA-CREMA-COCO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/178,tarjeta,client:ce84106b-2a6b-4ab2-9c15-660bb6eeb97b#1,PALETA CREMA Coco,7B6778AE,tarjeta
 S000058,2026-04-19,PALETA-CREMA-DURAZNOS-CON-CREMA,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/173,tarjeta,client:2b38a754-56fe-4ea5-a634-52f27457a1ba#0,PALETA CREMA Duraznos con Crema,C8A28FAC,tarjeta
 S000070,2026-04-19,PALETA-CREMA-DURAZNOS-CON-CREMA,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/188,tarjeta,client:5d244c60-6e80-46cd-bcb2-a2a52e9a553a#1,PALETA CREMA Duraznos con Crema,C8A28FAC,tarjeta
+S000075,2026-04-19,PALETA-CREMA-FRESA-CON-CREMA,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/196,efectivo,client:b3476221-f221-462a-81f1-8c5086a76a71#1,PALETA CREMA Fresa con Crema,03C761CC,efectivo
 S000074,2026-04-19,PALETA-CREMA-MAMEY,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/194,efectivo,client:6f09cfd1-0c9b-4420-a75c-e5aa29fe4c14#1,PALETA CREMA Mamey,07A7670E,efectivo
 S000060,2026-04-19,PALETA-CREMA-MAZAPAN,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/175,tarjeta,client:cccb3645-b4fc-4db0-a5bb-83ef60bc019e#0,PALETA CREMA Mazapan,07A7679E,tarjeta
 S000072,2026-04-19,PALETA-CREMA-OREO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/192,efectivo,client:c1211ae1-bb32-4935-83e5-af86577b85c5#0,PALETA CREMA Oreo,02298874,efectivo

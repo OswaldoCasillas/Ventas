@@ -214,7 +214,7 @@
     "item": "PALETA-AGUA-FRESA",
     "descripcion": "PALETA AGUA Fresa",
     "precio": 25.0,
-    "stock": 57
+    "stock": 56
   },
   {
     "product_id": "81CEF3B7",
@@ -452,7 +452,7 @@
     "item": "PALETA-CREMA-FRESA-CON-CREMA",
     "descripcion": "PALETA CREMA Fresa con Crema",
     "precio": 35.0,
-    "stock": 9999999
+    "stock": 9999998
   },
   {
     "product_id": "03C761EC",
