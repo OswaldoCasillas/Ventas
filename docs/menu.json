@@ -81,7 +81,7 @@
     "item": "EXTRA-COBERTURA-CHOCOLATE",
     "descripcion": "EXTRA Cobertura Chocolate",
     "precio": 10.0,
-    "stock": 9999998
+    "stock": 9999997
   },
   {
     "product_id": "A9581B56",
@@ -102,7 +102,7 @@
     "item": "HELADO-CLASICO-DOBLE",
     "descripcion": "Helado Clasico Doble",
     "precio": 60.0,
-    "stock": 9999998
+    "stock": 9999997
   },
   {
     "product_id": "7968996E",
@@ -130,7 +130,7 @@
     "item": "HELADO-GOURMET-DOBLE",
     "descripcion": "Helado Gourmet Doble",
     "precio": 70.0,
-    "stock": 9999999
+    "stock": 9999998
   },
   {
     "product_id": "28C3B90F",
@@ -158,7 +158,7 @@
     "item": "HELADO-NIEVE-DOBLE",
     "descripcion": "Helado Nieve Doble",
     "precio": 45.0,
-    "stock": 9999996
+    "stock": 9999995
   },
   {
     "product_id": "D6B795F8",
@@ -340,7 +340,7 @@
     "item": "PALETA-AGUA-PREMIUM-PICAPANDA",
     "descripcion": "PALETA AGUA PREMIUM Picapanda",
     "precio": 30.0,
-    "stock": 11
+    "stock": 10
   },
   {
     "product_id": "BFE99BE3",
@@ -487,7 +487,7 @@
     "item": "PALETA-CREMA-MAMEY",
     "descripcion": "PALETA CREMA Mamey",
     "precio": 35.0,
-    "stock": 32
+    "stock": 31
   },
   {
     "product_id": "07A7679E",
@@ -858,6 +858,6 @@
     "item": "POSTRE-DANONINO-GRANDE",
     "descripcion": "POSTRE Danonino Grande",
     "precio": 30.0,
-    "stock": 9999998
+    "stock": 9999997
   }
 ]
