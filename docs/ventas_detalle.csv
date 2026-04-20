@@ -168,8 +168,11 @@ S000072,2026-04-19,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoC
 S000056,2026-04-19,HELADO-SIN-AZUCAR-LITRO,1,180.0,180.0,https://github.com/OswaldoCasillas/Ventas/issues/171,efectivo,client:514a1023-bb98-4238-abec-a5700e83bffe#0,Helado Sin Azucar Litro,9DC9D6D6,efectivo
 S000075,2026-04-19,MALTEADA-CLASICA,2,65.0,130.0,https://github.com/OswaldoCasillas/Ventas/issues/195,efectivo,client:e01dfeff-ae7b-407b-b83f-3e469b2af6b8#0,MALTEADA Clasica,D7361A46,efectivo
 S000075,2026-04-19,PALETA-AGUA-FRESA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/196,efectivo,client:b3476221-f221-462a-81f1-8c5086a76a71#0,PALETA AGUA Fresa,6D8A2D50,efectivo
+S000075,2026-04-19,PALETA-AGUA-FRESA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/196,efectivo,client:b3476221-f221-462a-81f1-8c5086a76a71#0,PALETA AGUA Fresa,6D8A2D50,efectivo
+S000077,2026-04-19,PALETA-AGUA-GUANABANA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/199,efectivo,client:8e374c65-66c9-40bd-8dbf-71b6986eab50#0,PALETA AGUA Guanabana,K2F6E9F9,efectivo
 S000052,2026-04-19,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/165,efectivo,client:172dcdf4-fb76-40dc-9368-c2a9f2e54f22#1,PALETA AGUA Limon,FFFB8948,efectivo
 S000055,2026-04-19,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/170,efectivo,client:1481ccbd-e92d-48eb-b976-648f0b6e2b72#0,PALETA AGUA Limon,FFFB8948,efectivo
+S000077,2026-04-19,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/199,efectivo,client:8e374c65-66c9-40bd-8dbf-71b6986eab50#1,PALETA AGUA Limon,FFFB8948,efectivo
 S000067,2026-04-19,PALETA-AGUA-MANDARINA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/183,efectivo,client:36da91da-3f01-423d-ad92-c3246d6c6f30#0,PALETA AGUA Mandarina,3D2B18C9,efectivo
 S000066,2026-04-19,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/182,tarjeta,client:2398cdb8-e502-4e69-ace4-b1dbfd417d50#0,PALETA AGUA PREMIUM Frutos Rojos,746FF175,tarjeta
 S000065,2026-04-19,PALETA-AGUA-PREMIUM-MANGO-CHAMOY,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/180,efectivo,client:c35a7437-a72d-4045-b814-f196531dc072#1,PALETA AGUA PREMIUM Mango-Chamoy,331268B8,efectivo
@@ -177,6 +180,7 @@ S000065,2026-04-19,PALETA-AGUA-PREMIUM-MANGO-CHAMOY,4,30.0,120.0,https://github.
 S000073,2026-04-19,PALETA-AGUA-PREMIUM-MANGO-CHAMOY,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/193,efectivo,client:92cb6022-6cfb-420e-85af-8dfaba3dd4a6#0,PALETA AGUA PREMIUM Mango-Chamoy,331268B8,efectivo
 S000074,2026-04-19,PALETA-AGUA-PREMIUM-PICAPANDA,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/194,efectivo,client:6f09cfd1-0c9b-4420-a75c-e5aa29fe4c14#0,PALETA AGUA PREMIUM Picapanda,431378B8,efectivo
 S000065,2026-04-19,PALETA-AGUA-TAMARINDO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/180,efectivo,client:c35a7437-a72d-4045-b814-f196531dc072#0,PALETA AGUA Tamarindo,98C5FF9E,efectivo
+S000077,2026-04-19,PALETA-AGUA-TAMARINDO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/199,efectivo,client:8e374c65-66c9-40bd-8dbf-71b6986eab50#2,PALETA AGUA Tamarindo,98C5FF9E,efectivo
 S000062,2026-04-19,PALETA-AGUA-ZAPOTE,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/177,tarjeta,client:e1c7c403-0327-44c0-bf16-a91b38b90ad4#0,PALETA AGUA Zapote,B4564A9B,tarjeta
 S000052,2026-04-19,PALETA-CREMA-ARROZ,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/165,efectivo,client:172dcdf4-fb76-40dc-9368-c2a9f2e54f22#0,PALETA CREMA Arroz,D24145B9,efectivo
 S000052,2026-04-19,PALETA-CREMA-ARROZ,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/166,efectivo,client:f9faee1e-7295-40cc-8866-249ec1b3a32f#0,PALETA CREMA Arroz,D24145B9,efectivo
@@ -189,6 +193,7 @@ S000063,2026-04-19,PALETA-CREMA-COCO,1,35.0,35.0,https://github.com/OswaldoCasil
 S000058,2026-04-19,PALETA-CREMA-DURAZNOS-CON-CREMA,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/173,tarjeta,client:2b38a754-56fe-4ea5-a634-52f27457a1ba#0,PALETA CREMA Duraznos con Crema,C8A28FAC,tarjeta
 S000070,2026-04-19,PALETA-CREMA-DURAZNOS-CON-CREMA,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/188,tarjeta,client:5d244c60-6e80-46cd-bcb2-a2a52e9a553a#1,PALETA CREMA Duraznos con Crema,C8A28FAC,tarjeta
 S000075,2026-04-19,PALETA-CREMA-FRESA-CON-CREMA,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/196,efectivo,client:b3476221-f221-462a-81f1-8c5086a76a71#1,PALETA CREMA Fresa con Crema,03C761CC,efectivo
+S000075,2026-04-19,PALETA-CREMA-FRESA-CON-CREMA,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/196,efectivo,client:b3476221-f221-462a-81f1-8c5086a76a71#1,PALETA CREMA Fresa con Crema,03C761CC,efectivo
 S000074,2026-04-19,PALETA-CREMA-MAMEY,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/194,efectivo,client:6f09cfd1-0c9b-4420-a75c-e5aa29fe4c14#1,PALETA CREMA Mamey,07A7670E,efectivo
 S000060,2026-04-19,PALETA-CREMA-MAZAPAN,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/175,tarjeta,client:cccb3645-b4fc-4db0-a5bb-83ef60bc019e#0,PALETA CREMA Mazapan,07A7679E,tarjeta
 S000072,2026-04-19,PALETA-CREMA-OREO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/192,efectivo,client:c1211ae1-bb32-4935-83e5-af86577b85c5#0,PALETA CREMA Oreo,02298874,efectivo
@@ -197,13 +202,16 @@ S000070,2026-04-19,PALETA-CREMA-PAY-DE-LIMON,1,35.0,35.0,https://github.com/Oswa
 S000070,2026-04-19,PALETA-CREMA-PREMIUM-CAJETA,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/188,tarjeta,client:5d244c60-6e80-46cd-bcb2-a2a52e9a553a#2,PALETA CREMA PREMIUM Cajeta,6AD82AE1,tarjeta
 S000057,2026-04-19,PALETA-CREMA-PREMIUM-NUEZ,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/172,efectivo,client:fea93239-3165-4ab8-9e87-1aea6a423e16#1,PALETA CREMA PREMIUM Nuez,92CFB2A5,efectivo
 S000059,2026-04-19,PALETA-CREMA-PREMIUM-PINON,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/174,tarjeta,client:b9c01d2d-dbbf-4f8a-aa2d-62732b3286cb#1,PALETA CREMA PREMIUM Pinon,F6F917A9,tarjeta
+S000077,2026-04-19,PALETA-CREMA-PREMIUM-PINON,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/199,efectivo,client:8e374c65-66c9-40bd-8dbf-71b6986eab50#3,PALETA CREMA PREMIUM Pinon,F6F917A9,efectivo
 S000062,2026-04-19,PALETA-CREMA-PREMIUM-SELVA-NEGRA,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/177,tarjeta,client:e1c7c403-0327-44c0-bf16-a91b38b90ad4#4,PALETA CREMA PREMIUM Selva Negra,05833CE3,tarjeta
+S000077,2026-04-19,PALETA-CREMA-PREMIUM-SELVA-NEGRA,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/199,efectivo,client:8e374c65-66c9-40bd-8dbf-71b6986eab50#4,PALETA CREMA PREMIUM Selva Negra,05833CE3,efectivo
 S000062,2026-04-19,PALETA-CREMA-PREMIUM-SNICKERS,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/177,tarjeta,client:e1c7c403-0327-44c0-bf16-a91b38b90ad4#1,PALETA CREMA PREMIUM Snickers,3A0CCE07,tarjeta
 S000059,2026-04-19,PALETA-CREMA-PREMIUM-VINO-TINTO-RELLENO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/174,tarjeta,client:b9c01d2d-dbbf-4f8a-aa2d-62732b3286cb#0,PALETA CREMA PREMIUM Vino Tinto,6DF1F449,tarjeta
 S000054,2026-04-19,PALETA-MINI-MINI-AGUA,4,6.0,24.0,https://github.com/OswaldoCasillas/Ventas/issues/169,efectivo,client:b123844a-58ed-409d-8308-ae0df4309625#1,PALETA MINI Mini Agua,MINIAGUA6,efectivo
 S000072,2026-04-19,PALETA-MINI-MINI-AGUA,1,6.0,6.0,https://github.com/OswaldoCasillas/Ventas/issues/191,efectivo,client:afd2fc80-3f97-47c7-b62f-1dd696ee051b#2,PALETA MINI Mini Agua,MINIAGUA6,efectivo
 S000073,2026-04-19,PALETA-MINI-MINI-AGUA,5,6.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/193,efectivo,client:92cb6022-6cfb-420e-85af-8dfaba3dd4a6#2,PALETA MINI Mini Agua,MINIAGUA6,efectivo
 S000076,2026-04-19,PALETA-MINI-MINI-AGUA,2,6.0,12.0,https://github.com/OswaldoCasillas/Ventas/issues/197,efectivo,client:35b67bb2-c7d7-4a47-a855-343e40fb50d2#0,PALETA MINI Mini Agua,MINIAGUA6,efectivo
+S000077,2026-04-19,PALETA-MINI-MINI-AGUA,1,6.0,6.0,https://github.com/OswaldoCasillas/Ventas/issues/199,efectivo,client:8e374c65-66c9-40bd-8dbf-71b6986eab50#5,PALETA MINI Mini Agua,MINIAGUA6,efectivo
 S000073,2026-04-19,PALETA-MINI-MINI-CREMA,6,8.0,48.0,https://github.com/OswaldoCasillas/Ventas/issues/193,efectivo,client:92cb6022-6cfb-420e-85af-8dfaba3dd4a6#1,PALETA MINI Mini Crema,C371ED40,efectivo
 S000052,2026-04-19,PALETA-MINI-MINI-SIN-AZUCAR,2,10.0,20.0,https://github.com/OswaldoCasillas/Ventas/issues/165,efectivo,client:172dcdf4-fb76-40dc-9368-c2a9f2e54f22#3,PALETA MINI Sin Azucar,D189174D,efectivo
 S000059,2026-04-19,PALETA-SIN-AZUCAR-CAJETA,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/174,tarjeta,client:b9c01d2d-dbbf-4f8a-aa2d-62732b3286cb#3,PALETA SIN AZUCAR Cajeta,68DJ885D,tarjeta
@@ -214,5 +222,13 @@ S000067,2026-04-19,PALETAS-PERRO,1,30.0,30.0,https://github.com/OswaldoCasillas/
 S000072,2026-04-19,POSTRE-DANONINO-GRANDE,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/191,efectivo,client:afd2fc80-3f97-47c7-b62f-1dd696ee051b#1,POSTRE Danonino Grande,3B6B12C9,efectivo
 S000074,2026-04-19,POSTRE-DANONINO-GRANDE,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/194,efectivo,client:6f09cfd1-0c9b-4420-a75c-e5aa29fe4c14#2,POSTRE Danonino Grande,3B6B12C9,efectivo
 <<<<<<< Updated upstream,,,0,,0.0,,efectivo,,,,efectivo
+<<<<<<< Updated upstream,,,0,,0.0,,efectivo,,,,efectivo
+<<<<<<< Updated upstream,,,0,,0.0,,efectivo,,,,efectivo
 =======,,,0,,0.0,,efectivo,,,,efectivo
+>>>>>>> Stashed changes,,,0,,0.0,,efectivo,,,,efectivo
+=======,,,0,,0.0,,efectivo,,,,efectivo
+>>>>>>> Stashed changes,,,0,,0.0,,efectivo,,,,efectivo
+=======,,,0,,0.0,,efectivo,,,,efectivo
+=======,,,0,,0.0,,efectivo,,,,efectivo
+>>>>>>> Stashed changes,,,0,,0.0,,efectivo,,,,efectivo
 >>>>>>> Stashed changes,,,0,,0.0,,efectivo,,,,efectivo

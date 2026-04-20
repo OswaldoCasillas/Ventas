@@ -228,7 +228,7 @@
     "item": "PALETA-AGUA-GUANABANA",
     "descripcion": "PALETA AGUA Guanabana",
     "precio": 25.0,
-    "stock": 29
+    "stock": 28
   },
   {
     "product_id": "F2E6E9F9",
@@ -249,7 +249,7 @@
     "item": "PALETA-AGUA-LIMON",
     "descripcion": "PALETA AGUA Limon",
     "precio": 25.0,
-    "stock": 17
+    "stock": 16
   },
   {
     "product_id": "3D2B18C9",
@@ -354,7 +354,7 @@
     "item": "PALETA-AGUA-TAMARINDO",
     "descripcion": "PALETA AGUA Tamarindo",
     "precio": 25.0,
-    "stock": 25
+    "stock": 24
   },
   {
     "product_id": "27D27C45",
@@ -557,7 +557,7 @@
     "item": "PALETA-CREMA-PREMIUM-PINON",
     "descripcion": "PALETA CREMA PREMIUM Pinon",
     "precio": 40.0,
-    "stock": 24
+    "stock": 23
   },
   {
     "product_id": "E4F287A9",
@@ -606,7 +606,7 @@
     "item": "PALETA-CREMA-PREMIUM-SELVA-NEGRA",
     "descripcion": "PALETA CREMA PREMIUM Selva Negra",
     "precio": 40.0,
-    "stock": 36
+    "stock": 35
   },
   {
     "product_id": "3A0CCE07",
@@ -662,7 +662,7 @@
     "item": "PALETA-MINI-MINI-AGUA",
     "descripcion": "PALETA MINI Mini Agua",
     "precio": 6.0,
-    "stock": 9999987
+    "stock": 9999986
   },
   {
     "product_id": "C371ED50",
