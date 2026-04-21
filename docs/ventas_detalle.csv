@@ -239,6 +239,7 @@ S000096,2026-04-21,HELADO-CLASICO-SENCILLO,1,35.0,35.0,https://github.com/Oswald
 S000089,2026-04-21,HELADO-GOURMET-SENCILLO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/212,tarjeta,client:41a30a82-fe74-4f1f-8cf6-b200c3931b9d#1,Helado Gourmet Sencillo,97EEAB91,tarjeta
 S000096,2026-04-21,HELADO-GOURMET-SENCILLO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/219,efectivo,client:56791130-831b-4cb6-8d59-eb7efffc260f#2,Helado Gourmet Sencillo,97EEAB91,efectivo
 S000083,2026-04-21,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/206,efectivo,client:a490a282-60ee-4c74-8b7c-7b2705d39bdd#1,Helado Nieve Sencillo,641AA19F,efectivo
+S000098,2026-04-21,HELADO-SIN-AZUCAR-DOBLE,2,75.0,150.0,https://github.com/OswaldoCasillas/Ventas/issues/221,tarjeta,client:4ee40ada-2ef6-4813-a7d7-bbd426296a9c#0,Helado Sin Azucar Doble,93BBD957,tarjeta
 S000084,2026-04-21,HELADO-SIN-AZUCAR-SENCILLO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/207,efectivo,client:ae7e42d1-10c0-48d8-b97f-d963cf2d9d14#0,Helado Sin Azucar Sencillo,9E69701A,efectivo
 S000094,2026-04-21,PALETA-AGUA-FRESA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/217,efectivo,client:47f3c501-5848-4c81-b412-5ea148c6ba54#1,PALETA AGUA Fresa,6D8A2D50,efectivo
 S000094,2026-04-21,PALETA-AGUA-GROSSELLA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/217,efectivo,client:47f3c501-5848-4c81-b412-5ea148c6ba54#2,PALETA AGUA Grosella,81CEF3B7,efectivo
