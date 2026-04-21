@@ -1,0 +1,2 @@
+txn_id,fecha,item,cantidad,precio_unit,importe,issue,metodo_pago,source_id,descripcion,product_id,payment
+S000082,2026-04-21,PALETA-MINI-MINI-AGUA,1,6.0,6.0,https://github.com/OswaldoCasillas/Ventas/issues/204,efectivo,client:4f6388e9-5fc1-4b4b-b567-05af153230d5#0,PALETA MINI Mini Agua,MINIAGUA6,efectivo
