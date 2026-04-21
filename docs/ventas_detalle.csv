@@ -234,6 +234,7 @@ S000083,2026-04-21,EXTRA-CONO,1,5.0,5.0,https://github.com/OswaldoCasillas/Venta
 S000089,2026-04-21,HELADO-GOURMET-SENCILLO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/212,tarjeta,client:41a30a82-fe74-4f1f-8cf6-b200c3931b9d#1,Helado Gourmet Sencillo,97EEAB91,tarjeta
 S000083,2026-04-21,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/206,efectivo,client:a490a282-60ee-4c74-8b7c-7b2705d39bdd#1,Helado Nieve Sencillo,641AA19F,efectivo
 S000084,2026-04-21,HELADO-SIN-AZUCAR-SENCILLO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/207,efectivo,client:ae7e42d1-10c0-48d8-b97f-d963cf2d9d14#0,Helado Sin Azucar Sencillo,9E69701A,efectivo
+S000090,2026-04-21,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/213,tarjeta,client:c162ebdf-0008-43f2-864d-cc0d891915a3#0,PALETA AGUA Limon,FFFB8948,tarjeta
 S000088,2026-04-21,PALETA-AGUA-MANGO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/211,efectivo,client:623da726-7259-465d-bd4c-8af7e67559fa#1,PALETA AGUA Mango,6263D0A1,efectivo
 S000086,2026-04-21,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,2,30.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/209,efectivo,client:d3ae5b3f-f78d-4469-9623-58bd1f4f7179#3,PALETA AGUA PREMIUM Frutos Rojos,746FF175,efectivo
 S000083,2026-04-21,PALETA-AGUA-PREMIUM-SANDIA-CHAMOY,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/206,efectivo,client:a490a282-60ee-4c74-8b7c-7b2705d39bdd#0,PALETA AGUA PREMIUM Sandia-Chamoy,BFE99PL3,efectivo
