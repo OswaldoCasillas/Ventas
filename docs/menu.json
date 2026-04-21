@@ -130,7 +130,7 @@
     "item": "HELADO-GOURMET-SENCILLO",
     "descripcion": "Helado Gourmet Sencillo",
     "precio": 40.0,
-    "stock": 9999999
+    "stock": 9999998
   },
   {
     "product_id": "3021BE59",
@@ -739,7 +739,7 @@
     "item": "PALETA-SIN-AZUCAR-FRUTOS-ROJOS",
     "descripcion": "PALETA SIN AZUCAR Ketofrutos",
     "precio": 45.0,
-    "stock": 16
+    "stock": 15
   },
   {
     "product_id": "68DDFR5D",

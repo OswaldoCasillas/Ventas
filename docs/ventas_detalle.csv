@@ -231,6 +231,7 @@ S000072,2026-04-19,POSTRE-DANONINO-GRANDE,1,30.0,30.0,https://github.com/Oswaldo
 S000074,2026-04-19,POSTRE-DANONINO-GRANDE,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/194,efectivo,client:6f09cfd1-0c9b-4420-a75c-e5aa29fe4c14#2,POSTRE Danonino Grande,3B6B12C9,efectivo
 S000087,2026-04-21,BOTANA-DORILOCOS,1,50.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/210,efectivo,client:acc9baf3-0b17-4868-82ea-da7b78166334#0,BOTANA Dorilocos,CFCEA938,efectivo
 S000083,2026-04-21,EXTRA-CONO,1,5.0,5.0,https://github.com/OswaldoCasillas/Ventas/issues/206,efectivo,client:a490a282-60ee-4c74-8b7c-7b2705d39bdd#2,EXTRA Cono,7E9B8EC1,efectivo
+S000089,2026-04-21,HELADO-GOURMET-SENCILLO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/212,tarjeta,client:41a30a82-fe74-4f1f-8cf6-b200c3931b9d#1,Helado Gourmet Sencillo,97EEAB91,tarjeta
 S000083,2026-04-21,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/206,efectivo,client:a490a282-60ee-4c74-8b7c-7b2705d39bdd#1,Helado Nieve Sencillo,641AA19F,efectivo
 S000084,2026-04-21,HELADO-SIN-AZUCAR-SENCILLO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/207,efectivo,client:ae7e42d1-10c0-48d8-b97f-d963cf2d9d14#0,Helado Sin Azucar Sencillo,9E69701A,efectivo
 S000088,2026-04-21,PALETA-AGUA-MANGO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/211,efectivo,client:623da726-7259-465d-bd4c-8af7e67559fa#1,PALETA AGUA Mango,6263D0A1,efectivo
@@ -244,6 +245,7 @@ S000086,2026-04-21,PALETA-CREMA-ROMPOPE,1,35.0,35.0,https://github.com/OswaldoCa
 S000082,2026-04-21,PALETA-MINI-MINI-AGUA,1,6.0,6.0,https://github.com/OswaldoCasillas/Ventas/issues/204,efectivo,client:4f6388e9-5fc1-4b4b-b567-05af153230d5#0,PALETA MINI Mini Agua,MINIAGUA6,efectivo
 S000088,2026-04-21,PALETA-MINI-MINI-SIN-AZUCAR,1,10.0,10.0,https://github.com/OswaldoCasillas/Ventas/issues/211,efectivo,client:623da726-7259-465d-bd4c-8af7e67559fa#2,PALETA MINI Sin Azucar,D189174D,efectivo
 S000088,2026-04-21,PALETA-SIN-AZUCAR-COCO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/211,efectivo,client:623da726-7259-465d-bd4c-8af7e67559fa#0,PALETA SIN AZUCAR Cocoketo,68D4185D,efectivo
+S000089,2026-04-21,PALETA-SIN-AZUCAR-FRUTOS-ROJOS,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/212,tarjeta,client:41a30a82-fe74-4f1f-8cf6-b200c3931b9d#0,PALETA SIN AZUCAR Ketofrutos,EE158D68,tarjeta
 S000086,2026-04-21,PALETAS-PERRO,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/209,efectivo,client:d3ae5b3f-f78d-4469-9623-58bd1f4f7179#2,Paletas para Perro,6A3513FD,efectivo
 <<<<<<< Updated upstream,,,0,,0.0,,efectivo,,,,efectivo
 <<<<<<< Updated upstream,,,0,,0.0,,efectivo,,,,efectivo
