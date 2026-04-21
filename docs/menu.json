@@ -291,7 +291,7 @@
     "item": "PALETA-AGUA-PREMIUM-FRUTOS-ROJOS",
     "descripcion": "PALETA AGUA PREMIUM Frutos Rojos",
     "precio": 30.0,
-    "stock": 9999998
+    "stock": 9999996
   },
   {
     "product_id": "BBF0DD66",
@@ -417,7 +417,7 @@
     "item": "PALETA-CREMA-CAPUCHINO",
     "descripcion": "PALETA CREMA Capuchino",
     "precio": 35.0,
-    "stock": 39
+    "stock": 38
   },
   {
     "product_id": "053D0623",
@@ -459,7 +459,7 @@
     "item": "PALETA-CREMA-FRESA-CREMA",
     "descripcion": "PALETA CREMA Fresa Crema",
     "precio": 35.0,
-    "stock": 21
+    "stock": 20
   },
   {
     "product_id": "07A7670E",
@@ -627,7 +627,7 @@
     "item": "PALETA-CREMA-ROMPOPE",
     "descripcion": "PALETA CREMA Rompope",
     "precio": 35.0,
-    "stock": 31
+    "stock": 30
   },
   {
     "product_id": "05908024",
@@ -830,7 +830,7 @@
     "item": "PALETAS-PERRO",
     "descripcion": "Paletas para Perro",
     "precio": 30.0,
-    "stock": 137
+    "stock": 136
   },
   {
     "product_id": "3B6B12C9",

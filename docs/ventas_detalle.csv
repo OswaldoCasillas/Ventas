@@ -232,10 +232,15 @@ S000074,2026-04-19,POSTRE-DANONINO-GRANDE,1,30.0,30.0,https://github.com/Oswaldo
 S000083,2026-04-21,EXTRA-CONO,1,5.0,5.0,https://github.com/OswaldoCasillas/Ventas/issues/206,efectivo,client:a490a282-60ee-4c74-8b7c-7b2705d39bdd#2,EXTRA Cono,7E9B8EC1,efectivo
 S000083,2026-04-21,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/206,efectivo,client:a490a282-60ee-4c74-8b7c-7b2705d39bdd#1,Helado Nieve Sencillo,641AA19F,efectivo
 S000084,2026-04-21,HELADO-SIN-AZUCAR-SENCILLO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/207,efectivo,client:ae7e42d1-10c0-48d8-b97f-d963cf2d9d14#0,Helado Sin Azucar Sencillo,9E69701A,efectivo
+S000086,2026-04-21,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,2,30.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/209,efectivo,client:d3ae5b3f-f78d-4469-9623-58bd1f4f7179#3,PALETA AGUA PREMIUM Frutos Rojos,746FF175,efectivo
 S000083,2026-04-21,PALETA-AGUA-PREMIUM-SANDIA-CHAMOY,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/206,efectivo,client:a490a282-60ee-4c74-8b7c-7b2705d39bdd#0,PALETA AGUA PREMIUM Sandia-Chamoy,BFE99PL3,efectivo
+S000086,2026-04-21,PALETA-CREMA-CAPUCHINO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/209,efectivo,client:d3ae5b3f-f78d-4469-9623-58bd1f4f7179#0,PALETA CREMA Capuchino,13A74508,efectivo
+S000086,2026-04-21,PALETA-CREMA-FRESA-CREMA,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/209,efectivo,client:d3ae5b3f-f78d-4469-9623-58bd1f4f7179#4,PALETA CREMA Fresa Crema,03C761EC,efectivo
 S000083,2026-04-21,PALETA-CREMA-PAY-DE-LIMON,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/206,efectivo,client:a490a282-60ee-4c74-8b7c-7b2705d39bdd#3,PALETA CREMA Pay de Limon,7B72DC7E,efectivo
 S000085,2026-04-21,PALETA-CREMA-PAY-DE-LIMON,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/208,efectivo,client:6e427b63-eb71-4df4-a62f-e3a8e4a703f0#0,PALETA CREMA Pay de Limon,7B72DC7E,efectivo
+S000086,2026-04-21,PALETA-CREMA-ROMPOPE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/209,efectivo,client:d3ae5b3f-f78d-4469-9623-58bd1f4f7179#1,PALETA CREMA Rompope,ACF8DA00,efectivo
 S000082,2026-04-21,PALETA-MINI-MINI-AGUA,1,6.0,6.0,https://github.com/OswaldoCasillas/Ventas/issues/204,efectivo,client:4f6388e9-5fc1-4b4b-b567-05af153230d5#0,PALETA MINI Mini Agua,MINIAGUA6,efectivo
+S000086,2026-04-21,PALETAS-PERRO,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/209,efectivo,client:d3ae5b3f-f78d-4469-9623-58bd1f4f7179#2,Paletas para Perro,6A3513FD,efectivo
 <<<<<<< Updated upstream,,,0,,0.0,,efectivo,,,,efectivo
 <<<<<<< Updated upstream,,,0,,0.0,,efectivo,,,,efectivo
 <<<<<<< Updated upstream,,,0,,0.0,,efectivo,,,,efectivo
