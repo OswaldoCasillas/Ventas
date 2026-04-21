@@ -18,7 +18,7 @@
     "item": "BEBIDA-CHAMOYADA",
     "descripcion": "BEBIDA Chamoyada",
     "precio": 60.0,
-    "stock": 9999999
+    "stock": 9999998
   },
   {
     "product_id": "F76E2099",
@@ -319,7 +319,7 @@
     "item": "PALETA-AGUA-PREMIUM-PICAPANDA",
     "descripcion": "PALETA AGUA PREMIUM Picapanda",
     "precio": 30.0,
-    "stock": 9
+    "stock": 8
   },
   {
     "product_id": "BFE99BE3",
@@ -403,7 +403,7 @@
     "item": "PALETA-CREMA-ARROZ",
     "descripcion": "PALETA CREMA Arroz",
     "precio": 35.0,
-    "stock": 9999996
+    "stock": 9999995
   },
   {
     "product_id": "0F878660",
@@ -424,7 +424,7 @@
     "item": "PALETA-CREMA-CHICLE",
     "descripcion": "PALETA CREMA Chicle",
     "precio": 35.0,
-    "stock": 38
+    "stock": 37
   },
   {
     "product_id": "3D836156",
@@ -459,7 +459,7 @@
     "item": "PALETA-CREMA-FRESA-CREMA",
     "descripcion": "PALETA CREMA Fresa Crema",
     "precio": 35.0,
-    "stock": 20
+    "stock": 18
   },
   {
     "product_id": "07A7670E",
@@ -543,7 +543,7 @@
     "item": "PALETA-CREMA-PREMIUM-NUEZ",
     "descripcion": "PALETA CREMA PREMIUM Nuez",
     "precio": 40.0,
-    "stock": 3
+    "stock": 2
   },
   {
     "product_id": "92CFB2A5",
