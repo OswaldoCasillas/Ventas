@@ -214,14 +214,14 @@
     "item": "PALETA-AGUA-FRESA",
     "descripcion": "PALETA AGUA Fresa",
     "precio": 25.0,
-    "stock": 55
+    "stock": 54
   },
   {
     "product_id": "81CEF3B7",
     "item": "PALETA-AGUA-GROSSELLA",
     "descripcion": "PALETA AGUA Grosella",
     "precio": 25.0,
-    "stock": 35
+    "stock": 34
   },
   {
     "product_id": "K2F6E9F9",
@@ -249,7 +249,7 @@
     "item": "PALETA-AGUA-LIMON",
     "descripcion": "PALETA AGUA Limon",
     "precio": 25.0,
-    "stock": 14
+    "stock": 13
   },
   {
     "product_id": "3D2B18C9",
@@ -277,7 +277,7 @@
     "item": "PALETA-AGUA-MELON",
     "descripcion": "PALETA AGUA Melon",
     "precio": 25.0,
-    "stock": 9999999
+    "stock": 9999998
   },
   {
     "product_id": "BFE88BE3",
@@ -368,7 +368,7 @@
     "item": "PALETA-AGUA-ZAPOTE",
     "descripcion": "PALETA AGUA Zapote",
     "precio": 25.0,
-    "stock": 12
+    "stock": 11
   },
   {
     "product_id": "BJK64A9B",
@@ -480,7 +480,7 @@
     "item": "PALETA-CREMA-MENTA-CHOCOLATE",
     "descripcion": "PALETA CREMA Menta con Chocolate",
     "precio": 35.0,
-    "stock": 9999998
+    "stock": 9999997
   },
   {
     "product_id": "02298874",
@@ -522,7 +522,7 @@
     "item": "PALETA-CREMA-PREMIUM-FERRERO",
     "descripcion": "PALETA CREMA PREMIUM Ferrero",
     "precio": 40.0,
-    "stock": 26
+    "stock": 25
   },
   {
     "product_id": "2CF84FBA",
@@ -606,7 +606,7 @@
     "item": "PALETA-CREMA-PREMIUM-SELVA-NEGRA",
     "descripcion": "PALETA CREMA PREMIUM Selva Negra",
     "precio": 40.0,
-    "stock": 35
+    "stock": 34
   },
   {
     "product_id": "3A0CCE07",
