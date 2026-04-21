@@ -11,7 +11,7 @@
     "item": "AGUA-FRESCA-GRANDE",
     "descripcion": "AGUA FRESCA Grande",
     "precio": 35.0,
-    "stock": 9999991
+    "stock": 9999989
   },
   {
     "product_id": "1C271C39",
@@ -291,7 +291,7 @@
     "item": "PALETA-AGUA-PREMIUM-FRUTOS-ROJOS",
     "descripcion": "PALETA AGUA PREMIUM Frutos Rojos",
     "precio": 30.0,
-    "stock": 9999996
+    "stock": 9999995
   },
   {
     "product_id": "BBF0DD66",
@@ -564,7 +564,7 @@
     "item": "PALETA-CREMA-PREMIUM-PISTACHE",
     "descripcion": "PALETA CREMA PREMIUM Pistache",
     "precio": 40.0,
-    "stock": 8
+    "stock": 7
   },
   {
     "product_id": "02298024",
@@ -662,7 +662,7 @@
     "item": "PALETA-MINI-MINI-AGUA",
     "descripcion": "PALETA MINI Mini Agua",
     "precio": 6.0,
-    "stock": 9999979
+    "stock": 9999977
   },
   {
     "product_id": "C371ED50",

@@ -261,3 +261,7 @@ S000089,2026-04-21,HELADO-GOURMET-SENCILLO,1,40.00,40.00,https://github.com/Oswa
 S000090,2026-04-21,PALETA-AGUA-LIMON,1,25.00,25.00,https://github.com/OswaldoCasillas/Ventas/issues/213,tarjeta,client:c162ebdf-0008-43f2-864d-cc0d891915a3#0,
 S000091,2026-04-21,PALETA-CREMA-CAPUCHINO,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/214,efectivo,client:e36f17ba-0243-4db9-a539-738f4925413e#0,
 S000091,2026-04-21,PALETA-CREMA-PAY-DE-LIMON,1,35.00,35.00,https://github.com/OswaldoCasillas/Ventas/issues/214,efectivo,client:e36f17ba-0243-4db9-a539-738f4925413e#1,
+S000092,2026-04-21,PALETA-CREMA-PREMIUM-PISTACHE,1,40.00,40.00,https://github.com/OswaldoCasillas/Ventas/issues/215,tarjeta,client:94cb22ed-2119-43bd-909b-762bbb88ff77#0,
+S000092,2026-04-21,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,1,30.00,30.00,https://github.com/OswaldoCasillas/Ventas/issues/215,tarjeta,client:94cb22ed-2119-43bd-909b-762bbb88ff77#1,
+S000092,2026-04-21,AGUA-FRESCA-GRANDE,2,35.00,70.00,https://github.com/OswaldoCasillas/Ventas/issues/215,tarjeta,client:94cb22ed-2119-43bd-909b-762bbb88ff77#2,
+S000092,2026-04-21,PALETA-MINI-MINI-AGUA,2,6.00,12.00,https://github.com/OswaldoCasillas/Ventas/issues/215,tarjeta,client:94cb22ed-2119-43bd-909b-762bbb88ff77#3,
