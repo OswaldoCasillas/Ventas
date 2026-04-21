@@ -95,14 +95,14 @@
     "item": "HELADO-CLASICO-MEDIO-LITRO",
     "descripcion": "Helado Clasico Medio Litro",
     "precio": 85.0,
-    "stock": 9999999
+    "stock": 9999998
   },
   {
     "product_id": "9D68612D",
     "item": "HELADO-CLASICO-SENCILLO",
     "descripcion": "Helado Clasico Sencillo",
     "precio": 35.0,
-    "stock": 9999995
+    "stock": 9999994
   },
   {
     "product_id": "7888486E",
@@ -130,7 +130,7 @@
     "item": "HELADO-GOURMET-SENCILLO",
     "descripcion": "Helado Gourmet Sencillo",
     "precio": 40.0,
-    "stock": 9999998
+    "stock": 9999997
   },
   {
     "product_id": "3021BE59",

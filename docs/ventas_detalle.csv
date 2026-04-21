@@ -233,7 +233,10 @@ S000092,2026-04-21,AGUA-FRESCA-GRANDE,2,35.0,70.0,https://github.com/OswaldoCasi
 S000095,2026-04-21,BEBIDA-CHAMOYADA,1,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/218,efectivo,client:9de67a34-f408-4eef-ac98-375f6c9c1e69#0,BEBIDA Chamoyada,1C271C39,efectivo
 S000087,2026-04-21,BOTANA-DORILOCOS,1,50.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/210,efectivo,client:acc9baf3-0b17-4868-82ea-da7b78166334#0,BOTANA Dorilocos,CFCEA938,efectivo
 S000083,2026-04-21,EXTRA-CONO,1,5.0,5.0,https://github.com/OswaldoCasillas/Ventas/issues/206,efectivo,client:a490a282-60ee-4c74-8b7c-7b2705d39bdd#2,EXTRA Cono,7E9B8EC1,efectivo
+S000096,2026-04-21,HELADO-CLASICO-MEDIO-LITRO,1,85.0,85.0,https://github.com/OswaldoCasillas/Ventas/issues/219,efectivo,client:56791130-831b-4cb6-8d59-eb7efffc260f#0,Helado Clasico Medio Litro,AA40C33B,efectivo
+S000096,2026-04-21,HELADO-CLASICO-SENCILLO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/219,efectivo,client:56791130-831b-4cb6-8d59-eb7efffc260f#1,Helado Clasico Sencillo,9D68612D,efectivo
 S000089,2026-04-21,HELADO-GOURMET-SENCILLO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/212,tarjeta,client:41a30a82-fe74-4f1f-8cf6-b200c3931b9d#1,Helado Gourmet Sencillo,97EEAB91,tarjeta
+S000096,2026-04-21,HELADO-GOURMET-SENCILLO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/219,efectivo,client:56791130-831b-4cb6-8d59-eb7efffc260f#2,Helado Gourmet Sencillo,97EEAB91,efectivo
 S000083,2026-04-21,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/206,efectivo,client:a490a282-60ee-4c74-8b7c-7b2705d39bdd#1,Helado Nieve Sencillo,641AA19F,efectivo
 S000084,2026-04-21,HELADO-SIN-AZUCAR-SENCILLO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/207,efectivo,client:ae7e42d1-10c0-48d8-b97f-d963cf2d9d14#0,Helado Sin Azucar Sencillo,9E69701A,efectivo
 S000094,2026-04-21,PALETA-AGUA-FRESA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/217,efectivo,client:47f3c501-5848-4c81-b412-5ea148c6ba54#1,PALETA AGUA Fresa,6D8A2D50,efectivo
