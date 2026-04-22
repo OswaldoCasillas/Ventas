@@ -130,7 +130,7 @@
     "item": "HELADO-GOURMET-SENCILLO",
     "descripcion": "Helado Gourmet Sencillo",
     "precio": 40.0,
-    "stock": 9999994
+    "stock": 9999993
   },
   {
     "product_id": "3021BE59",
@@ -158,7 +158,7 @@
     "item": "HELADO-NIEVE-SENCILLO",
     "descripcion": "Helado Nieve Sencillo",
     "precio": 25.0,
-    "stock": 9999992
+    "stock": 9999991
   },
   {
     "product_id": "93BBD957",
@@ -172,7 +172,7 @@
     "item": "HELADO-SIN-AZUCAR-LITRO",
     "descripcion": "Helado Sin Azucar Litro",
     "precio": 180.0,
-    "stock": 9999998
+    "stock": 9999997
   },
   {
     "product_id": "DA2364A6",
@@ -718,7 +718,7 @@
     "item": "PALETA-SIN-AZUCAR-COCO",
     "descripcion": "PALETA SIN AZUCAR Cocoketo",
     "precio": 45.0,
-    "stock": 26
+    "stock": 25
   },
   {
     "product_id": "0935F20F",
