@@ -67,7 +67,7 @@
     "item": "EXTRA-COBERTURA-CON-TOPPING",
     "descripcion": "EXTRA Cobertura con Topping",
     "precio": 15.0,
-    "stock": 9999997
+    "stock": 9999996
   },
   {
     "product_id": "7E9B8EC1",
@@ -130,7 +130,7 @@
     "item": "HELADO-GOURMET-SENCILLO",
     "descripcion": "Helado Gourmet Sencillo",
     "precio": 40.0,
-    "stock": 9999995
+    "stock": 9999994
   },
   {
     "product_id": "3021BE59",
@@ -683,7 +683,7 @@
     "item": "PALETA-MINI-MINI-SIN-AZUCAR",
     "descripcion": "PALETA MINI Sin Azucar",
     "precio": 10.0,
-    "stock": 9999996
+    "stock": 9999986
   },
   {
     "product_id": "68DJ885D",
