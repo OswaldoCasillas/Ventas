@@ -102,7 +102,7 @@
     "item": "HELADO-CLASICO-SENCILLO",
     "descripcion": "Helado Clasico Sencillo",
     "precio": 35.0,
-    "stock": 9999994
+    "stock": 9999993
   },
   {
     "product_id": "7888486E",
@@ -221,7 +221,7 @@
     "item": "PALETA-AGUA-GROSSELLA",
     "descripcion": "PALETA AGUA Grosella",
     "precio": 25.0,
-    "stock": 31
+    "stock": 30
   },
   {
     "product_id": "K2F6E9F9",
@@ -263,7 +263,7 @@
     "item": "PALETA-AGUA-MANGO",
     "descripcion": "PALETA AGUA Mango",
     "precio": 25.0,
-    "stock": 27
+    "stock": 26
   },
   {
     "product_id": "4E1A8D0F",
@@ -347,7 +347,7 @@
     "item": "PALETA-AGUA-SANDIA",
     "descripcion": "PALETA AGUA Sandia",
     "precio": 25.0,
-    "stock": 48
+    "stock": 47
   },
   {
     "product_id": "98C5FF9E",
@@ -438,7 +438,7 @@
     "item": "PALETA-CREMA-COCO",
     "descripcion": "PALETA CREMA Coco",
     "precio": 35.0,
-    "stock": 9999998
+    "stock": 9999997
   },
   {
     "product_id": "C8A28FAC",
@@ -543,7 +543,7 @@
     "item": "PALETA-CREMA-PREMIUM-NUEZ",
     "descripcion": "PALETA CREMA PREMIUM Nuez",
     "precio": 40.0,
-    "stock": 2
+    "stock": 1
   },
   {
     "product_id": "92CFB2A5",
