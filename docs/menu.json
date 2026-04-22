@@ -67,7 +67,7 @@
     "item": "EXTRA-COBERTURA-CON-TOPPING",
     "descripcion": "EXTRA Cobertura con Topping",
     "precio": 15.0,
-    "stock": 9999998
+    "stock": 9999997
   },
   {
     "product_id": "7E9B8EC1",
@@ -186,7 +186,7 @@
     "item": "HELADO-SIN-AZUCAR-SENCILLO",
     "descripcion": "Helado Sin Azucar Sencillo",
     "precio": 45.0,
-    "stock": 9999998
+    "stock": 9999997
   },
   {
     "product_id": "D7361A46",
@@ -704,7 +704,7 @@
     "item": "PALETA-SIN-AZUCAR-CHOCOLATE",
     "descripcion": "PALETA SIN AZUCAR Chocoketo",
     "precio": 45.0,
-    "stock": 40
+    "stock": 37
   },
   {
     "product_id": "03400F0A",
