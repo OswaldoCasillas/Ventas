@@ -1,23 +1,32 @@
-# PATCH NOTES FOR scripts/process_issue.py
-# Cambios que debes aplicar en tu archivo actual:
-#
-# 1) Agrega esta helper cerca de las otras funciones utilitarias:
-#
-# def _write_csv(df: pd.DataFrame, path: Path) -> None:
-#     df.to_csv(path, index=False, lineterminator="\n")
-#
-# 2) Cambia estas líneas:
-#    export.to_csv(path, index=False)
-#    df.to_csv(PROCESSED_EVENTS_CSV, index=False)
-#    merged.to_csv(path, index=False)
-#    inv_gen.sort_values("item").to_csv(INV_OUT_CSV, index=False)
-#    inv_mkt.sort_values("item").to_csv(INV_MKT_OUT_CSV, index=False)
-#
-#    por:
-#    _write_csv(export, path)
-#    _write_csv(df, PROCESSED_EVENTS_CSV)
-#    _write_csv(merged, path)
-#    _write_csv(inv_gen.sort_values("item"), INV_OUT_CSV)
-#    _write_csv(inv_mkt.sort_values("item"), INV_MKT_OUT_CSV)
-#
-# Esto fuerza finales de línea \n en todos los CSV generados.
+APLICA ESTOS CAMBIOS EN scripts/process_issue.py
+
+1) Agrega esta helper cerca de tus otras funciones:
+
+def _write_csv(df: pd.DataFrame, path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(path, index=False, lineterminator="\n")
+
+2) Reemplaza TODAS las llamadas a:
+   .to_csv(..., index=False)
+
+por:
+   _write_csv(df, ruta)
+
+En especial busca y cambia las que escriben:
+- data/sales.csv
+- data/sales_mercado.csv
+- data/processed_events.csv
+- data/inventory.csv
+- data/inventory_mercado.csv
+
+3) Si tienes exportaciones tipo:
+   merged.to_csv(path, index=False)
+   inv_gen.sort_values("item").to_csv(INV_OUT_CSV, index=False)
+   inv_mkt.sort_values("item").to_csv(INV_MKT_OUT_CSV, index=False)
+
+cámbialas por:
+   _write_csv(merged, path)
+   _write_csv(inv_gen.sort_values("item"), INV_OUT_CSV)
+   _write_csv(inv_mkt.sort_values("item"), INV_MKT_OUT_CSV)
+
+Con eso todos los CSV del flujo saldrán con saltos de línea LF y dejarán de reensuciarse.
