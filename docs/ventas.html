@@ -1,331 +1,55 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Ventas del día</title>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     :root{--bg:#f7f7fb;--card:#ffffff;--line:#e5e7eb;--text:#1f2937;--muted:#6b7280;--shadow:0 8px 24px rgba(0,0,0,.05)}
-    *{box-sizing:border-box}
-    body{font-family:system-ui,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;background:var(--bg);color:var(--text)}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
-    .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+    *{box-sizing:border-box} body{font-family:system-ui,Arial,sans-serif;max-width:1120px;margin:18px auto;padding:0 12px;background:var(--bg);color:var(--text)}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
     .back-btn{display:inline-block;text-decoration:none;padding:10px 12px;border:1px solid #d1d5db;border-radius:10px;background:#fff;color:var(--text)}
-    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:16px}
-    input,select,button{font:inherit;padding:10px 12px;border:1px solid #d1d5db;border-radius:10px;background:#fff}
-    button{cursor:pointer}
-    table{width:100%;border-collapse:collapse;background:#fff;font-size:14px}
-    th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-    th{background:#fafafa;position:sticky;top:0;z-index:1}
-    .muted{color:var(--muted)}
-    .totals{display:flex;gap:20px;flex-wrap:wrap;margin:12px 0 16px}
-    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
-    @media print{
-      .topbar a,.row button,.row select,.row input,#status{display:none !important}
-      body{background:#fff;margin:0;max-width:none}
-      .card{box-shadow:none;border:none;padding:0}
-    }
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:end;margin-bottom:14px} .row .full{grid-column:1 / -1}
+    input,select,button{font:inherit;padding:10px 12px;border:1px solid #d1d5db;border-radius:10px;background:#fff} button{cursor:pointer}
+    table{width:100%;border-collapse:collapse;background:#fff;font-size:13px} th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+    th{background:#fafafa;position:sticky;top:0;z-index:1} .muted{color:var(--muted)} .totals{display:flex;gap:18px;flex-wrap:wrap;margin:10px 0 14px;font-size:14px}
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px} @media(min-width:900px){.row{grid-template-columns:repeat(5,1fr)} .row .full{grid-column:auto}}
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="topbar">
-      <h1 style="margin:0;">Ventas del día</h1>
-      <a class="back-btn" href="index.html">← Menú</a>
-    </div>
-
+    <div class="topbar"><h1 style="margin:0;font-size:24px;">Ventas del día</h1><a class="back-btn" href="index.html">← Menú</a></div>
     <div class="row">
       <div><label for="fecha">Fecha</label><br><input id="fecha" type="date"></div>
-      <div>
-        <label for="metodo">Método de pago</label><br>
-        <select id="metodo">
-          <option value="todos">Todos</option>
-          <option value="efectivo">Efectivo</option>
-          <option value="tarjeta">Tarjeta</option>
-          <option value="transferencia">Transferencia</option>
-        </select>
-      </div>
+      <div><label for="metodo">Método de pago</label><br><select id="metodo"><option value="todos">Todos</option><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta</option><option value="transferencia">Transferencia</option></select></div>
+      <div><label for="orden">Orden</label><br><select id="orden"><option value="reciente">Reciente a viejo</option><option value="viejo">Viejo a reciente</option><option value="az">A → Z</option><option value="za">Z → A</option><option value="mayor">Mayor a menor</option><option value="menor">Menor a mayor</option></select></div>
       <div><button id="cargar" type="button">Cargar</button></div>
-      <div><button id="imprimir" type="button">Imprimir</button></div>
-      <div><button id="excel" type="button">Excel del día</button></div>
+      <div><button id="excel" type="button">Excel</button></div>
+      <div class="full"><button id="imprimir" type="button">Imprimir</button></div>
     </div>
-
-    <div class="totals">
-      <div><strong>Registros:</strong> <span id="count">0</span></div>
-      <div><strong>Unidades:</strong> <span id="units">0</span></div>
-      <div><strong>Total:</strong> <span id="total">$0.00</span></div>
-    </div>
-
+    <div class="totals"><div><strong>Registros:</strong> <span id="count">0</span></div><div><strong>Unidades:</strong> <span id="units">0</span></div><div><strong>Total:</strong> <span id="total">$0.00</span></div></div>
     <div class="muted" id="status">Selecciona una fecha y presiona Cargar.</div>
-
-    <div class="table-wrap" style="margin-top:12px;">
-      <table>
-        <thead>
-          <tr>
-            <th>Fecha</th>
-            <th>SKU</th>
-            <th>Producto</th>
-            <th>Cantidad</th>
-            <th>Precio unitario</th>
-            <th>Importe</th>
-            <th>Método</th>
-            <th>Issue</th>
-            <th>Txn</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </div>
+    <div class="table-wrap" style="margin-top:12px;"><table><thead><tr><th>Fecha</th><th>SKU</th><th>Producto</th><th>Cantidad</th><th>Precio unitario</th><th>Importe</th><th>Método</th><th>Issue</th><th>Txn</th></tr></thead><tbody id="tbody"></tbody></table></div>
   </div>
 
   <script>
-    let _rowsFull = [];
-    let _metodo = "todos";
-
+    let _rowsFull = [], _metodo = "todos", _orden = "reciente";
     function money(n){ return `$${Number(n || 0).toFixed(2)}`; }
-    function todayISO(){
-      const d = new Date();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      return `${d.getFullYear()}-${m}-${day}`;
-    }
+    function todayISO(){ const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
     function skuToNice(sku){ return String(sku || "").replaceAll("-", " "); }
-
-    function normalizeCsvText(text){
-      let normalized = String(text || "").replace(/\uFEFF/g, "").trim();
-      normalized = normalized.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-
-      if (!normalized.includes("\n")) {
-        normalized = normalized.replace(/\s+(?=[A-Z]{1,3}\d{6},\d{4}-\d{2}-\d{2},)/g, "\n");
-      }
-
-      return normalized;
-    }
-
-    function isValidSaleRow(r){
-      const fields = [
-        String(r.fecha || ""),
-        String(r.item || ""),
-        String(r.descripcion || ""),
-        String(r.issue || ""),
-        String(r.txn_id || "")
-      ].join(" ");
-
-      const bad = ["<<<<<<<", "=======", ">>>>>>>", "Updated upstream", "Stashed changes"];
-      if (bad.some(x => fields.includes(x))) return false;
-
-      const item = String(r.item || "").trim();
-      const descripcion = String(r.descripcion || "").trim();
-      const cantidad = Number(r.cantidad || 0);
-      const precio = Number(r.precio_unit || 0);
-      const importe = Number(r.importe || 0);
-
-      return Boolean(item || descripcion) && (cantidad > 0 || precio > 0 || importe > 0);
-    }
-
-    function parseCSV(text){
-      const normalized = normalizeCsvText(text);
-      const lines = normalized.split(/\n+/).filter(Boolean);
-      if (!lines.length) return [];
-
-      const headers = [];
-      let current = "";
-      let inQuotes = false;
-
-      for (let i = 0; i < lines[0].length; i++) {
-        const ch = lines[0][i];
-        if (ch === '"') {
-          inQuotes = !inQuotes;
-        } else if (ch === "," && !inQuotes) {
-          headers.push(current.trim());
-          current = "";
-        } else {
-          current += ch;
-        }
-      }
-      headers.push(current.trim());
-
-      const rows = [];
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i];
-        if (!line.trim()) continue;
-
-        const cols = [];
-        let value = "";
-        let quoted = false;
-
-        for (let j = 0; j < line.length; j++) {
-          const ch = line[j];
-          if (ch === '"') {
-            if (quoted && line[j + 1] === '"') {
-              value += '"';
-              j++;
-            } else {
-              quoted = !quoted;
-            }
-          } else if (ch === "," && !quoted) {
-            cols.push(value);
-            value = "";
-          } else {
-            value += ch;
-          }
-        }
-        cols.push(value);
-
-        const row = {};
-        headers.forEach((h, idx) => row[h] = cols[idx] ?? "");
-        rows.push(row);
-      }
-      return rows;
-    }
-
-    async function fetchText(url){
-      const r = await fetch(url + "?_=" + Date.now(), { cache: "no-store" });
-      if (!r.ok) throw new Error(`${r.status} ${url}`);
-      return r.text();
-    }
-
-    function rowsForCurrentFilter(){
-      const rows = Array.isArray(_rowsFull) ? _rowsFull.filter(isValidSaleRow) : [];
-      if (_metodo === "todos") return rows;
-      return rows.filter(r => (r.metodo_pago || "efectivo") === _metodo);
-    }
-
-    function render(){
-      const rows = rowsForCurrentFilter();
-      const tbody = document.getElementById("tbody");
-      tbody.innerHTML = rows.map(r => `
-        <tr>
-          <td>${r.fecha || ""}</td>
-          <td>${r.item || ""}</td>
-          <td>${r.descripcion || skuToNice(r.item || "")}</td>
-          <td>${Number(r.cantidad || 0)}</td>
-          <td>${money(r.precio_unit)}</td>
-          <td>${money(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0)))}</td>
-          <td>${r.metodo_pago || "efectivo"}</td>
-          <td>${r.issue || ""}</td>
-          <td>${r.txn_id || ""}</td>
-        </tr>
-      `).join("");
-
-      const units = rows.reduce((s, r) => s + Number(r.cantidad || 0), 0);
-      const total = rows.reduce((s, r) => s + Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0))), 0);
-
-      document.getElementById("count").textContent = String(rows.length);
-      document.getElementById("units").textContent = String(units);
-      document.getElementById("total").textContent = money(total);
-      document.getElementById("status").textContent = rows.length ? "Ventas cargadas." : "No hay ventas para ese filtro.";
-    }
-
-    function buildResumenPorProducto(rows){
-      const bucket = new Map();
-      rows.forEach(r => {
-        const key = `${r.item || ""}|||${r.descripcion || skuToNice(r.item || "")}`;
-        const current = bucket.get(key) || { "SKU": r.item || "", "Producto": r.descripcion || skuToNice(r.item || ""), "Cantidad": 0, "Importe": 0 };
-        current["Cantidad"] += Number(r.cantidad || 0);
-        current["Importe"] += Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0)));
-        bucket.set(key, current);
-      });
-      return Array.from(bucket.values()).sort((a, b) => String(a["Producto"]).localeCompare(String(b["Producto"])));
-    }
-
-    function exportExcelDelDia(){
-      const fecha = document.getElementById("fecha").value;
-      const rows = rowsForCurrentFilter();
-      if (!fecha) return alert("Selecciona una fecha");
-      if (!rows.length) return alert("No hay ventas para exportar");
-      if (!window.XLSX) return;
-
-      const detalle = rows.map(r => ({
-        "Fecha": r.fecha || fecha,
-        "SKU": r.item || "",
-        "Producto": r.descripcion || skuToNice(r.item || ""),
-        "Cantidad": Number(r.cantidad || 0),
-        "Precio unitario": Number(r.precio_unit || 0),
-        "Importe": Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0))),
-        "Método de pago": (r.metodo_pago || "efectivo"),
-        "Issue": r.issue || "",
-        "Txn": r.txn_id || ""
-      }));
-
-      const resumenProducto = buildResumenPorProducto(rows);
-      const totalUnidades = detalle.reduce((s, r) => s + Number(r["Cantidad"] || 0), 0);
-      const totalImporte = detalle.reduce((s, r) => s + Number(r["Importe"] || 0), 0);
-
-      const wb = XLSX.utils.book_new();
-
-      const wsResumenProd = XLSX.utils.json_to_sheet(resumenProducto);
-      wsResumenProd["!cols"] = [{ wch: 34 }, { wch: 42 }, { wch: 12 }, { wch: 14 }];
-      XLSX.utils.book_append_sheet(wb, wsResumenProd, "Resumen por producto");
-
-      const wsDetalle = XLSX.utils.json_to_sheet(detalle);
-      wsDetalle["!cols"] = [{ wch: 12 }, { wch: 30 }, { wch: 36 }, { wch: 10 }, { wch: 14 }, { wch: 14 }, { wch: 16 }, { wch: 45 }, { wch: 18 }];
-      XLSX.utils.book_append_sheet(wb, wsDetalle, "Detalle");
-
-      const resumen = [["Fecha", fecha],["Filtro", _metodo],["Registros", detalle.length],["Unidades", totalUnidades],["Importe", totalImporte]];
-      const wsResumen = XLSX.utils.aoa_to_sheet(resumen);
-      wsResumen["!cols"] = [{ wch: 18 }, { wch: 18 }];
-      XLSX.utils.book_append_sheet(wb, wsResumen, "Resumen");
-
-      XLSX.writeFile(wb, `ventas-${fecha}-${_metodo}.xlsx`);
-    }
-
-    async function loadRowsByDate(fecha){
-      const dailyPath = `diario/${fecha}-ventas.csv`;
-      try {
-        const csv = await fetchText(dailyPath);
-        return parseCSV(csv).map(r => ({
-          fecha: r.fecha || r.Fecha || fecha,
-          item: r.item || r.SKU || "",
-          descripcion: r.descripcion || r.Producto || "",
-          cantidad: Number(r.cantidad || r.Cantidad || 0),
-          precio_unit: Number(r.precio_unit || r["Precio unitario"] || 0),
-          importe: Number(r.importe || r.Importe || 0),
-          metodo_pago: String(r.metodo_pago || r["Método de pago"] || "efectivo").toLowerCase(),
-          issue: r.issue || r.Issue || "",
-          txn_id: r.txn_id || r.Txn || ""
-        })).filter(isValidSaleRow);
-      } catch (_) {
-        const csv = await fetchText("ventas_detalle.csv");
-        return parseCSV(csv)
-          .map(r => ({
-            fecha: r.fecha || r.Fecha || "",
-            item: r.item || r.SKU || "",
-            descripcion: r.descripcion || r.Producto || "",
-            cantidad: Number(r.cantidad || r.Cantidad || 0),
-            precio_unit: Number(r.precio_unit || r["Precio unitario"] || 0),
-            importe: Number(r.importe || r.Importe || 0),
-            metodo_pago: String(r.metodo_pago || r["Método de pago"] || "efectivo").toLowerCase(),
-            issue: r.issue || r.Issue || "",
-            txn_id: r.txn_id || r.Txn || ""
-          }))
-          .filter(r => String(r.fecha || "").slice(0, 10) === fecha)
-          .filter(isValidSaleRow);
-      }
-    }
-
-    async function cargar(){
-      const fecha = document.getElementById("fecha").value;
-      _metodo = document.getElementById("metodo").value;
-      if (!fecha) return alert("Selecciona una fecha");
-      document.getElementById("status").textContent = "Cargando…";
-      try {
-        _rowsFull = await loadRowsByDate(fecha);
-        render();
-      } catch (error) {
-        console.error(error);
-        _rowsFull = [];
-        render();
-        document.getElementById("status").textContent = "Error al cargar ventas.";
-      }
-    }
-
-    document.getElementById("fecha").value = todayISO();
-    document.getElementById("cargar").onclick = cargar;
-    document.getElementById("metodo").onchange = () => { _metodo = document.getElementById("metodo").value; render(); };
-    document.getElementById("imprimir").onclick = () => window.print();
-    document.getElementById("excel").onclick = () => exportExcelDelDia();
+    function normalizeCsvText(text){ let t = String(text || "").replace(/\uFEFF/g,"").trim(); t = t.replace(/\r\n/g,"\n").replace(/\r/g,"\n"); if (!t.includes("\n")) t = t.replace(/\s+(?=[A-Z]{1,3}\d{6},\d{4}-\d{2}-\d{2},)/g,"\n"); return t; }
+    function isValidSaleRow(r){ const f = [String(r.fecha||""),String(r.item||""),String(r.descripcion||""),String(r.issue||""),String(r.txn_id||"")].join(" "); const bad = ["<<<<<<<","=======",">>>>>>>","Updated upstream","Stashed changes"]; if (bad.some(x => f.includes(x))) return false; const item = String(r.item||"").trim(), descripcion = String(r.descripcion||"").trim(), cantidad = Number(r.cantidad||0), precio = Number(r.precio_unit||0), importe = Number(r.importe||0); return Boolean(item || descripcion) && (cantidad > 0 || precio > 0 || importe > 0); }
+    function parseCSV(text){ const lines = normalizeCsvText(text).split(/\n+/).filter(Boolean); if (!lines.length) return []; const headers=[]; let current="", inQuotes=false; for (let i=0;i<lines[0].length;i++){ const ch=lines[0][i]; if(ch === '"') inQuotes=!inQuotes; else if(ch === "," && !inQuotes){ headers.push(current.trim()); current=""; } else current += ch; } headers.push(current.trim()); const rows=[]; for (let i=1;i<lines.length;i++){ const line=lines[i]; if(!line.trim()) continue; const cols=[]; let value="", quoted=false; for (let j=0;j<line.length;j++){ const ch=line[j]; if(ch === '"'){ if(quoted && line[j+1] === '"'){ value += '"'; j++; } else quoted=!quoted; } else if(ch === "," && !quoted){ cols.push(value); value=""; } else value += ch; } cols.push(value); const row={}; headers.forEach((h, idx)=> row[h]=cols[idx] ?? ""); rows.push(row); } return rows; }
+    async function fetchText(url){ const r = await fetch(url + "?_=" + Date.now(), { cache:"no-store" }); if(!r.ok) throw new Error(`${r.status} ${url}`); return r.text(); }
+    function sortRows(rows){ const s = rows.slice(), byName = r => String(r.descripcion || skuToNice(r.item || "")).toLowerCase(), byAmount = r => Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0))), byDate = r => `${String(r.fecha || "")}|${String(r.txn_id || "")}|${String(r.issue || "")}`; if(_orden === "az") s.sort((a,b)=>byName(a).localeCompare(byName(b))); else if(_orden === "za") s.sort((a,b)=>byName(b).localeCompare(byName(a))); else if(_orden === "mayor") s.sort((a,b)=>byAmount(b)-byAmount(a)); else if(_orden === "menor") s.sort((a,b)=>byAmount(a)-byAmount(b)); else if(_orden === "viejo") s.sort((a,b)=>byDate(a).localeCompare(byDate(b))); else s.sort((a,b)=>byDate(b).localeCompare(byDate(a))); return s; }
+    function rowsForCurrentView(){ let rows = Array.isArray(_rowsFull) ? _rowsFull.filter(isValidSaleRow) : []; if(_metodo !== "todos") rows = rows.filter(r => (r.metodo_pago || "efectivo") === _metodo); return sortRows(rows); }
+    function render(){ const rows = rowsForCurrentView(), tbody = document.getElementById("tbody"); tbody.innerHTML = rows.map(r => `<tr><td>${r.fecha || ""}</td><td>${r.item || ""}</td><td>${r.descripcion || skuToNice(r.item || "")}</td><td>${Number(r.cantidad || 0)}</td><td>${money(r.precio_unit)}</td><td>${money(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0)))}</td><td>${r.metodo_pago || "efectivo"}</td><td>${r.issue || ""}</td><td>${r.txn_id || ""}</td></tr>`).join(""); const units = rows.reduce((s,r)=>s+Number(r.cantidad||0),0), total = rows.reduce((s,r)=>s+Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0))),0); document.getElementById("count").textContent=String(rows.length); document.getElementById("units").textContent=String(units); document.getElementById("total").textContent=money(total); document.getElementById("status").textContent=rows.length ? "Ventas cargadas." : "No hay ventas para ese filtro."; }
+    function buildResumenPorProducto(rows){ const bucket = new Map(); rows.forEach(r => { const key = `${r.item || ""}|||${r.descripcion || skuToNice(r.item || "")}`; const current = bucket.get(key) || {"SKU":r.item || "","Producto":r.descripcion || skuToNice(r.item || ""),"Cantidad":0,"Importe":0}; current["Cantidad"] += Number(r.cantidad || 0); current["Importe"] += Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0))); bucket.set(key, current); }); return Array.from(bucket.values()).sort((a,b)=>String(a["Producto"]).localeCompare(String(b["Producto"]))); }
+    function exportExcelDelDia(){ const fecha = document.getElementById("fecha").value, rows = rowsForCurrentView(); if(!fecha) return alert("Selecciona una fecha"); if(!rows.length) return alert("No hay ventas para exportar"); if(!window.XLSX) return; const detalle = rows.map(r => ({"Fecha":r.fecha || fecha,"SKU":r.item || "","Producto":r.descripcion || skuToNice(r.item || ""),"Cantidad":Number(r.cantidad || 0),"Precio unitario":Number(r.precio_unit || 0),"Importe":Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0))),"Método de pago":(r.metodo_pago || "efectivo"),"Issue":r.issue || "","Txn":r.txn_id || ""})); const resumenProducto = buildResumenPorProducto(rows), totalUnidades = detalle.reduce((s,r)=>s+Number(r["Cantidad"] || 0),0), totalImporte = detalle.reduce((s,r)=>s+Number(r["Importe"] || 0),0); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(resumenProducto), "Resumen por producto"); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(detalle), "Detalle"); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([["Fecha",fecha],["Filtro",_metodo],["Orden",_orden],["Registros",detalle.length],["Unidades",totalUnidades],["Importe",totalImporte]]), "Resumen"); XLSX.writeFile(wb, "ventas-" + fecha + "-" + _metodo + "-" + _orden + ".xlsx"); }
+    async function loadRowsByDate(fecha){ const dailyPath = `diario/${fecha}-ventas.csv`; try{ const csv = await fetchText(dailyPath); return parseCSV(csv).map(r => ({fecha:r.fecha || r.Fecha || fecha,item:r.item || r.SKU || "",descripcion:r.descripcion || r.Producto || "",cantidad:Number(r.cantidad || r.Cantidad || 0),precio_unit:Number(r.precio_unit || r["Precio unitario"] || 0),importe:Number(r.importe || r.Importe || 0),metodo_pago:String(r.metodo_pago || r["Método de pago"] || "efectivo").toLowerCase(),issue:r.issue || r.Issue || "",txn_id:r.txn_id || r.Txn || ""})).filter(isValidSaleRow); }catch(_){ const csv = await fetchText("ventas_detalle.csv"); return parseCSV(csv).map(r => ({fecha:r.fecha || r.Fecha || "",item:r.item || r.SKU || "",descripcion:r.descripcion || r.Producto || "",cantidad:Number(r.cantidad || r.Cantidad || 0),precio_unit:Number(r.precio_unit || r["Precio unitario"] || 0),importe:Number(r.importe || r.Importe || 0),metodo_pago:String(r.metodo_pago || r["Método de pago"] || "efectivo").toLowerCase(),issue:r.issue || r.Issue || "",txn_id:r.txn_id || r.Txn || ""})).filter(r => String(r.fecha || "").slice(0,10) === fecha).filter(isValidSaleRow); } }
+    async function cargar(){ const fecha = document.getElementById("fecha").value; _metodo = document.getElementById("metodo").value; _orden = document.getElementById("orden").value; if(!fecha) return alert("Selecciona una fecha"); document.getElementById("status").textContent="Cargando…"; try{ _rowsFull = await loadRowsByDate(fecha); render(); }catch(error){ console.error(error); _rowsFull=[]; render(); document.getElementById("status").textContent="Error al cargar ventas."; } }
+    document.getElementById("fecha").value=todayISO(); document.getElementById("cargar").onclick=cargar; document.getElementById("metodo").onchange=()=>{ _metodo=document.getElementById("metodo").value; render(); }; document.getElementById("orden").onchange=()=>{ _orden=document.getElementById("orden").value; render(); }; document.getElementById("imprimir").onclick=()=>window.print(); document.getElementById("excel").onclick=()=>exportExcelDelDia();
   </script>
 </body>
 </html>
