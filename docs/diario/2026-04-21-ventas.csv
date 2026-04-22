@@ -24,6 +24,7 @@ S000094,2026-04-21,PALETA-AGUA-GROSSELLA,1,25.0,25.0,https://github.com/OswaldoC
 S000101,2026-04-21,PALETA-AGUA-GROSSELLA,3,25.0,75.0,https://github.com/OswaldoCasillas/Ventas/issues/224,tarjeta,client:166a58dc-0987-4d72-b8ab-dae0658461b6#5,PALETA AGUA Grosella,81CEF3B7,tarjeta
 S000105,2026-04-21,PALETA-AGUA-GROSSELLA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/228,tarjeta,client:556bfa0f-972d-45b8-a244-72cc9a9e6cec#0,PALETA AGUA Grosella,81CEF3B7,tarjeta
 S000101,2026-04-21,PALETA-AGUA-GUANABANA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/224,tarjeta,client:166a58dc-0987-4d72-b8ab-dae0658461b6#6,PALETA AGUA Guanabana,K2F6E9F9,tarjeta
+S000107,2026-04-21,PALETA-AGUA-GUANABANA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/230,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/230#3,PALETA AGUA Guanabana,K2F6E9F9,efectivo
 S000090,2026-04-21,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/213,tarjeta,client:c162ebdf-0008-43f2-864d-cc0d891915a3#0,PALETA AGUA Limon,FFFB8948,tarjeta
 S000094,2026-04-21,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/217,efectivo,client:47f3c501-5848-4c81-b412-5ea148c6ba54#6,PALETA AGUA Limon,FFFB8948,efectivo
 S000088,2026-04-21,PALETA-AGUA-MANGO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/211,efectivo,client:623da726-7259-465d-bd4c-8af7e67559fa#1,PALETA AGUA Mango,6263D0A1,efectivo
@@ -33,6 +34,7 @@ S000086,2026-04-21,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,2,30.0,60.0,https://github.c
 S000092,2026-04-21,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/215,tarjeta,client:94cb22ed-2119-43bd-909b-762bbb88ff77#1,PALETA AGUA PREMIUM Frutos Rojos,746FF175,tarjeta
 S000095,2026-04-21,PALETA-AGUA-PREMIUM-PICAPANDA,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/218,efectivo,client:9de67a34-f408-4eef-ac98-375f6c9c1e69#1,PALETA AGUA PREMIUM Picapanda,431378B8,efectivo
 S000101,2026-04-21,PALETA-AGUA-PREMIUM-PICAPANDA,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/224,tarjeta,client:166a58dc-0987-4d72-b8ab-dae0658461b6#3,PALETA AGUA PREMIUM Picapanda,431378B8,tarjeta
+S000107,2026-04-21,PALETA-AGUA-PREMIUM-PULPARINDO,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/230,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/230#2,PALETA AGUA PREMIUM Pulparindo,430P78B8,efectivo
 S000083,2026-04-21,PALETA-AGUA-PREMIUM-SANDIA-CHAMOY,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/206,efectivo,client:a490a282-60ee-4c74-8b7c-7b2705d39bdd#0,PALETA AGUA PREMIUM Sandia-Chamoy,BFE99PL3,efectivo
 S000101,2026-04-21,PALETA-AGUA-PREMIUM-SANDIA-CHAMOY,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/224,tarjeta,client:166a58dc-0987-4d72-b8ab-dae0658461b6#4,PALETA AGUA PREMIUM Sandia-Chamoy,BFE99PL3,tarjeta
 S000105,2026-04-21,PALETA-AGUA-SANDIA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/228,tarjeta,client:556bfa0f-972d-45b8-a244-72cc9a9e6cec#2,PALETA AGUA Sandia,21BFA58F,tarjeta
@@ -49,7 +51,9 @@ S000094,2026-04-21,PALETA-CREMA-MENTA-CHOCOLATE,1,35.0,35.0,https://github.com/O
 S000083,2026-04-21,PALETA-CREMA-PAY-DE-LIMON,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/206,efectivo,client:a490a282-60ee-4c74-8b7c-7b2705d39bdd#3,PALETA CREMA Pay de Limon,7B72DC7E,efectivo
 S000085,2026-04-21,PALETA-CREMA-PAY-DE-LIMON,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/208,efectivo,client:6e427b63-eb71-4df4-a62f-e3a8e4a703f0#0,PALETA CREMA Pay de Limon,7B72DC7E,efectivo
 S000091,2026-04-21,PALETA-CREMA-PAY-DE-LIMON,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/214,efectivo,client:e36f17ba-0243-4db9-a539-738f4925413e#1,PALETA CREMA Pay de Limon,7B72DC7E,efectivo
+S000107,2026-04-21,PALETA-CREMA-PREMIUM-CHONGOS,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/230,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/230#1,PALETA CREMA PREMIUM Chongos,884118CA,efectivo
 S000094,2026-04-21,PALETA-CREMA-PREMIUM-FERRERO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/217,efectivo,client:47f3c501-5848-4c81-b412-5ea148c6ba54#0,PALETA CREMA PREMIUM Ferrero,516E1BCF,efectivo
+S000107,2026-04-21,PALETA-CREMA-PREMIUM-FERRERO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/230,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/230#0,PALETA CREMA PREMIUM Ferrero,516E1BCF,efectivo
 S000095,2026-04-21,PALETA-CREMA-PREMIUM-NUEZ,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/218,efectivo,client:9de67a34-f408-4eef-ac98-375f6c9c1e69#2,PALETA CREMA PREMIUM Nuez,92CFB2A5,efectivo
 S000105,2026-04-21,PALETA-CREMA-PREMIUM-NUEZ,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/228,tarjeta,client:556bfa0f-972d-45b8-a244-72cc9a9e6cec#4,PALETA CREMA PREMIUM Nuez,92CFB2A5,tarjeta
 S000092,2026-04-21,PALETA-CREMA-PREMIUM-PISTACHE,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/215,tarjeta,client:94cb22ed-2119-43bd-909b-762bbb88ff77#0,PALETA CREMA PREMIUM Pistache,E4F287A9,tarjeta
@@ -67,7 +71,3 @@ S000102,2026-04-21,PALETA-SIN-AZUCAR-CHOCOLATE,3,45.0,135.0,https://github.com/O
 S000088,2026-04-21,PALETA-SIN-AZUCAR-COCO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/211,efectivo,client:623da726-7259-465d-bd4c-8af7e67559fa#0,PALETA SIN AZUCAR Cocoketo,68D4185D,efectivo
 S000089,2026-04-21,PALETA-SIN-AZUCAR-FRUTOS-ROJOS,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/212,tarjeta,client:41a30a82-fe74-4f1f-8cf6-b200c3931b9d#0,PALETA SIN AZUCAR Ketofrutos,EE158D68,tarjeta
 S000086,2026-04-21,PALETAS-PERRO,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/209,efectivo,client:d3ae5b3f-f78d-4469-9623-58bd1f4f7179#2,Paletas para Perro,6A3513FD,efectivo
-S000107,2026-04-22,PALETA-AGUA-GUANABANA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/230,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/230#3,PALETA AGUA Guanabana,K2F6E9F9,efectivo
-S000107,2026-04-22,PALETA-AGUA-PREMIUM-PULPARINDO,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/230,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/230#2,PALETA AGUA PREMIUM Pulparindo,430P78B8,efectivo
-S000107,2026-04-22,PALETA-CREMA-PREMIUM-CHONGOS,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/230,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/230#1,PALETA CREMA PREMIUM Chongos,884118CA,efectivo
-S000107,2026-04-22,PALETA-CREMA-PREMIUM-FERRERO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/230,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/230#0,PALETA CREMA PREMIUM Ferrero,516E1BCF,efectivo
