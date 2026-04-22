@@ -4,18 +4,6 @@ on:
   workflow_dispatch: {}
   issues:
     types: [opened]
-  push:
-    paths:
-      - "data/**"
-      - "scripts/**"
-      - "docs/register.html"
-      - "docs/produccion.html"
-      - "docs/register_mercado.html"
-      - "docs/abasto_mercado.html"
-      - "docs/inventario_mercado.html"
-      - "docs/ventas_mercado.html"
-      - "docs/reportes_mercado.html"
-      - "data/inventory_mercado.csv"
 
 permissions:
   contents: write
@@ -28,6 +16,7 @@ concurrency:
 jobs:
   process:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -66,6 +55,22 @@ jobs:
         env:
           TZ: America/Mexico_City
 
+      - name: Normalize line endings before commit
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          for p in list(Path("data").rglob("*")) + list(Path("docs").rglob("*")):
+              if p.is_file() and p.suffix.lower() in {".csv", ".json", ".html", ".js"}:
+                  try:
+                      txt = p.read_text(encoding="utf-8", errors="ignore")
+                      txt = txt.replace("\r\n", "\n").replace("\r", "\n")
+                      p.write_text(txt, encoding="utf-8", newline="\n")
+                  except Exception:
+                      pass
+          PY
+        env:
+          TZ: America/Mexico_City
+
       - name: Commit & push
         env:
           BRANCH_NAME: ${{ github.ref_name }}
@@ -76,18 +81,14 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
 
           branch="${BRANCH_NAME:-$(git rev-parse --abbrev-ref HEAD)}"
-
           git fetch origin "$branch" --prune
-          git -c rebase.autoStash=true pull --rebase origin "$branch" || {
-            echo "⚠️ No se pudo rebasear. Se aborta push para evitar conflictos."
-            exit 0
-          }
 
+          git add .gitattributes
           git add -A
           if git diff --cached --quiet; then
             echo "Sin cambios para commitear."
             exit 0
           fi
 
-          git commit -m "chore(inventory): actualizar datos, menú y reportes"
+          git commit -m "chore(inventory): actualizar datos, menu y reportes"
           git push origin HEAD:"$branch"
