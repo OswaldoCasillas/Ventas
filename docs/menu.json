@@ -221,14 +221,14 @@
     "item": "PALETA-AGUA-GROSSELLA",
     "descripcion": "PALETA AGUA Grosella",
     "precio": 25.0,
-    "stock": 34
+    "stock": 31
   },
   {
     "product_id": "K2F6E9F9",
     "item": "PALETA-AGUA-GUANABANA",
     "descripcion": "PALETA AGUA Guanabana",
     "precio": 25.0,
-    "stock": 28
+    "stock": 27
   },
   {
     "product_id": "F2E6E9F9",
@@ -319,7 +319,7 @@
     "item": "PALETA-AGUA-PREMIUM-PICAPANDA",
     "descripcion": "PALETA AGUA PREMIUM Picapanda",
     "precio": 30.0,
-    "stock": 8
+    "stock": 7
   },
   {
     "product_id": "BFE99BE3",
@@ -340,7 +340,7 @@
     "item": "PALETA-AGUA-PREMIUM-SANDIA-CHAMOY",
     "descripcion": "PALETA AGUA PREMIUM Sandia-Chamoy",
     "precio": 30.0,
-    "stock": 40
+    "stock": 39
   },
   {
     "product_id": "21BFA58F",
@@ -564,14 +564,14 @@
     "item": "PALETA-CREMA-PREMIUM-PISTACHE",
     "descripcion": "PALETA CREMA PREMIUM Pistache",
     "precio": 40.0,
-    "stock": 6
+    "stock": 5
   },
   {
     "product_id": "02298024",
     "item": "PALETA-CREMA-PREMIUM-QUESO",
     "descripcion": "PALETA CREMA PREMIUM Queso",
     "precio": 40.0,
-    "stock": 25
+    "stock": 23
   },
   {
     "product_id": "000CCCFD",
@@ -620,7 +620,7 @@
     "item": "PALETA-CREMA-PREMIUM-VINO-TINTO-RELLENO",
     "descripcion": "PALETA CREMA PREMIUM Vino Tinto",
     "precio": 40.0,
-    "stock": 10
+    "stock": 7
   },
   {
     "product_id": "ACF8DA00",
