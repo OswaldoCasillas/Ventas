@@ -1,0 +1,5 @@
+txn_id,fecha,item,cantidad,precio_unit,importe,issue,metodo_pago,source_id,descripcion,product_id,payment
+S000107,2026-04-22,PALETA-AGUA-GUANABANA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/230,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/230#3,PALETA AGUA Guanabana,K2F6E9F9,efectivo
+S000107,2026-04-22,PALETA-AGUA-PREMIUM-PULPARINDO,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/230,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/230#2,PALETA AGUA PREMIUM Pulparindo,430P78B8,efectivo
+S000107,2026-04-22,PALETA-CREMA-PREMIUM-CHONGOS,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/230,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/230#1,PALETA CREMA PREMIUM Chongos,884118CA,efectivo
+S000107,2026-04-22,PALETA-CREMA-PREMIUM-FERRERO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/230,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/230#0,PALETA CREMA PREMIUM Ferrero,516E1BCF,efectivo

@@ -228,7 +228,7 @@
     "item": "PALETA-AGUA-GUANABANA",
     "descripcion": "PALETA AGUA Guanabana",
     "precio": 25.0,
-    "stock": 27
+    "stock": 26
   },
   {
     "product_id": "F2E6E9F9",
@@ -333,7 +333,7 @@
     "item": "PALETA-AGUA-PREMIUM-PULPARINDO",
     "descripcion": "PALETA AGUA PREMIUM Pulparindo",
     "precio": 30.0,
-    "stock": 35
+    "stock": 34
   },
   {
     "product_id": "BFE99PL3",
@@ -515,14 +515,14 @@
     "item": "PALETA-CREMA-PREMIUM-CHONGOS",
     "descripcion": "PALETA CREMA PREMIUM Chongos",
     "precio": 40.0,
-    "stock": 9999999
+    "stock": 9999998
   },
   {
     "product_id": "516E1BCF",
     "item": "PALETA-CREMA-PREMIUM-FERRERO",
     "descripcion": "PALETA CREMA PREMIUM Ferrero",
     "precio": 40.0,
-    "stock": 25
+    "stock": 24
   },
   {
     "product_id": "2CF84FBA",
