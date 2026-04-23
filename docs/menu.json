@@ -102,7 +102,7 @@
     "item": "HELADO-CLASICO-SENCILLO",
     "descripcion": "Helado Clasico Sencillo",
     "precio": 35.0,
-    "stock": 9999989
+    "stock": 9999987
   },
   {
     "product_id": "7888486E",
@@ -662,7 +662,7 @@
     "item": "PALETA-MINI-MINI-AGUA",
     "descripcion": "PALETA MINI Mini Agua",
     "precio": 6.0,
-    "stock": 9999965
+    "stock": 9999964
   },
   {
     "product_id": "C371ED50",
