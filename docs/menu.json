@@ -102,7 +102,7 @@
     "item": "HELADO-CLASICO-SENCILLO",
     "descripcion": "Helado Clasico Sencillo",
     "precio": 35.0,
-    "stock": 9999990
+    "stock": 9999989
   },
   {
     "product_id": "7888486E",
@@ -193,7 +193,7 @@
     "item": "MALTEADA-CLASICA",
     "descripcion": "MALTEADA Clasica",
     "precio": 65.0,
-    "stock": 9999997
+    "stock": 9999996
   },
   {
     "product_id": "F63212B1",
