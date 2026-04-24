@@ -1,0 +1,2 @@
+txn_id,fecha,item,cantidad,precio_unit,importe,issue,metodo_pago,source_id,descripcion,product_id,payment
+S000123,2026-04-24,PALETA-MINI-MINI-SIN-AZUCAR,5,10.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/246,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/246#0,PALETA MINI Sin Azucar,D189174D,efectivo
