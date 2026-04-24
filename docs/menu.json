@@ -4,14 +4,14 @@
     "item": "AGUA-FRESCA-CHICA",
     "descripcion": "AGUA FRESCA Chica",
     "precio": 25.0,
-    "stock": 9999998
+    "stock": 9999997
   },
   {
     "product_id": "9C1B04E4",
     "item": "AGUA-FRESCA-GRANDE",
     "descripcion": "AGUA FRESCA Grande",
     "precio": 35.0,
-    "stock": 9999987
+    "stock": 9999985
   },
   {
     "product_id": "1C271C39",
@@ -102,7 +102,7 @@
     "item": "HELADO-CLASICO-SENCILLO",
     "descripcion": "Helado Clasico Sencillo",
     "precio": 35.0,
-    "stock": 9999983
+    "stock": 9999981
   },
   {
     "product_id": "7888486E",
