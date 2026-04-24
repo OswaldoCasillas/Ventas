@@ -249,7 +249,7 @@
     "item": "PALETA-AGUA-LIMON",
     "descripcion": "PALETA AGUA Limon",
     "precio": 25.0,
-    "stock": 11
+    "stock": 10
   },
   {
     "product_id": "3D2B18C9",
@@ -564,7 +564,7 @@
     "item": "PALETA-CREMA-PREMIUM-PISTACHE",
     "descripcion": "PALETA CREMA PREMIUM Pistache",
     "precio": 40.0,
-    "stock": 5
+    "stock": 4
   },
   {
     "product_id": "02298024",
