@@ -130,7 +130,7 @@
     "item": "HELADO-GOURMET-SENCILLO",
     "descripcion": "Helado Gourmet Sencillo",
     "precio": 40.0,
-    "stock": 9999991
+    "stock": 9999990
   },
   {
     "product_id": "3021BE59",
@@ -312,7 +312,7 @@
     "item": "PALETA-AGUA-PREMIUM-PICAFRESA",
     "descripcion": "PALETA AGUA PREMIUM Picafresa",
     "precio": 30.0,
-    "stock": 22
+    "stock": 21
   },
   {
     "product_id": "431378B8",
@@ -487,7 +487,7 @@
     "item": "PALETA-CREMA-OREO",
     "descripcion": "PALETA CREMA Oreo",
     "precio": 35.0,
-    "stock": 36
+    "stock": 35
   },
   {
     "product_id": "7B72DC7E",
