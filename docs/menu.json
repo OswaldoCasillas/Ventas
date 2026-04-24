@@ -403,7 +403,7 @@
     "item": "PALETA-CREMA-ARROZ",
     "descripcion": "PALETA CREMA Arroz",
     "precio": 35.0,
-    "stock": 9999995
+    "stock": 9999994
   },
   {
     "product_id": "0F878660",
@@ -473,7 +473,7 @@
     "item": "PALETA-CREMA-MAZAPAN",
     "descripcion": "PALETA CREMA Mazapan",
     "precio": 35.0,
-    "stock": 9999998
+    "stock": 9999997
   },
   {
     "product_id": "97A7679E",
@@ -648,7 +648,7 @@
     "item": "PALETA-CREMA-TRIX",
     "descripcion": "PALETA CREMA Trix",
     "precio": 35.0,
-    "stock": 9999999
+    "stock": 9999997
   },
   {
     "product_id": "F6AEC245",
