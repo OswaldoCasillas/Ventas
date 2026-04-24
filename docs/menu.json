@@ -74,7 +74,7 @@
     "item": "EXTRA-CONO",
     "descripcion": "EXTRA Cono",
     "precio": 5.0,
-    "stock": 9999978
+    "stock": 9999977
   },
   {
     "product_id": "BD4D8B7F",
@@ -109,7 +109,7 @@
     "item": "HELADO-GOURMET-DOBLE",
     "descripcion": "Helado Gourmet Doble",
     "precio": 70.0,
-    "stock": 9999997
+    "stock": 9999996
   },
   {
     "product_id": "28C3B90F",
@@ -186,7 +186,7 @@
     "item": "HELADO-SIN-AZUCAR-SENCILLO",
     "descripcion": "Helado Sin Azucar Sencillo",
     "precio": 45.0,
-    "stock": 9999994
+    "stock": 9999993
   },
   {
     "product_id": "D7361A46",
@@ -403,7 +403,7 @@
     "item": "PALETA-CREMA-ARROZ",
     "descripcion": "PALETA CREMA Arroz",
     "precio": 35.0,
-    "stock": 9999994
+    "stock": 9999993
   },
   {
     "product_id": "0F878660",
