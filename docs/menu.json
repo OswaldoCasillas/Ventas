@@ -109,7 +109,7 @@
     "item": "HELADO-GOURMET-DOBLE",
     "descripcion": "Helado Gourmet Doble",
     "precio": 70.0,
-    "stock": 9999998
+    "stock": 9999997
   },
   {
     "product_id": "28C3B90F",
@@ -151,7 +151,7 @@
     "item": "HELADO-NIEVE-MEDIO-LITRO",
     "descripcion": "Helado Nieve Medio Litro",
     "precio": 75.0,
-    "stock": 9999997
+    "stock": 9999996
   },
   {
     "product_id": "641AA19F",
@@ -291,7 +291,7 @@
     "item": "PALETA-AGUA-PREMIUM-FRUTOS-ROJOS",
     "descripcion": "PALETA AGUA PREMIUM Frutos Rojos",
     "precio": 30.0,
-    "stock": 9999994
+    "stock": 9999993
   },
   {
     "product_id": "BBF0DD66",
@@ -606,7 +606,7 @@
     "item": "PALETA-CREMA-PREMIUM-SELVA-NEGRA",
     "descripcion": "PALETA CREMA PREMIUM Selva Negra",
     "precio": 40.0,
-    "stock": 34
+    "stock": 33
   },
   {
     "product_id": "3A0CCE07",
