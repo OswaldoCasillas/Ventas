@@ -102,7 +102,7 @@
     "item": "HELADO-CLASICO-SENCILLO",
     "descripcion": "Helado Clasico Sencillo",
     "precio": 35.0,
-    "stock": 9999987
+    "stock": 9999986
   },
   {
     "product_id": "7888486E",
@@ -151,7 +151,7 @@
     "item": "HELADO-NIEVE-MEDIO-LITRO",
     "descripcion": "Helado Nieve Medio Litro",
     "precio": 75.0,
-    "stock": 9999998
+    "stock": 9999997
   },
   {
     "product_id": "641AA19F",
@@ -256,7 +256,7 @@
     "item": "PALETA-AGUA-MANDARINA",
     "descripcion": "PALETA AGUA Mandarina",
     "precio": 25.0,
-    "stock": 31
+    "stock": 30
   },
   {
     "product_id": "6263D0A1",
@@ -718,7 +718,7 @@
     "item": "PALETA-SIN-AZUCAR-COCO",
     "descripcion": "PALETA SIN AZUCAR Cocoketo",
     "precio": 45.0,
-    "stock": 25
+    "stock": 24
   },
   {
     "product_id": "0935F20F",

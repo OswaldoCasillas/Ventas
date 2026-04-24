@@ -1,3 +1,7 @@
 txn_id,fecha,item,cantidad,precio_unit,importe,issue,metodo_pago,source_id,descripcion,product_id,payment
 S000124,2026-04-24,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/247,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/247#0,AGUA FRESCA Grande,9C1B04E4,efectivo
+S000125,2026-04-24,HELADO-CLASICO-SENCILLO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/248,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/248#0,Helado Clasico Sencillo,9D68612D,efectivo
+S000125,2026-04-24,HELADO-NIEVE-MEDIO-LITRO,1,75.0,75.0,https://github.com/OswaldoCasillas/Ventas/issues/248,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/248#3,Helado Nieve Medio Litro,7081D5FB,efectivo
+S000125,2026-04-24,PALETA-AGUA-MANDARINA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/248,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/248#1,PALETA AGUA Mandarina,3D2B18C9,efectivo
 S000123,2026-04-24,PALETA-MINI-MINI-SIN-AZUCAR,5,10.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/246,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/246#0,PALETA MINI Sin Azucar,D189174D,efectivo
+S000125,2026-04-24,PALETA-SIN-AZUCAR-COCO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/248,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/248#2,PALETA SIN AZUCAR Cocoketo,68D4185D,efectivo
