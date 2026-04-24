@@ -284,14 +284,14 @@
     "item": "PALETA-AGUA-PINA",
     "descripcion": "PALETA AGUA Pina",
     "precio": 25.0,
-    "stock": 19
+    "stock": 18
   },
   {
     "product_id": "746FF175",
     "item": "PALETA-AGUA-PREMIUM-FRUTOS-ROJOS",
     "descripcion": "PALETA AGUA PREMIUM Frutos Rojos",
     "precio": 30.0,
-    "stock": 9999995
+    "stock": 9999994
   },
   {
     "product_id": "BBF0DD66",
@@ -543,7 +543,7 @@
     "item": "PALETA-CREMA-PREMIUM-NUEZ",
     "descripcion": "PALETA CREMA PREMIUM Nuez",
     "precio": 40.0,
-    "stock": 1
+    "stock": 0
   },
   {
     "product_id": "92CFB2A5",
