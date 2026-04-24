@@ -263,7 +263,7 @@
     "item": "PALETA-AGUA-MANGO",
     "descripcion": "PALETA AGUA Mango",
     "precio": 25.0,
-    "stock": 26
+    "stock": 25
   },
   {
     "product_id": "4E1A8D0F",
@@ -452,7 +452,7 @@
     "item": "PALETA-CREMA-FRESA-CON-CREMA",
     "descripcion": "PALETA CREMA Fresa con Crema",
     "precio": 35.0,
-    "stock": 9999998
+    "stock": 9999997
   },
   {
     "product_id": "03C761EC",
@@ -557,7 +557,7 @@
     "item": "PALETA-CREMA-PREMIUM-PINON",
     "descripcion": "PALETA CREMA PREMIUM Pinon",
     "precio": 40.0,
-    "stock": 23
+    "stock": 21
   },
   {
     "product_id": "E4F287A9",
@@ -718,7 +718,7 @@
     "item": "PALETA-SIN-AZUCAR-COCO",
     "descripcion": "PALETA SIN AZUCAR Cocoketo",
     "precio": 45.0,
-    "stock": 24
+    "stock": 23
   },
   {
     "product_id": "0935F20F",
