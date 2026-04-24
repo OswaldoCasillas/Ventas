@@ -690,7 +690,7 @@
     "item": "PALETA-SIN-AZUCAR-CAJETA",
     "descripcion": "PALETA SIN AZUCAR Cajeta",
     "precio": 45.0,
-    "stock": 44
+    "stock": 43
   },
   {
     "product_id": "68DJ808D",
@@ -718,7 +718,7 @@
     "item": "PALETA-SIN-AZUCAR-COCO",
     "descripcion": "PALETA SIN AZUCAR Cocoketo",
     "precio": 45.0,
-    "stock": 23
+    "stock": 22
   },
   {
     "product_id": "0935F20F",
@@ -774,7 +774,7 @@
     "item": "PALETA-SIN-AZUCAR-MAMEY",
     "descripcion": "PALETA SIN AZUCAR Mamey",
     "precio": 45.0,
-    "stock": 35
+    "stock": 34
   },
   {
     "product_id": "DC109062",
@@ -802,28 +802,28 @@
     "item": "PALETA-SIN-AZUCAR-NUEZ",
     "descripcion": "PALETA SIN AZUCAR Nuez",
     "precio": 45.0,
-    "stock": 53
+    "stock": 52
   },
   {
     "product_id": "F797E587",
     "item": "PALETA-SIN-AZUCAR-PINON",
     "descripcion": "PALETA SIN AZUCAR Pinon",
     "precio": 45.0,
-    "stock": 32
+    "stock": 31
   },
   {
     "product_id": "66B31F3E",
     "item": "PALETA-SIN-AZUCAR-PISTACHE",
     "descripcion": "PALETA Pistaketo",
     "precio": 45.0,
-    "stock": 56
+    "stock": 55
   },
   {
     "product_id": "6A09314A",
     "item": "PALETA-SIN-AZUCAR-VAINILLA",
     "descripcion": "PALETA SIN AZUCAR Vainilla",
     "precio": 45.0,
-    "stock": 43
+    "stock": 42
   },
   {
     "product_id": "6A3513FD",
