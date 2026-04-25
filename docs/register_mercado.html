@@ -30,7 +30,7 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="top"><div><h1>Registrar venta · Mercado</h1><div class="muted">Versión estable.</div></div><a class="back" href="index.html">← Menú</a></div>
+    <div class="top"><div><h1>Registrar venta · Mercado</h1><div class="muted">Usa menu_mercado.json.</div></div><a class="back" href="index.html">← Menú</a></div>
     <div class="grid">
       <section class="card">
         <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><strong>Carrito</strong><div class="muted"><span id="totalItems">0</span> items · <span id="totalAmount">$0.00</span></div></div>
@@ -51,20 +51,18 @@
       </section>
     </div>
   </div>
-
   <script>
     const APP_CONFIG = window.APP_CONFIG || {};
     const ORG = APP_CONFIG.ORG || "OswaldoCasillas";
     const REPO = APP_CONFIG.REPO || "Ventas";
     const API_URL = APP_CONFIG.API_URL || "https://ventas-backend-rose.vercel.app/api/create-issue";
-    const MENU_LOCAL = "menu.json";
-    const MENU_FALLBACK = `https://${ORG.toLowerCase()}.github.io/${REPO}/menu.json`;
+    const MENU_LOCAL = "menu_mercado.json";
+    const MENU_FALLBACK = `https://${ORG.toLowerCase()}.github.io/${REPO}/menu_mercado.json`;
     const CAT_LABELS = {"ALL":"Todas","PALETA-AGUA":"Agua","PALETA-AGUA-PREMIUM":"Agua Premium","PALETA-CREMA":"Crema","PALETA-CREMA-PREMIUM":"Crema Premium","PALETA-SIN-AZUCAR":"Sin Azúcar","PALETA-MINI":"Mini","PALETAS-PERRO":"Perro","HELADO-NIEVE":"Nieve","HELADO-CLASICO":"Clásico","HELADO-GOURMET":"Gourmet","HELADO-SIN-AZUCAR":"Helado SA","AGUA-FRESCA":"Aguas","BEBIDA":"Bebidas","POSTRE":"Postres","BOTANA":"Botanas","EXTRA":"Extras"};
     const PENDING_SALE_KEY = "ventas.pending.mercado";
     const PENDING_SALE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
     let MENU = [], FILTER_CATEGORY = "ALL", metodoPago = "efectivo";
     const cart = [];
-
     function money(v){ return `$${Number(v || 0).toFixed(2)}`; }
     function todayISO(){ const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
     function round2(v){ return Math.round((Number(v || 0) + Number.EPSILON) * 100) / 100; }
@@ -79,7 +77,7 @@
     function searchHasText(){ return String(document.getElementById("search").value || "").trim().length > 0; }
     function buildCategoryUI(){ const categories = Array.from(new Set(MENU.map(p => getCategoryOf(p.item)))).sort((a,b) => (CAT_LABELS[a] || a).localeCompare(CAT_LABELS[b] || b)); const all = ["ALL", ...categories]; const select = document.getElementById("category"); select.innerHTML = all.map(k => `<option value="${k}">${CAT_LABELS[k] || k}</option>`).join(""); select.value = FILTER_CATEGORY; select.onchange = () => { FILTER_CATEGORY = select.value; resetSearch(); renderProducts(); focusSearch(); }; const chips = document.getElementById("quickCats"); chips.innerHTML = all.slice(0,8).map(k => `<button type="button" class="chip ${k===FILTER_CATEGORY?'active':''}" data-cat="${k}">${CAT_LABELS[k] || k}</button>`).join(""); chips.querySelectorAll(".chip").forEach(chip => { chip.onclick = () => { FILTER_CATEGORY = chip.dataset.cat; select.value = FILTER_CATEGORY; resetSearch(); buildCategoryUI(); renderProducts(); focusSearch(); }; }); }
     function filteredProducts(){ const search = normalizeText(document.getElementById("search").value); const terms = search ? search.split(" ").filter(Boolean) : []; return MENU.filter(p => { const byCat = FILTER_CATEGORY === "ALL" || getCategoryOf(p.item) === FILTER_CATEGORY; if (!byCat) return false; if (!terms.length) return true; const hay = normalizeText(`${p.item} ${p.descripcion} ${CAT_LABELS[getCategoryOf(p.item)] || ""}`); return terms.every(t => hay.includes(t)); }); }
-    function getQuickPickProducts(){ const ranked = [], seen = new Set(); const patterns = [/AGUA\-FRESCA\-GRANDE/i,/SENCILLO/i,/DOBLE/i,/MINI/i]; for (const pattern of patterns){ for (const p of MENU){ if (seen.has(p.item)) continue; if (pattern.test(p.item) || pattern.test(p.descripcion || "")) { ranked.push(p); seen.add(p.item); if (ranked.length >= 8) return ranked; } } } return ranked; }
+    function getQuickPickProducts(){ const ranked = [], seen = new Set(); const patterns = [/MINI/i,/PERRO/i,/PALETA\-CREMA/i,/PALETA\-AGUA/i]; for (const pattern of patterns){ for (const p of MENU){ if (seen.has(p.item)) continue; if (pattern.test(p.item) || pattern.test(p.descripcion || "")) { ranked.push(p); seen.add(p.item); if (ranked.length >= 8) return ranked; } } } return ranked; }
     function renderQuickPicks(){ const wrap = document.getElementById("quickPicks"); const picks = getQuickPickProducts(); wrap.innerHTML = picks.map(p => `<button type="button" class="quick-btn" data-quick="${p.item}"><span class="q1">${niceLabel(p)}</span><span class="q2">${money(p.precio)}</span></button>`).join(""); wrap.querySelectorAll("[data-quick]").forEach(btn => btn.onclick = () => { const p = MENU.find(x => x.item === btn.dataset.quick); if (p) addToCart(p, 0, false); }); }
     function addToCart(product, discount = 0, fromSearch = false){ const finalPrice = round2(Math.max(0, Number(product.precio || 0) - Number(discount || 0))); const discountLabel = discount > 0 ? ` · -$${discount}` : ""; const found = cart.find(item => item.item === product.item && Number(item.precio) === finalPrice); if (found) found.cantidad += 1; else cart.push({ item:product.item, descripcion:product.descripcion, variantLabel:discountLabel, precio:finalPrice, cantidad:1 }); renderCart(); if (fromSearch){ resetSearch(); renderProducts(); focusSearch(); } }
     function updateQty(item, price, delta){ const found = cart.find(row => row.item === item && Number(row.precio) === Number(price)); if (!found) return; found.cantidad += delta; if (found.cantidad <= 0) return removeFromCart(item, price); renderCart(); }
