@@ -33,7 +33,11 @@ def normalize_sales(df: pd.DataFrame) -> pd.DataFrame:
     df["cantidad"] = df["cantidad"].astype(int)
     if "status" in df.columns:
         df = df[df["status"].fillna("activa").isin(["", "activa"])]
-    df["fecha"] = pd.to_datetime(df["fecha"].astype(str), errors="coerce").dt.strftime("%Y-%m-%d")
+    df["fecha"] = pd.to_datetime(df["fecha"].astype(str), errors="coerce")
+    df = df[df["fecha"].notna()].copy()
+    df["fecha"] = df["fecha"].dt.strftime("%Y-%m-%d")
+    if "descripcion" in df.columns:
+        df["descripcion"] = df["descripcion"].replace("", pd.NA).fillna(df["item"])
     df["metodo_pago"] = df["metodo_pago"].replace("", "efectivo")
     return df.sort_values(["fecha", "txn_id", "item"], ascending=[True, True, True], na_position="last")
 
@@ -71,7 +75,9 @@ def export_production(df: pd.DataFrame) -> None:
             out[c] = ""
     if not out.empty:
         out["cantidad"] = pd.to_numeric(out["cantidad"], errors="coerce").fillna(0).astype(int)
-        out["fecha"] = pd.to_datetime(out["fecha"].astype(str), errors="coerce").dt.strftime("%Y-%m-%d")
+        out["fecha"] = pd.to_datetime(out["fecha"].astype(str), errors="coerce")
+        out = out[out["fecha"].notna()].copy()
+        out["fecha"] = out["fecha"].dt.strftime("%Y-%m-%d")
         out = out.sort_values(["fecha", "item"], na_position="last")
     write_csv(out[cols], DOCS / "produccion_detalle.csv")
 

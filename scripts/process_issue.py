@@ -8,6 +8,7 @@ import re
 import sys
 import urllib.request
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -176,10 +177,12 @@ def inventory_adjust(path: Path, sku: str, descripcion: str, mode: str, value: i
     if row is None:
         row = {"item": sku, "descripcion": descripcion, "stock": "0", "precio": "0", "product_id": ""}
         rows.append(row)
+
     current_stock = to_int(row.get("stock", 0), 0)
     row["stock"] = str(value if mode == "set" else current_stock + value)
     if descripcion and not str(row.get("descripcion", "")).strip():
         row["descripcion"] = descripcion
+
     csv_write(path, rows, fieldnames=["item", "descripcion", "stock", "precio", "product_id"])
 
 
@@ -322,7 +325,6 @@ def parse_items_from_any(body: str, sections: dict[str, str], json_body: dict[st
         except Exception:
             pass
 
-    # extra robusto: buscar en TODAS las líneas del body con pipes, no solo en la sección Items.
     rows = parse_markdown_table_items(strip_conflict_lines(body))
     if rows:
         return rows
@@ -474,6 +476,11 @@ def register_sale(payload: ParsedPayload, mercado: bool, zero_price: bool = Fals
     inventory_path = INVENTORY_MERCADO_CSV if mercado else INVENTORY_CSV
     sales_path = SALES_MERCADO_CSV if mercado else SALES_CSV
     txn_id = payload.txn_id or f"txn-issue-{payload.issue_number}"
+
+    fecha = str(payload.fecha or "").strip()
+    if not fecha:
+        fecha = datetime.now().strftime("%Y-%m-%d")
+
     items = resolve_items_with_inventory(payload.items, inventory_path, zero_price=zero_price)
     if not items:
         raise ValueError("La operación no trae items válidos")
@@ -481,18 +488,26 @@ def register_sale(payload: ParsedPayload, mercado: bool, zero_price: bool = Fals
     for item in items:
         qty = to_int(item["cantidad"], 0)
         price = 0.0 if zero_price else to_float(item["precio"], 0.0)
-        inventory_adjust(inventory_path, item["item"], item["descripcion"], "delta", -qty)
         append_csv_row(
             sales_path,
             {
-                "txn_id": txn_id, "fecha": payload.fecha, "item": item["item"], "cantidad": qty,
-                "precio_unit": f"{price:.2f}", "importe": f"{qty * price:.2f}",
-                "issue": payload.issue_number, "metodo_pago": normalize_payment(payload.metodo_pago),
-                "source_id": payload.issue_number, "descripcion": item["descripcion"],
-                "status": "activa", "correction_ref": "", "notas": payload.notas,
+                "txn_id": txn_id,
+                "fecha": fecha,
+                "item": item["item"],
+                "cantidad": qty,
+                "precio_unit": f"{price:.2f}",
+                "importe": f"{qty * price:.2f}",
+                "issue": payload.issue_number,
+                "metodo_pago": normalize_payment(payload.metodo_pago),
+                "source_id": payload.issue_number,
+                "descripcion": item["descripcion"] or item["item"],
+                "status": "activa",
+                "correction_ref": "",
+                "notas": payload.notas,
             },
             ["txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue", "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"],
         )
+        inventory_adjust(inventory_path, item["item"], item["descripcion"] or item["item"], "delta", -qty)
     return txn_id
 
 
@@ -500,29 +515,30 @@ def register_production(payload: ParsedPayload) -> None:
     items = resolve_items_with_inventory(payload.items, INVENTORY_CSV)
     if not items:
         raise ValueError("Producción sin items válidos")
+    fecha = str(payload.fecha or "").strip() or datetime.now().strftime("%Y-%m-%d")
     for item in items:
         qty = to_int(item["cantidad"], 0)
         if qty <= 0:
             continue
         inventory_adjust(INVENTORY_CSV, item["item"], item["descripcion"], "delta", qty)
-        append_csv_row(PRODUCTION_CSV, {"fecha": payload.fecha, "item": item["item"], "cantidad": qty, "issue": payload.issue_number, "source_id": payload.issue_number, "descripcion": item["descripcion"]}, ["fecha", "item", "cantidad", "issue", "source_id", "descripcion"])
+        append_csv_row(PRODUCTION_CSV, {"fecha": fecha, "item": item["item"], "cantidad": qty, "issue": payload.issue_number, "source_id": payload.issue_number, "descripcion": item["descripcion"]}, ["fecha", "item", "cantidad", "issue", "source_id", "descripcion"])
 
 
 def register_abasto_mercado(payload: ParsedPayload) -> None:
     items = resolve_items_with_inventory(payload.items, INVENTORY_CSV)
     if not items:
         raise ValueError("Abasto mercado sin items válidos")
+    fecha = str(payload.fecha or "").strip() or datetime.now().strftime("%Y-%m-%d")
     for item in items:
         qty = to_int(item["cantidad"], 0)
         if qty <= 0:
             continue
         inventory_move_between(item["item"], item["descripcion"], qty)
-        append_csv_row(TRANSFER_MERCADO_CSV, {"fecha": payload.fecha, "item": item["item"], "cantidad": qty, "issue": payload.issue_number, "source_id": payload.issue_number, "descripcion": item["descripcion"]}, ["fecha", "item", "cantidad", "issue", "source_id", "descripcion"])
+        append_csv_row(TRANSFER_MERCADO_CSV, {"fecha": fecha, "item": item["item"], "cantidad": qty, "issue": payload.issue_number, "source_id": payload.issue_number, "descripcion": item["descripcion"]}, ["fecha", "item", "cantidad", "issue", "source_id", "descripcion"])
 
 
 def parse_correction_detail_lines(text: str) -> list[dict[str, Any]]:
-    rows = parse_markdown_table_items(text)
-    return rows
+    return parse_markdown_table_items(text)
 
 
 def find_sale_rows(sales_path: Path, txn_id: str, issue_ref: str) -> tuple[list[dict[str, str]], list[int]]:
@@ -556,7 +572,7 @@ def revert_sale_rows_to_inventory(matches: list[dict[str, str]], inventory_path:
 
 
 def append_corrected_sale(sales_path: Path, inventory_path: Path, payload: ParsedPayload, base_matches: list[dict[str, str]]) -> str:
-    fecha = payload.fecha or (base_matches[0].get("fecha", "") if base_matches else "")
+    fecha = str(payload.fecha or "").strip() or str(base_matches[0].get("fecha", "") if base_matches else "").strip() or datetime.now().strftime("%Y-%m-%d")
     metodo = normalize_payment(payload.metodo_pago or (base_matches[0].get("metodo_pago", "") if base_matches else ""))
     new_txn = f"corr-{payload.issue_number}"
     items = resolve_items_with_inventory(parse_correction_detail_lines(payload.detalle), inventory_path)
@@ -567,13 +583,13 @@ def append_corrected_sale(sales_path: Path, inventory_path: Path, payload: Parse
         if qty <= 0:
             continue
         price = to_float(item["precio"], 0.0)
-        inventory_adjust(inventory_path, item["item"], item["descripcion"], "delta", -qty)
         append_csv_row(sales_path, {
             "txn_id": new_txn, "fecha": fecha, "item": item["item"], "cantidad": qty,
             "precio_unit": f"{price:.2f}", "importe": f"{qty * price:.2f}",
             "issue": payload.issue_number, "metodo_pago": metodo, "source_id": payload.issue_number,
-            "descripcion": item["descripcion"], "status": "activa", "correction_ref": "", "notas": payload.razon,
+            "descripcion": item["descripcion"] or item["item"], "status": "activa", "correction_ref": "", "notas": payload.razon,
         }, ["txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue", "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"])
+        inventory_adjust(inventory_path, item["item"], item["descripcion"] or item["item"], "delta", -qty)
     return new_txn
 
 
@@ -654,14 +670,14 @@ def main() -> None:
 
     try:
         result = process_payload(payload)
-        mark_processed(payload.issue_number, event_hash, payload.payload_type, payload.fecha, "ok")
+        mark_processed(payload.issue_number, event_hash, payload.payload_type, str(payload.fecha or "").strip() or datetime.now().strftime("%Y-%m-%d"), "ok")
         log(result)
         add_github_comment(payload.issue_number, f"✅ Procesado correctamente.\n\n{result}")
         close_github_issue(payload.issue_number)
     except Exception as exc:
         err = f"❌ Error procesando issue #{payload.issue_number}: {exc}"
         log(err)
-        mark_processed(payload.issue_number, event_hash, payload.payload_type, payload.fecha, "error")
+        mark_processed(payload.issue_number, event_hash, payload.payload_type, str(payload.fecha or "").strip() or datetime.now().strftime("%Y-%m-%d"), "error")
         add_github_comment(payload.issue_number, err)
         raise
 
