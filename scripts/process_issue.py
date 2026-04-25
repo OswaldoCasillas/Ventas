@@ -53,10 +53,6 @@ def log(msg: str) -> None:
     print(msg, flush=True)
 
 
-def ensure_parent(path: Path) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-
-
 def normalize_payment(value: str) -> str:
     v = str(value or "").strip().lower()
     if v in {"tarjeta", "transferencia", "merma"}:
@@ -112,24 +108,20 @@ def csv_read(path: Path) -> list[dict[str, str]]:
         return []
     with path.open("r", encoding="utf-8-sig", newline="") as f:
         reader = csv.DictReader(f)
-        rows: list[dict[str, str]] = []
-        for raw in reader:
-            rows.append({str(k).strip(): (v if v is not None else "") for k, v in raw.items()})
-        return rows
+        return [{str(k).strip(): (v if v is not None else "") for k, v in raw.items()} for raw in reader]
 
 
 def csv_write(path: Path, rows: list[dict[str, Any]], fieldnames: list[str] | None = None) -> None:
-    ensure_parent(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
     rows = rows or []
     if fieldnames is None:
-        keys: list[str] = []
+        fieldnames = []
         seen: set[str] = set()
         for row in rows:
             for k in row.keys():
                 if k not in seen:
                     seen.add(k)
-                    keys.append(k)
-        fieldnames = keys
+                    fieldnames.append(k)
 
     with path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames, lineterminator="\n", extrasaction="ignore")
@@ -141,31 +133,18 @@ def csv_write(path: Path, rows: list[dict[str, Any]], fieldnames: list[str] | No
 def append_csv_row(path: Path, row: dict[str, Any], preferred_fieldnames: list[str] | None = None) -> None:
     rows = csv_read(path)
     rows.append({k: str(v) if v is not None else "" for k, v in row.items()})
-    fieldnames = preferred_fieldnames
-    if fieldnames is None:
-        fieldnames = []
-        seen: set[str] = set()
-        for r in rows:
-            for k in r.keys():
-                if k not in seen:
-                    seen.add(k)
-                    fieldnames.append(k)
-    csv_write(path, rows, fieldnames=fieldnames)
+    csv_write(path, rows, fieldnames=preferred_fieldnames)
 
 
 def ensure_csv_if_missing(path: Path, fieldnames: list[str]) -> None:
-    if path.exists():
-        return
-    csv_write(path, [], fieldnames=fieldnames)
+    if not path.exists():
+        csv_write(path, [], fieldnames=fieldnames)
 
 
 def ensure_core_files() -> None:
     ensure_csv_if_missing(INVENTORY_CSV, ["item", "descripcion", "stock", "precio", "product_id"])
     ensure_csv_if_missing(INVENTORY_MERCADO_CSV, ["item", "descripcion", "stock", "precio", "product_id"])
-    sales_fields = [
-        "txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue",
-        "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"
-    ]
+    sales_fields = ["txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue", "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"]
     ensure_csv_if_missing(SALES_CSV, sales_fields)
     ensure_csv_if_missing(SALES_MERCADO_CSV, sales_fields)
     ensure_csv_if_missing(PRODUCTION_CSV, ["fecha", "item", "cantidad", "issue", "source_id", "descripcion"])
@@ -174,6 +153,7 @@ def ensure_core_files() -> None:
 
 
 def inventory_find_row(rows: list[dict[str, str]], sku: str) -> dict[str, str] | None:
+    sku = str(sku).strip()
     for row in rows:
         if str(row.get("item", "")).strip() == sku:
             return row
@@ -182,16 +162,12 @@ def inventory_find_row(rows: list[dict[str, str]], sku: str) -> dict[str, str] |
 
 def inventory_get_desc(rows: list[dict[str, str]], sku: str, fallback: str = "") -> str:
     row = inventory_find_row(rows, sku)
-    if row:
-        return str(row.get("descripcion", "")).strip() or fallback
-    return fallback
+    return str(row.get("descripcion", "")).strip() if row else fallback
 
 
 def inventory_get_price(rows: list[dict[str, str]], sku: str, fallback: float = 0.0) -> float:
     row = inventory_find_row(rows, sku)
-    if row:
-        return to_float(row.get("precio", ""), fallback)
-    return fallback
+    return to_float(row.get("precio", ""), fallback) if row else fallback
 
 
 def inventory_adjust(path: Path, sku: str, descripcion: str, mode: str, value: int) -> None:
@@ -200,13 +176,10 @@ def inventory_adjust(path: Path, sku: str, descripcion: str, mode: str, value: i
     if row is None:
         row = {"item": sku, "descripcion": descripcion, "stock": "0", "precio": "0", "product_id": ""}
         rows.append(row)
-
     current_stock = to_int(row.get("stock", 0), 0)
-    new_stock = value if mode == "set" else current_stock + value
-    row["stock"] = str(new_stock)
+    row["stock"] = str(value if mode == "set" else current_stock + value)
     if descripcion and not str(row.get("descripcion", "")).strip():
         row["descripcion"] = descripcion
-
     csv_write(path, rows, fieldnames=["item", "descripcion", "stock", "precio", "product_id"])
 
 
@@ -226,23 +199,20 @@ def parse_issue_event() -> dict[str, Any]:
 
 
 def strip_conflict_lines(text: str) -> str:
-    cleaned: list[str] = []
+    out = []
     for line in str(text or "").splitlines():
-        if line.startswith("<<<<<<<") or line.startswith("=======") or line.startswith(">>>>>>>"):
+        if line.startswith(("<<<<<<<", "=======", ">>>>>>>")) or line.strip() in {"Updated upstream", "Stashed changes"}:
             continue
-        if line.strip() in {"Updated upstream", "Stashed changes"}:
-            continue
-        cleaned.append(line)
-    return "\n".join(cleaned).strip()
+        out.append(line)
+    return "\n".join(out).strip()
 
 
 def extract_multiline_sections(body: str) -> dict[str, str]:
     body = strip_conflict_lines(body)
-    lines = body.splitlines()
     keys = {"detalle": [], "razon": [], "items_raw": [], "notas": []}
     current: str | None = None
 
-    for raw in lines:
+    for raw in body.splitlines():
         line = raw.rstrip()
         low = line.strip().lower()
 
@@ -258,10 +228,8 @@ def extract_multiline_sections(body: str) -> dict[str, str]:
         if re.match(r"^notas\s*:?\s*$", low):
             current = "notas"
             continue
-
         if re.match(r"^[a-záéíóúüñ_ ]+\s*:\s*$", low) and current:
             current = None
-
         if current:
             keys[current].append(line)
 
@@ -269,17 +237,15 @@ def extract_multiline_sections(body: str) -> dict[str, str]:
 
 
 def extract_simple_fields(body: str) -> dict[str, str]:
-    body = strip_conflict_lines(body)
     fields: dict[str, str] = {}
-    for raw in body.splitlines():
+    for raw in strip_conflict_lines(body).splitlines():
         line = raw.strip()
         if not line or ":" not in line:
             continue
         key, value = line.split(":", 1)
         k = key.strip().lower().replace(" ", "_")
-        v = value.strip()
         if k in {"tipo", "type", "fecha", "txn_id", "client_txn_id", "issue_ref", "accion", "metodo_pago", "modo", "valor", "sku", "descripcion", "notas", "items"}:
-            fields[k] = v
+            fields[k] = value.strip()
     return fields
 
 
@@ -301,87 +267,68 @@ def parse_markdown_table_items(text: str) -> list[dict[str, Any]]:
         sku = parts[0]
         if not sku or sku.lower() in {"sku", "item", "producto"}:
             continue
-        qty = to_int(parts[1], 0)
-        price = to_float(parts[2], 0.0) if len(parts) >= 3 else 0.0
-        desc = parts[3] if len(parts) >= 4 else ""
-        rows.append({"item": sku, "cantidad": qty, "precio": price, "descripcion": desc})
-    return [r for r in rows if str(r["item"]).strip() and int(r["cantidad"]) != 0]
-
-
-def parse_bullet_items(text: str) -> list[dict[str, Any]]:
-    rows: list[dict[str, Any]] = []
-    for raw in text.splitlines():
-        line = raw.strip().lstrip("-").strip()
-        if not line or "|" not in line:
-            continue
-        parts = [p.strip() for p in line.split("|")]
-        if len(parts) < 2:
-            continue
-        sku = parts[0]
-        qty = to_int(parts[1], 0)
-        price = to_float(parts[2], 0.0) if len(parts) >= 3 else 0.0
-        desc = parts[3] if len(parts) >= 4 else ""
-        rows.append({"item": sku, "cantidad": qty, "precio": price, "descripcion": desc})
-    return [r for r in rows if str(r["item"]).strip()]
+        rows.append({
+            "item": sku,
+            "cantidad": to_int(parts[1], 0),
+            "precio": to_float(parts[2], 0.0) if len(parts) >= 3 else 0.0,
+            "descripcion": parts[3] if len(parts) >= 4 else "",
+        })
+    return [r for r in rows if r["item"] and to_int(r["cantidad"], 0) != 0]
 
 
 def parse_json_body(body: str) -> dict[str, Any] | None:
     text = strip_conflict_lines(body).strip()
-    if not text or not (text.startswith("{") and text.endswith("}")):
+    if not text.startswith("{") or not text.endswith("}"):
         return None
     try:
         obj = json.loads(text)
-        if isinstance(obj, dict):
-            return obj
+        return obj if isinstance(obj, dict) else None
     except Exception:
         return None
-    return None
 
 
-def parse_items_from_any(body: str, sections: dict[str, str], json_body: dict[str, Any] | None, fields: dict[str, str] | None = None) -> list[dict[str, Any]]:
-    fields = fields or {}
-
+def parse_items_from_any(body: str, sections: dict[str, str], json_body: dict[str, Any] | None, fields: dict[str, str]) -> list[dict[str, Any]]:
     if json_body and isinstance(json_body.get("items"), list):
-        out: list[dict[str, Any]] = []
+        out = []
         for item in json_body["items"]:
-            if not isinstance(item, dict):
-                continue
-            out.append({
-                "item": str(item.get("item", "")).strip(),
-                "cantidad": to_int(item.get("cantidad", 0), 0),
-                "precio": to_float(item.get("precio", 0), 0.0),
-                "descripcion": str(item.get("descripcion", "")).strip(),
-            })
+            if isinstance(item, dict):
+                out.append({
+                    "item": str(item.get("item", "")).strip(),
+                    "cantidad": to_int(item.get("cantidad", 0), 0),
+                    "precio": to_float(item.get("precio", 0), 0.0),
+                    "descripcion": str(item.get("descripcion", "")).strip(),
+                })
         out = [r for r in out if r["item"] and to_int(r["cantidad"], 0) != 0]
         if out:
             return out
 
-    raw_items_field = str(fields.get("items", "")).strip()
-    if raw_items_field:
+    raw_items = str(fields.get("items", "")).strip()
+    if raw_items:
         try:
-            parsed = json.loads(raw_items_field)
+            parsed = json.loads(raw_items)
             if isinstance(parsed, list):
-                out: list[dict[str, Any]] = []
+                out = []
                 for item in parsed:
-                    if not isinstance(item, dict):
-                        continue
-                    out.append({
-                        "item": str(item.get("item", "")).strip(),
-                        "cantidad": to_int(item.get("cantidad", 0), 0),
-                        "precio": to_float(item.get("precio", 0), 0.0),
-                        "descripcion": str(item.get("descripcion", "")).strip(),
-                    })
+                    if isinstance(item, dict):
+                        out.append({
+                            "item": str(item.get("item", "")).strip(),
+                            "cantidad": to_int(item.get("cantidad", 0), 0),
+                            "precio": to_float(item.get("precio", 0), 0.0),
+                            "descripcion": str(item.get("descripcion", "")).strip(),
+                        })
                 out = [r for r in out if r["item"] and to_int(r["cantidad"], 0) != 0]
                 if out:
                     return out
         except Exception:
             pass
 
-    source = sections.get("items_raw", "") or sections.get("detalle", "")
-    rows = parse_markdown_table_items(source)
+    # extra robusto: buscar en TODAS las líneas del body con pipes, no solo en la sección Items.
+    rows = parse_markdown_table_items(strip_conflict_lines(body))
     if rows:
         return rows
-    rows = parse_bullet_items(source)
+
+    source = sections.get("items_raw", "") or sections.get("detalle", "")
+    rows = parse_markdown_table_items(source)
     if rows:
         return rows
 
@@ -392,12 +339,7 @@ def parse_items_from_any(body: str, sections: dict[str, str], json_body: dict[st
             continue
         m = re.match(r"^(?P<sku>[A-Z0-9\-_]+)\s+[,;]?\s*(?P<qty>-?\d+)(?:\s+[,;]?\s*(?P<price>-?\d+(?:\.\d+)?))?$", line, re.IGNORECASE)
         if m:
-            parsed.append({
-                "item": m.group("sku").strip(),
-                "cantidad": to_int(m.group("qty"), 0),
-                "precio": to_float(m.group("price") or 0, 0.0),
-                "descripcion": "",
-            })
+            parsed.append({"item": m.group("sku").strip(), "cantidad": to_int(m.group("qty"), 0), "precio": to_float(m.group("price") or 0, 0.0), "descripcion": ""})
     return [r for r in parsed if r["item"] and to_int(r["cantidad"], 0) != 0]
 
 
@@ -428,14 +370,7 @@ def guess_type_from_title(title: str) -> str:
 
 def guess_type_from_labels(labels: list[str]) -> str:
     normalized = [normalize_type(x) for x in labels]
-    priority = [
-        "correccion_venta_mkt", "correccion_venta",
-        "ajuste_inv_mkt", "ajuste_inv",
-        "abasto_mkt", "venta_mkt",
-        "merma_mkt", "merma",
-        "prod", "venta",
-    ]
-    for p in priority:
+    for p in ["correccion_venta_mkt", "correccion_venta", "ajuste_inv_mkt", "ajuste_inv", "abasto_mkt", "venta_mkt", "merma_mkt", "merma", "prod", "venta"]:
         if p in normalized:
             return p
     return ""
@@ -452,23 +387,12 @@ def parse_issue_payload(event: dict[str, Any]) -> ParsedPayload:
     json_body = parse_json_body(body)
     sections = extract_multiline_sections(body)
     fields = extract_simple_fields(body)
-    payload_type = normalize_type(
-        (json_body or {}).get("type")
-        or fields.get("type")
-        or fields.get("tipo")
-        or guess_type_from_title(title)
-        or guess_type_from_labels(labels)
-    )
+    payload_type = normalize_type((json_body or {}).get("type") or fields.get("type") or fields.get("tipo") or guess_type_from_title(title) or guess_type_from_labels(labels))
     items = parse_items_from_any(body, sections, json_body, fields)
 
     fecha = str((json_body or {}).get("fecha", "")).strip() or fields.get("fecha", "").strip() or ""
     metodo_pago = normalize_payment(str((json_body or {}).get("metodo_pago", "")).strip() or fields.get("metodo_pago", "").strip())
-    txn_id = (
-        str((json_body or {}).get("txn_id", "")).strip()
-        or str((json_body or {}).get("client_txn_id", "")).strip()
-        or fields.get("txn_id", "").strip()
-        or fields.get("client_txn_id", "").strip()
-    )
+    txn_id = str((json_body or {}).get("txn_id", "")).strip() or str((json_body or {}).get("client_txn_id", "")).strip() or fields.get("txn_id", "").strip() or fields.get("client_txn_id", "").strip()
     issue_ref = str((json_body or {}).get("issue_ref", "")).strip() or fields.get("issue_ref", "").strip()
     accion = str((json_body or {}).get("accion", "")).strip().lower() or fields.get("accion", "").strip().lower()
     modo = str((json_body or {}).get("modo", "")).strip().lower() or fields.get("modo", "").strip().lower()
@@ -482,24 +406,18 @@ def parse_issue_payload(event: dict[str, Any]) -> ParsedPayload:
     if not txn_id and payload_type in {"venta", "venta_mkt", "merma", "merma_mkt"}:
         txn_id = f"txn-issue-{number}"
 
-    return ParsedPayload(
-        issue_number=number, issue_title=title, issue_body=body, issue_author=author, labels=labels, raw=event,
-        payload_type=payload_type, fecha=fecha, metodo_pago=metodo_pago, txn_id=txn_id, issue_ref=issue_ref,
-        accion=accion, modo=modo, valor=valor, sku=sku, descripcion=descripcion, razon=razon,
-        detalle=detalle, notas=notas, items=items,
-    )
+    return ParsedPayload(number, title, body, author, labels, event, payload_type, fecha, metodo_pago, txn_id, issue_ref, accion, modo, valor, sku, descripcion, razon, detalle, notas, items)
 
 
 def processed_event_exists(issue_number: str, event_hash: str) -> bool:
-    rows = csv_read(PROCESSED_EVENTS_CSV)
-    for row in rows:
+    for row in csv_read(PROCESSED_EVENTS_CSV):
         if str(row.get("issue_number", "")).strip() == issue_number and str(row.get("event_hash", "")).strip() == event_hash:
             return True
     return False
 
 
 def mark_processed(issue_number: str, event_hash: str, payload_type: str, fecha: str, status: str) -> None:
-    append_csv_row(PROCESSED_EVENTS_CSV, {"issue_number": issue_number, "event_hash": event_hash, "payload_type": payload_type, "fecha": fecha, "status": status}, preferred_fieldnames=["issue_number", "event_hash", "payload_type", "fecha", "status"])
+    append_csv_row(PROCESSED_EVENTS_CSV, {"issue_number": issue_number, "event_hash": event_hash, "payload_type": payload_type, "fecha": fecha, "status": status}, ["issue_number", "event_hash", "payload_type", "fecha", "status"])
 
 
 def add_github_comment(issue_number: str, body: str) -> None:
@@ -507,12 +425,14 @@ def add_github_comment(issue_number: str, body: str) -> None:
     repo = os.environ.get("GITHUB_REPOSITORY", "").strip()
     if not token or not repo or not issue_number:
         return
-    url = f"https://api.github.com/repos/{repo}/issues/{issue_number}/comments"
-    payload = json.dumps({"body": body}).encode("utf-8")
-    req = urllib.request.Request(url, data=payload, headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json", "Content-Type": "application/json", "User-Agent": "inventory-bot"}, method="POST")
+    req = urllib.request.Request(
+        f"https://api.github.com/repos/{repo}/issues/{issue_number}/comments",
+        data=json.dumps({"body": body}).encode("utf-8"),
+        headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json", "Content-Type": "application/json", "User-Agent": "inventory-bot"},
+        method="POST",
+    )
     try:
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            _ = resp.read()
+        urllib.request.urlopen(req, timeout=20).read()
     except Exception as exc:
         log(f"No se pudo comentar en issue #{issue_number}: {exc}")
 
@@ -522,25 +442,25 @@ def close_github_issue(issue_number: str) -> None:
     repo = os.environ.get("GITHUB_REPOSITORY", "").strip()
     if not token or not repo or not issue_number:
         return
-    url = f"https://api.github.com/repos/{repo}/issues/{issue_number}"
-    payload = json.dumps({"state": "closed"}).encode("utf-8")
-    req = urllib.request.Request(url, data=payload, headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json", "Content-Type": "application/json", "User-Agent": "inventory-bot"}, method="PATCH")
+    req = urllib.request.Request(
+        f"https://api.github.com/repos/{repo}/issues/{issue_number}",
+        data=json.dumps({"state": "closed"}).encode("utf-8"),
+        headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json", "Content-Type": "application/json", "User-Agent": "inventory-bot"},
+        method="PATCH",
+    )
     try:
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            _ = resp.read()
+        urllib.request.urlopen(req, timeout=20).read()
     except Exception as exc:
         log(f"No se pudo cerrar issue #{issue_number}: {exc}")
 
 
 def resolve_items_with_inventory(items: list[dict[str, Any]], inventory_path: Path, zero_price: bool = False) -> list[dict[str, Any]]:
     inventory_rows = csv_read(inventory_path)
-    resolved: list[dict[str, Any]] = []
+    resolved = []
     for item in items:
         sku = str(item.get("item", "")).strip()
-        if not sku:
-            continue
         qty = to_int(item.get("cantidad", 0), 0)
-        if qty == 0:
+        if not sku or qty == 0:
             continue
         desc = str(item.get("descripcion", "")).strip() or inventory_get_desc(inventory_rows, sku, "")
         price = 0.0 if zero_price else to_float(item.get("precio", 0), 0.0)
@@ -553,10 +473,7 @@ def resolve_items_with_inventory(items: list[dict[str, Any]], inventory_path: Pa
 def register_sale(payload: ParsedPayload, mercado: bool, zero_price: bool = False) -> str:
     inventory_path = INVENTORY_MERCADO_CSV if mercado else INVENTORY_CSV
     sales_path = SALES_MERCADO_CSV if mercado else SALES_CSV
-    source_id = payload.issue_number
     txn_id = payload.txn_id or f"txn-issue-{payload.issue_number}"
-    metodo_pago = normalize_payment(payload.metodo_pago)
-    fecha = payload.fecha
     items = resolve_items_with_inventory(payload.items, inventory_path, zero_price=zero_price)
     if not items:
         raise ValueError("La operación no trae items válidos")
@@ -568,15 +485,13 @@ def register_sale(payload: ParsedPayload, mercado: bool, zero_price: bool = Fals
         append_csv_row(
             sales_path,
             {
-                "txn_id": txn_id, "fecha": fecha, "item": item["item"], "cantidad": qty,
+                "txn_id": txn_id, "fecha": payload.fecha, "item": item["item"], "cantidad": qty,
                 "precio_unit": f"{price:.2f}", "importe": f"{qty * price:.2f}",
-                "issue": payload.issue_number, "metodo_pago": metodo_pago, "source_id": source_id,
-                "descripcion": item["descripcion"], "status": "activa", "correction_ref": "", "notas": payload.notas,
+                "issue": payload.issue_number, "metodo_pago": normalize_payment(payload.metodo_pago),
+                "source_id": payload.issue_number, "descripcion": item["descripcion"],
+                "status": "activa", "correction_ref": "", "notas": payload.notas,
             },
-            preferred_fieldnames=[
-                "txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue",
-                "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"
-            ],
+            ["txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue", "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"],
         )
     return txn_id
 
@@ -590,7 +505,7 @@ def register_production(payload: ParsedPayload) -> None:
         if qty <= 0:
             continue
         inventory_adjust(INVENTORY_CSV, item["item"], item["descripcion"], "delta", qty)
-        append_csv_row(PRODUCTION_CSV, {"fecha": payload.fecha, "item": item["item"], "cantidad": qty, "issue": payload.issue_number, "source_id": payload.issue_number, "descripcion": item["descripcion"]}, preferred_fieldnames=["fecha", "item", "cantidad", "issue", "source_id", "descripcion"])
+        append_csv_row(PRODUCTION_CSV, {"fecha": payload.fecha, "item": item["item"], "cantidad": qty, "issue": payload.issue_number, "source_id": payload.issue_number, "descripcion": item["descripcion"]}, ["fecha", "item", "cantidad", "issue", "source_id", "descripcion"])
 
 
 def register_abasto_mercado(payload: ParsedPayload) -> None:
@@ -602,46 +517,25 @@ def register_abasto_mercado(payload: ParsedPayload) -> None:
         if qty <= 0:
             continue
         inventory_move_between(item["item"], item["descripcion"], qty)
-        append_csv_row(TRANSFER_MERCADO_CSV, {"fecha": payload.fecha, "item": item["item"], "cantidad": qty, "issue": payload.issue_number, "source_id": payload.issue_number, "descripcion": item["descripcion"]}, preferred_fieldnames=["fecha", "item", "cantidad", "issue", "source_id", "descripcion"])
+        append_csv_row(TRANSFER_MERCADO_CSV, {"fecha": payload.fecha, "item": item["item"], "cantidad": qty, "issue": payload.issue_number, "source_id": payload.issue_number, "descripcion": item["descripcion"]}, ["fecha", "item", "cantidad", "issue", "source_id", "descripcion"])
 
 
 def parse_correction_detail_lines(text: str) -> list[dict[str, Any]]:
     rows = parse_markdown_table_items(text)
-    if rows:
-        return rows
-    rows = parse_bullet_items(text)
-    if rows:
-        return rows
-    out: list[dict[str, Any]] = []
-    for raw in text.splitlines():
-        line = raw.strip()
-        if not line:
-            continue
-        parts = [p.strip() for p in line.split("|")]
-        if len(parts) < 2:
-            continue
-        sku = parts[0]
-        qty = to_int(parts[1], 0)
-        price = to_float(parts[2], 0.0) if len(parts) >= 3 else 0.0
-        out.append({"item": sku, "cantidad": qty, "precio": price, "descripcion": ""})
-    return [r for r in out if str(r["item"]).strip()]
+    return rows
 
 
 def find_sale_rows(sales_path: Path, txn_id: str, issue_ref: str) -> tuple[list[dict[str, str]], list[int]]:
     rows = csv_read(sales_path)
-    matches: list[dict[str, str]] = []
-    indexes: list[int] = []
-    target_txn = str(txn_id or "").strip()
-    target_issue = str(issue_ref or "").strip()
-
+    matches, indexes = [], []
     for idx, row in enumerate(rows):
         status = str(row.get("status", "activa")).strip().lower() or "activa"
         if status in {"cancelada", "corregida"}:
             continue
-        if target_txn and str(row.get("txn_id", "")).strip() == target_txn:
-            matches.append(row); indexes.append(idx); continue
-        if target_issue and str(row.get("issue", "")).strip() == target_issue:
-            matches.append(row); indexes.append(idx); continue
+        if txn_id and str(row.get("txn_id", "")).strip() == txn_id:
+            matches.append(row); indexes.append(idx)
+        elif issue_ref and str(row.get("issue", "")).strip() == issue_ref:
+            matches.append(row); indexes.append(idx)
     return matches, indexes
 
 
@@ -651,16 +545,14 @@ def mark_sale_rows_status(sales_path: Path, indexes: list[int], status: str, cor
         if 0 <= idx < len(rows):
             rows[idx]["status"] = status
             rows[idx]["correction_ref"] = correction_ref
-    csv_write(sales_path, rows, fieldnames=["txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue", "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"])
+    csv_write(sales_path, rows, ["txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue", "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"])
 
 
 def revert_sale_rows_to_inventory(matches: list[dict[str, str]], inventory_path: Path) -> None:
     for row in matches:
-        sku = str(row.get("item", "")).strip()
-        desc = str(row.get("descripcion", "")).strip()
         qty = to_int(row.get("cantidad", 0), 0)
-        if sku and qty > 0:
-            inventory_adjust(inventory_path, sku, desc, "delta", qty)
+        if qty > 0:
+            inventory_adjust(inventory_path, str(row.get("item", "")).strip(), str(row.get("descripcion", "")).strip(), "delta", qty)
 
 
 def append_corrected_sale(sales_path: Path, inventory_path: Path, payload: ParsedPayload, base_matches: list[dict[str, str]]) -> str:
@@ -676,16 +568,12 @@ def append_corrected_sale(sales_path: Path, inventory_path: Path, payload: Parse
             continue
         price = to_float(item["precio"], 0.0)
         inventory_adjust(inventory_path, item["item"], item["descripcion"], "delta", -qty)
-        append_csv_row(
-            sales_path,
-            {
-                "txn_id": new_txn, "fecha": fecha, "item": item["item"], "cantidad": qty,
-                "precio_unit": f"{price:.2f}", "importe": f"{qty * price:.2f}",
-                "issue": payload.issue_number, "metodo_pago": metodo, "source_id": payload.issue_number,
-                "descripcion": item["descripcion"], "status": "activa", "correction_ref": "", "notas": payload.razon,
-            },
-            preferred_fieldnames=["txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue", "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"],
-        )
+        append_csv_row(sales_path, {
+            "txn_id": new_txn, "fecha": fecha, "item": item["item"], "cantidad": qty,
+            "precio_unit": f"{price:.2f}", "importe": f"{qty * price:.2f}",
+            "issue": payload.issue_number, "metodo_pago": metodo, "source_id": payload.issue_number,
+            "descripcion": item["descripcion"], "status": "activa", "correction_ref": "", "notas": payload.razon,
+        }, ["txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue", "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"])
     return new_txn
 
 
@@ -708,76 +596,58 @@ def handle_sale_correction(payload: ParsedPayload, mercado: bool) -> str:
 
 def handle_inventory_adjust(payload: ParsedPayload, mercado: bool) -> None:
     inventory_path = INVENTORY_MERCADO_CSV if mercado else INVENTORY_CSV
-    sku = str(payload.sku or "").strip()
-    descripcion = str(payload.descripcion or "").strip()
     mode = str(payload.modo or "delta").strip().lower()
-    value = to_int(payload.valor, 0)
-    if not sku:
-        raise ValueError("Falta sku para ajuste de inventario")
     if mode not in {"delta", "set"}:
         raise ValueError("Modo inválido, usa delta o set")
-    inventory_adjust(inventory_path, sku, descripcion, mode, value)
+    if not str(payload.sku or "").strip():
+        raise ValueError("Falta sku para ajuste de inventario")
+    inventory_adjust(inventory_path, str(payload.sku).strip(), str(payload.descripcion or "").strip(), mode, to_int(payload.valor, 0))
 
 
 def build_event_hash(payload: ParsedPayload) -> str:
-    payload_base = {
-        "type": payload.payload_type, "fecha": payload.fecha, "metodo_pago": payload.metodo_pago,
-        "txn_id": payload.txn_id, "issue_ref": payload.issue_ref, "accion": payload.accion,
-        "modo": payload.modo, "valor": payload.valor, "sku": payload.sku, "descripcion": payload.descripcion,
-        "razon": payload.razon, "detalle": payload.detalle, "notas": payload.notas, "items": payload.items, "body": payload.issue_body,
-    }
-    return sha1_text(json.dumps(payload_base, ensure_ascii=False, sort_keys=True))
+    return sha1_text(json.dumps({
+        "type": payload.payload_type, "fecha": payload.fecha, "metodo_pago": payload.metodo_pago, "txn_id": payload.txn_id,
+        "issue_ref": payload.issue_ref, "accion": payload.accion, "modo": payload.modo, "valor": payload.valor,
+        "sku": payload.sku, "descripcion": payload.descripcion, "razon": payload.razon, "detalle": payload.detalle,
+        "notas": payload.notas, "items": payload.items, "body": payload.issue_body,
+    }, ensure_ascii=False, sort_keys=True))
 
 
 def process_payload(payload: ParsedPayload) -> str:
     ptype = payload.payload_type
     if not ptype:
         raise ValueError("No pude detectar el tipo de operación")
-
     if ptype == "venta":
-        txn = register_sale(payload, mercado=False, zero_price=False)
-        return f"Venta normal registrada. txn={txn}"
+        return f"Venta normal registrada. txn={register_sale(payload, mercado=False)}"
     if ptype == "venta_mkt":
-        txn = register_sale(payload, mercado=True, zero_price=False)
-        return f"Venta mercado registrada. txn={txn}"
+        return f"Venta mercado registrada. txn={register_sale(payload, mercado=True)}"
     if ptype == "merma":
-        txn = register_sale(payload, mercado=False, zero_price=True)
-        return f"Merma/regaladas normal registrada. txn={txn}"
+        return f"Merma/regaladas normal registrada. txn={register_sale(payload, mercado=False, zero_price=True)}"
     if ptype == "merma_mkt":
-        txn = register_sale(payload, mercado=True, zero_price=True)
-        return f"Merma/regaladas mercado registrada. txn={txn}"
+        return f"Merma/regaladas mercado registrada. txn={register_sale(payload, mercado=True, zero_price=True)}"
     if ptype == "prod":
-        register_production(payload)
-        return "Producción aplicada a inventory.csv"
+        register_production(payload); return "Producción aplicada a inventory.csv"
     if ptype == "abasto_mkt":
-        register_abasto_mercado(payload)
-        return "Abasto mercado aplicado (normal -> mercado)"
+        register_abasto_mercado(payload); return "Abasto mercado aplicado (normal -> mercado)"
     if ptype == "ajuste_inv":
-        handle_inventory_adjust(payload, mercado=False)
-        return "Ajuste de inventario normal aplicado"
+        handle_inventory_adjust(payload, mercado=False); return "Ajuste de inventario normal aplicado"
     if ptype == "ajuste_inv_mkt":
-        handle_inventory_adjust(payload, mercado=True)
-        return "Ajuste de inventario mercado aplicado"
+        handle_inventory_adjust(payload, mercado=True); return "Ajuste de inventario mercado aplicado"
     if ptype == "correccion_venta":
-        result = handle_sale_correction(payload, mercado=False)
-        return f"Corrección de venta normal aplicada: {result}"
+        return f"Corrección de venta normal aplicada: {handle_sale_correction(payload, mercado=False)}"
     if ptype == "correccion_venta_mkt":
-        result = handle_sale_correction(payload, mercado=True)
-        return f"Corrección de venta mercado aplicada: {result}"
+        return f"Corrección de venta mercado aplicada: {handle_sale_correction(payload, mercado=True)}"
     raise ValueError(f"Tipo no soportado: {ptype}")
 
 
 def main() -> None:
     ensure_core_files()
-    event = parse_issue_event()
-    payload = parse_issue_payload(event)
-
+    payload = parse_issue_payload(parse_issue_event())
     if not payload.payload_type:
         log("No hay tipo de operación en este evento. Se omite sin error.")
         return
 
     event_hash = build_event_hash(payload)
-
     if processed_event_exists(payload.issue_number, event_hash):
         log(f"Issue #{payload.issue_number} ya estaba procesado. No hago nada.")
         return
@@ -800,9 +670,8 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as exc:
-        msg = str(exc)
-        if "No pude detectar el tipo de operación" in msg:
-            log(f"Sin operación para procesar: {msg}")
+        if "No pude detectar el tipo de operación" in str(exc):
+            log(f"Sin operación para procesar: {exc}")
             sys.exit(0)
         log(f"Fallo fatal: {exc}")
         sys.exit(1)
