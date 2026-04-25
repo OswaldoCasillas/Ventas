@@ -21,8 +21,6 @@ INVENTORY_CSV = DATA_DIR / "inventory.csv"
 INVENTORY_MERCADO_CSV = DATA_DIR / "inventory_mercado.csv"
 SALES_CSV = DATA_DIR / "sales.csv"
 SALES_MERCADO_CSV = DATA_DIR / "sales_mercado.csv"
-PRODUCTION_CSV = DATA_DIR / "production.csv"
-TRANSFER_MERCADO_CSV = DATA_DIR / "transfer_mercado.csv"
 PROCESSED_EVENTS_CSV = DATA_DIR / "processed_events.csv"
 
 
@@ -65,23 +63,11 @@ def normalize_type(value: str) -> str:
     v = str(value or "").strip().lower().replace(" ", "_").replace("-", "_")
     aliases = {
         "venta": "venta",
-        "venta_normal": "venta",
         "venta_mkt": "venta_mkt",
-        "venta_mercado": "venta_mkt",
-        "prod": "prod",
-        "produccion": "prod",
-        "abasto_mkt": "abasto_mkt",
-        "abasto_mercado": "abasto_mkt",
-        "correccion_venta": "correccion_venta",
-        "correccion_venta_mkt": "correccion_venta_mkt",
-        "ajuste_inv": "ajuste_inv",
-        "ajuste_inv_mkt": "ajuste_inv_mkt",
         "merma": "merma",
         "merma_mkt": "merma_mkt",
         "regalada": "merma",
         "regaladas": "merma",
-        "regalada_mkt": "merma_mkt",
-        "regaladas_mkt": "merma_mkt",
     }
     return aliases.get(v, v)
 
@@ -123,7 +109,6 @@ def csv_write(path: Path, rows: list[dict[str, Any]], fieldnames: list[str] | No
                 if k not in seen:
                     seen.add(k)
                     fieldnames.append(k)
-
     with path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames, lineterminator="\n", extrasaction="ignore")
         writer.writeheader()
@@ -134,12 +119,12 @@ def csv_write(path: Path, rows: list[dict[str, Any]], fieldnames: list[str] | No
 def append_csv_row(path: Path, row: dict[str, Any], preferred_fieldnames: list[str] | None = None) -> None:
     rows = csv_read(path)
     rows.append({k: str(v) if v is not None else "" for k, v in row.items()})
-    csv_write(path, rows, fieldnames=preferred_fieldnames)
+    csv_write(path, rows, preferred_fieldnames)
 
 
 def ensure_csv_if_missing(path: Path, fieldnames: list[str]) -> None:
     if not path.exists():
-        csv_write(path, [], fieldnames=fieldnames)
+        csv_write(path, [], fieldnames)
 
 
 def ensure_core_files() -> None:
@@ -148,8 +133,6 @@ def ensure_core_files() -> None:
     sales_fields = ["txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue", "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"]
     ensure_csv_if_missing(SALES_CSV, sales_fields)
     ensure_csv_if_missing(SALES_MERCADO_CSV, sales_fields)
-    ensure_csv_if_missing(PRODUCTION_CSV, ["fecha", "item", "cantidad", "issue", "source_id", "descripcion"])
-    ensure_csv_if_missing(TRANSFER_MERCADO_CSV, ["fecha", "item", "cantidad", "issue", "source_id", "descripcion"])
     ensure_csv_if_missing(PROCESSED_EVENTS_CSV, ["issue_number", "event_hash", "payload_type", "fecha", "status"])
 
 
@@ -177,13 +160,11 @@ def inventory_adjust(path: Path, sku: str, descripcion: str, mode: str, value: i
     if row is None:
         row = {"item": sku, "descripcion": descripcion, "stock": "0", "precio": "0", "product_id": ""}
         rows.append(row)
-
     current_stock = to_int(row.get("stock", 0), 0)
     row["stock"] = str(value if mode == "set" else current_stock + value)
     if descripcion and not str(row.get("descripcion", "")).strip():
         row["descripcion"] = descripcion
-
-    csv_write(path, rows, fieldnames=["item", "descripcion", "stock", "precio", "product_id"])
+    csv_write(path, rows, ["item", "descripcion", "stock", "precio", "product_id"])
 
 
 def parse_issue_event() -> dict[str, Any]:
@@ -201,35 +182,6 @@ def strip_conflict_lines(text: str) -> str:
             continue
         out.append(line)
     return "\n".join(out).strip()
-
-
-def extract_multiline_sections(body: str) -> dict[str, str]:
-    body = strip_conflict_lines(body)
-    keys = {"detalle": [], "razon": [], "items_raw": [], "notas": []}
-    current: str | None = None
-
-    for raw in body.splitlines():
-        line = raw.rstrip()
-        low = line.strip().lower()
-
-        if re.match(r"^detalle\s*:?\s*$", low):
-            current = "detalle"
-            continue
-        if re.match(r"^razon\s*:?\s*$", low):
-            current = "razon"
-            continue
-        if re.match(r"^(items|productos)\s*:?\s*$", low):
-            current = "items_raw"
-            continue
-        if re.match(r"^notas\s*:?\s*$", low):
-            current = "notas"
-            continue
-        if re.match(r"^[a-záéíóúüñ_ ]+\s*:\s*$", low) and current:
-            current = None
-        if current:
-            keys[current].append(line)
-
-    return {k: "\n".join(v).strip() for k, v in keys.items()}
 
 
 def extract_simple_fields(body: str) -> dict[str, str]:
@@ -287,18 +239,6 @@ def guess_type_from_title(title: str) -> str:
     t = str(title or "").strip().lower().replace(" ", "_").replace("-", "_")
     if "venta_mkt" in t or "venta_mercado" in t:
         return "venta_mkt"
-    if "abasto_mkt" in t or "abasto_mercado" in t:
-        return "abasto_mkt"
-    if "produccion" in t or "prod" in t:
-        return "prod"
-    if "correccion_venta_mkt" in t:
-        return "correccion_venta_mkt"
-    if "correccion_venta" in t:
-        return "correccion_venta"
-    if "ajuste_inv_mkt" in t:
-        return "ajuste_inv_mkt"
-    if "ajuste_inv" in t:
-        return "ajuste_inv"
     if "merma_mkt" in t:
         return "merma_mkt"
     if "merma" in t or "regalada" in t or "regaladas" in t:
@@ -310,7 +250,7 @@ def guess_type_from_title(title: str) -> str:
 
 def guess_type_from_labels(labels: list[str]) -> str:
     normalized = [normalize_type(x) for x in labels]
-    for p in ["correccion_venta_mkt", "correccion_venta", "ajuste_inv_mkt", "ajuste_inv", "abasto_mkt", "venta_mkt", "merma_mkt", "merma", "prod", "venta"]:
+    for p in ["venta_mkt", "merma_mkt", "merma", "venta"]:
         if p in normalized:
             return p
     return ""
@@ -327,7 +267,7 @@ def is_probable_merma(title: str, labels: list[str], items: list[dict[str, Any]]
     return all(to_float(item.get("precio", 0), 0.0) == 0.0 for item in items)
 
 
-def parse_items_from_any(body: str, sections: dict[str, str], json_body: dict[str, Any] | None, fields: dict[str, str]) -> list[dict[str, Any]]:
+def parse_items_from_any(body: str, json_body: dict[str, Any] | None, fields: dict[str, str]) -> list[dict[str, Any]]:
     if json_body and isinstance(json_body.get("items"), list):
         out = []
         for item in json_body["items"]:
@@ -362,24 +302,7 @@ def parse_items_from_any(body: str, sections: dict[str, str], json_body: dict[st
         except Exception:
             pass
 
-    rows = parse_markdown_table_items(strip_conflict_lines(body))
-    if rows:
-        return rows
-
-    source = sections.get("items_raw", "") or sections.get("detalle", "")
-    rows = parse_markdown_table_items(source)
-    if rows:
-        return rows
-
-    parsed: list[dict[str, Any]] = []
-    for raw in source.splitlines():
-        line = raw.strip()
-        if not line:
-            continue
-        m = re.match(r"^(?P<sku>[A-Z0-9\-_]+)\s+[,;]?\s*(?P<qty>-?\d+)(?:\s+[,;]?\s*(?P<price>-?\d+(?:\.\d+)?))?$", line, re.IGNORECASE)
-        if m:
-            parsed.append({"item": m.group("sku").strip(), "cantidad": to_int(m.group("qty"), 0), "precio": to_float(m.group("price") or 0, 0.0), "descripcion": ""})
-    return [r for r in parsed if r["item"] and to_int(r["cantidad"], 0) != 0]
+    return parse_markdown_table_items(strip_conflict_lines(body))
 
 
 def parse_issue_payload(event: dict[str, Any]) -> ParsedPayload:
@@ -391,9 +314,8 @@ def parse_issue_payload(event: dict[str, Any]) -> ParsedPayload:
     labels = [str((x or {}).get("name", "")).strip() for x in (issue.get("labels") or [])]
 
     json_body = parse_json_body(body)
-    sections = extract_multiline_sections(body)
     fields = extract_simple_fields(body)
-    items = parse_items_from_any(body, sections, json_body, fields)
+    items = parse_items_from_any(body, json_body, fields)
 
     payload_type = normalize_type(
         (json_body or {}).get("type")
@@ -402,12 +324,14 @@ def parse_issue_payload(event: dict[str, Any]) -> ParsedPayload:
         or guess_type_from_title(title)
         or guess_type_from_labels(labels)
     )
-
     if not payload_type and is_probable_merma(title, labels, items):
         payload_type = "merma"
 
     fecha = str((json_body or {}).get("fecha", "")).strip() or fields.get("fecha", "").strip() or ""
     metodo_pago = normalize_payment(str((json_body or {}).get("metodo_pago", "")).strip() or fields.get("metodo_pago", "").strip())
+    if payload_type == "merma":
+        metodo_pago = "merma"
+
     txn_id = str((json_body or {}).get("txn_id", "")).strip() or str((json_body or {}).get("client_txn_id", "")).strip() or fields.get("txn_id", "").strip() or fields.get("client_txn_id", "").strip()
     issue_ref = str((json_body or {}).get("issue_ref", "")).strip() or fields.get("issue_ref", "").strip()
     accion = str((json_body or {}).get("accion", "")).strip().lower() or fields.get("accion", "").strip().lower()
@@ -415,12 +339,9 @@ def parse_issue_payload(event: dict[str, Any]) -> ParsedPayload:
     valor = str((json_body or {}).get("valor", "")).strip() or fields.get("valor", "").strip()
     sku = str((json_body or {}).get("sku", "")).strip() or fields.get("sku", "").strip()
     descripcion = str((json_body or {}).get("descripcion", "")).strip() or fields.get("descripcion", "").strip()
-    razon = sections.get("razon", "") or str((json_body or {}).get("razon", "")).strip()
-    detalle = sections.get("detalle", "") or str((json_body or {}).get("detalle", "")).strip()
-    notas = sections.get("notas", "") or str((json_body or {}).get("notas", "")).strip() or fields.get("notas", "").strip()
-
-    if payload_type == "merma":
-        metodo_pago = "merma"
+    razon = str((json_body or {}).get("razon", "")).strip()
+    detalle = str((json_body or {}).get("detalle", "")).strip()
+    notas = str((json_body or {}).get("notas", "")).strip() or fields.get("notas", "").strip()
 
     if not txn_id and payload_type in {"venta", "venta_mkt", "merma", "merma_mkt"}:
         txn_id = f"txn-issue-{number}"
@@ -473,6 +394,75 @@ def close_github_issue(issue_number: str) -> None:
         log(f"No se pudo cerrar issue #{issue_number}: {exc}")
 
 
+def slack_token() -> str:
+    return str(os.environ.get("SLACK_BOT_TOKEN") or os.environ.get("SLACK_API_TOKEN") or "").strip()
+
+
+def slack_channel_for_scope(scope: str) -> str:
+    if scope == "mercado":
+        return str(os.environ.get("SLACK_CHANNEL_VENTAS_BAZAR") or os.environ.get("VENTAS_BAZAR_SLACK_CHANNEL") or "").strip()
+    return str(os.environ.get("SLACK_CHANNEL_VENTAS") or os.environ.get("VENTAS_SLACK_CHANNEL") or "").strip()
+
+
+def post_slack_message(text: str, scope: str) -> None:
+    token = slack_token()
+    channel = slack_channel_for_scope(scope)
+    if not token or not channel:
+        log(f"Slack omitido: faltan token/canal para scope={scope}")
+        return
+
+    req = urllib.request.Request(
+        "https://slack.com/api/chat.postMessage",
+        data=json.dumps({"channel": channel, "text": text}).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json; charset=utf-8",
+            "User-Agent": "inventory-bot",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            data = json.loads(resp.read().decode("utf-8", errors="ignore"))
+            if not data.get("ok", False):
+                log(f"Slack respondió error: {data}")
+    except Exception as exc:
+        log(f"No se pudo enviar mensaje a Slack: {exc}")
+
+
+def format_items_for_slack(items: list[dict[str, Any]]) -> str:
+    if not items:
+        return "Sin items"
+    return "\n".join(
+        f"• {str(it.get('item','')).strip()} x{to_int(it.get('cantidad',0),0)} (${to_float(it.get('precio',0),0.0):.2f})"
+        for it in items
+    )
+
+
+def slack_summary(payload: ParsedPayload, result: str) -> tuple[str, str]:
+    scope = "mercado" if payload.payload_type in {"venta_mkt", "merma_mkt"} else "normal"
+    title_map = {
+        "venta": "🧾 Venta",
+        "venta_mkt": "🧾 Venta mercado",
+        "merma": "🎁 Merma / regaladas",
+        "merma_mkt": "🎁 Merma mercado",
+    }
+    lines = [
+        title_map.get(payload.payload_type, payload.payload_type),
+        f"Fecha: {str(payload.fecha or '').strip() or datetime.now().strftime('%Y-%m-%d')}",
+        f"Issue: #{payload.issue_number}",
+    ]
+    if payload.txn_id:
+        lines.append(f"Txn: {payload.txn_id}")
+    lines.append(f"Método: {payload.metodo_pago}")
+    if payload.notas:
+        lines.append(f"Notas: {payload.notas}")
+    lines.append("Items:")
+    lines.append(format_items_for_slack(payload.items))
+    lines.append(f"Resultado: {result}")
+    return ("\n".join(lines), scope)
+
+
 def resolve_items_with_inventory(items: list[dict[str, Any]], inventory_path: Path, zero_price: bool = False) -> list[dict[str, Any]]:
     inventory_rows = csv_read(inventory_path)
     resolved = []
@@ -494,7 +484,6 @@ def register_sale(payload: ParsedPayload, mercado: bool, zero_price: bool = Fals
     sales_path = SALES_MERCADO_CSV if mercado else SALES_CSV
     txn_id = payload.txn_id or f"txn-issue-{payload.issue_number}"
     fecha = str(payload.fecha or "").strip() or datetime.now().strftime("%Y-%m-%d")
-
     items = resolve_items_with_inventory(payload.items, inventory_path, zero_price=zero_price)
     if not items:
         raise ValueError("La operación no trae items válidos")
@@ -563,14 +552,18 @@ def main() -> None:
 
     try:
         result = process_payload(payload)
-        mark_processed(payload.issue_number, event_hash, payload.payload_type, str(payload.fecha or "").strip() or datetime.now().strftime("%Y-%m-%d"), "ok")
+        fecha_out = str(payload.fecha or "").strip() or datetime.now().strftime("%Y-%m-%d")
+        mark_processed(payload.issue_number, event_hash, payload.payload_type, fecha_out, "ok")
         log(result)
         add_github_comment(payload.issue_number, f"✅ Procesado correctamente.\n\n{result}")
+        slack_text, scope = slack_summary(payload, result)
+        post_slack_message(slack_text, scope)
         close_github_issue(payload.issue_number)
     except Exception as exc:
         err = f"❌ Error procesando issue #{payload.issue_number}: {exc}"
         log(err)
-        mark_processed(payload.issue_number, event_hash, payload.payload_type, str(payload.fecha or "").strip() or datetime.now().strftime("%Y-%m-%d"), "error")
+        fecha_out = str(payload.fecha or "").strip() or datetime.now().strftime("%Y-%m-%d")
+        mark_processed(payload.issue_number, event_hash, payload.payload_type, fecha_out, "error")
         add_github_comment(payload.issue_number, err)
         raise
 
