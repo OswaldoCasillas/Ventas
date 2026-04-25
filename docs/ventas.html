@@ -1,370 +1,53 @@
 <!doctype html>
 <html lang="es">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Ventas del día</title>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <style>
-    :root{--bg:#f7f7fb;--card:#ffffff;--line:#e5e7eb;--text:#1f2937;--muted:#6b7280;--shadow:0 6px 16px rgba(0,0,0,.05);--soft:#f8fafc}
-    *{box-sizing:border-box}
-    body{font-family:system-ui,Arial,sans-serif;max-width:980px;margin:10px auto;padding:0 10px;background:var(--bg);color:var(--text)}
-    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px;box-shadow:var(--shadow)}
-    .top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-    .back{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 10px;border:1px solid #d1d5db;border-radius:10px;background:#fff;color:var(--text);text-decoration:none;font-weight:700}
-    .filters{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
-    input,select,button{font:inherit;padding:9px 10px;border:1px solid #d1d5db;border-radius:10px;background:#fff}
-    button{cursor:pointer}
-    .views{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}
-    .views button.active{background:#eaf1ff;border-color:#0f62fe;color:#0f62fe;font-weight:800}
-    .stats{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;margin:8px 0}
-    .muted{color:var(--muted);font-size:12px}
-    .list{display:grid;gap:8px;margin-top:8px}
-    .sale-card{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff}
-    .sale-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-    .name{font-size:14px;font-weight:800;line-height:1.15}
-    .sub{font-size:11px;color:var(--muted);line-height:1.3}
-    .totals{text-align:right;font-size:12px;white-space:nowrap}
-    .products-box{margin-top:8px;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--soft);display:grid;gap:6px}
-    .prod-row{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;border-bottom:1px dashed var(--line);padding-bottom:6px}
-    .prod-row:last-child{border-bottom:none;padding-bottom:0}
-    .prod-name{font-size:12px;font-weight:700;line-height:1.15}
-    .prod-meta{font-size:12px;font-weight:700;white-space:nowrap}
-    .actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px}
-  </style>
-</head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ventas del día</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#f7f7fb;--card:#fff;--line:#e5e7eb;--text:#1f2937;--muted:#6b7280;--shadow:0 6px 16px rgba(0,0,0,.05);--soft:#f8fafc}
+*{box-sizing:border-box} body{font-family:system-ui,Arial,sans-serif;max-width:980px;margin:10px auto;padding:0 10px;background:var(--bg);color:var(--text)}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px;box-shadow:var(--shadow)} .top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.back{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 10px;border:1px solid #d1d5db;border-radius:10px;background:#fff;color:var(--text);text-decoration:none;font-weight:700}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px} input,select,button{font:inherit;padding:9px 10px;border:1px solid #d1d5db;border-radius:10px;background:#fff} button{cursor:pointer}
+.views{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0} .views button.active{background:#eaf1ff;border-color:#0f62fe;color:#0f62fe;font-weight:800}
+.stats{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;margin:8px 0} .muted{color:var(--muted);font-size:12px}
+.list{display:grid;gap:8px;margin-top:8px}.sale-card{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff}.sale-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.name{font-size:14px;font-weight:800;line-height:1.15}.sub{font-size:11px;color:var(--muted);line-height:1.3}.totals{text-align:right;font-size:12px;white-space:nowrap}
+.products-box{margin-top:8px;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--soft);display:grid;gap:6px}.prod-row{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;border-bottom:1px dashed var(--line);padding-bottom:6px}.prod-row:last-child{border-bottom:none;padding-bottom:0}
+.prod-name{font-size:12px;font-weight:700;line-height:1.15}.prod-meta{font-size:12px;font-weight:700;white-space:nowrap}.actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px}
+.fix-btn{margin-top:8px;width:100%}
+</style></head>
 <body>
-  <div class="card">
-    <div class="top">
-      <div><h1 style="margin:0;font-size:20px;">Ventas del día</h1><div class="muted">La vista por venta registrada junta toda la venta en un solo recuadro.</div></div>
-      <a class="back" href="index.html">← Menú</a>
-    </div>
-
-    <div class="filters">
-      <input id="fecha" type="date">
-      <select id="metodo"><option value="todos">Todos</option><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta</option><option value="transferencia">Transferencia</option></select>
-      <select id="orden"><option value="reciente">Reciente a viejo</option><option value="viejo">Viejo a reciente</option><option value="az">A → Z</option><option value="za">Z → A</option><option value="mayor">Mayor a menor</option><option value="menor">Menor a mayor</option></select>
-      <button id="cargar" type="button">Cargar</button>
-    </div>
-
-    <div class="views">
-      <button id="viewProduct" type="button">Ventas por producto</button>
-      <button id="viewRegistro" type="button">Ventas por venta registrada</button>
-    </div>
-
-    <div class="stats">
-      <div><strong>Registros:</strong> <span id="count">0</span></div>
-      <div><strong>Unidades:</strong> <span id="units">0</span></div>
-      <div><strong>Total:</strong> <span id="total">$0.00</span></div>
-    </div>
-
-    <div class="muted" id="status">Selecciona una fecha y presiona Cargar.</div>
-
-    <div id="list" class="list"></div>
-
-    <div class="actions">
-      <button id="excel" type="button">Excel</button>
-      <button id="excelPaletas" type="button">Reporte paletas</button>
-      <button id="imprimir" type="button">Imprimir</button>
-    </div>
-  </div>
-
-  <script>
-
-    let _rowsFull = [], _metodo = "todos", _orden = "reciente", _vista = "producto";
-
-    function money(n){ return `$${Number(n || 0).toFixed(2)}`; }
-    function todayISO(){ const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
-    function skuToNice(sku){ return String(sku || "").replaceAll("-", " "); }
-    function normalizeCsvText(text){
-      let t = String(text || "").replace(/\uFEFF/g,"").trim();
-      t = t.replace(/\r\n/g,"\n").replace(/\r/g,"\n");
-      if (!t.includes("\n")) t = t.replace(/\s+(?=[A-Z]{1,3}\d{6},\d{4}-\d{2}-\d{2},)/g,"\n");
-      return t;
-    }
-    function isValidSaleRow(r){
-      const f = [String(r.fecha||""),String(r.item||""),String(r.descripcion||""),String(r.issue||""),String(r.txn_id||"")].join(" ");
-      const bad = ["<<<<<<<","=======",">>>>>>>","Updated upstream","Stashed changes"];
-      if (bad.some(x => f.includes(x))) return false;
-      const item = String(r.item||"").trim();
-      const cantidad = Number(r.cantidad||0), precio = Number(r.precio_unit||0), importe = Number(r.importe||0);
-      return Boolean(item) && (cantidad > 0 || precio > 0 || importe > 0);
-    }
-    function parseCSV(text){
-      const lines = normalizeCsvText(text).split(/\n+/).filter(Boolean);
-      if (!lines.length) return [];
-      const headers=[]; let current="", inQuotes=false;
-      for (let i=0;i<lines[0].length;i++){
-        const ch=lines[0][i];
-        if(ch === '"') inQuotes=!inQuotes;
-        else if(ch === "," && !inQuotes){ headers.push(current.trim()); current=""; }
-        else current += ch;
-      }
-      headers.push(current.trim());
-      const rows=[];
-      for (let i=1;i<lines.length;i++){
-        const line=lines[i];
-        if(!line.trim()) continue;
-        const cols=[]; let value="", quoted=false;
-        for (let j=0;j<line.length;j++){
-          const ch=line[j];
-          if(ch === '"'){
-            if(quoted && line[j+1] === '"'){ value += '"'; j++; }
-            else quoted=!quoted;
-          } else if(ch === "," && !quoted){ cols.push(value); value=""; }
-          else value += ch;
-        }
-        cols.push(value);
-        const row={}; headers.forEach((h, idx)=> row[h]=cols[idx] ?? "");
-        rows.push(row);
-      }
-      return rows;
-    }
-    async function fetchText(url){
-      const r = await fetch(url + "?_=" + Date.now(), { cache:"no-store" });
-      if(!r.ok) throw new Error(`${r.status} ${url}`);
-      return r.text();
-    }
-    function sortRows(rows){
-      const s = rows.slice();
-      const byName = r => String(r.descripcion || r.nombre || skuToNice(r.item || "")).toLowerCase();
-      const byAmount = r => Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0)));
-      const byDate = r => `${String(r.fecha || "")}|${String(r.txn_id || "")}|${String(r.issue || "")}`;
-      if(_orden === "az") s.sort((a,b)=>byName(a).localeCompare(byName(b)));
-      else if(_orden === "za") s.sort((a,b)=>byName(b).localeCompare(byName(a)));
-      else if(_orden === "mayor") s.sort((a,b)=>byAmount(b)-byAmount(a));
-      else if(_orden === "menor") s.sort((a,b)=>byAmount(a)-byAmount(b));
-      else if(_orden === "viejo") s.sort((a,b)=>byDate(a).localeCompare(byDate(b)));
-      else s.sort((a,b)=>byDate(b).localeCompare(byDate(a)));
-      return s;
-    }
-    function rowsForCurrentView(){
-      let rows = Array.isArray(_rowsFull) ? _rowsFull.filter(isValidSaleRow) : [];
-      if(_metodo !== "todos") rows = rows.filter(r => (r.metodo_pago || "efectivo") === _metodo);
-      return sortRows(rows);
-    }
-    function groupByProduct(rows){
-      const bucket = new Map();
-      rows.forEach(r => {
-        const key = `${r.item || ""}|||${r.descripcion || skuToNice(r.item || "")}`;
-        const current = bucket.get(key) || {
-          item: r.item || "",
-          descripcion: r.descripcion || skuToNice(r.item || ""),
-          cantidad: 0,
-          importe: 0,
-          veces: 0,
-          fecha: r.fecha || ""
-        };
-        current.cantidad += Number(r.cantidad || 0);
-        current.importe += Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0)));
-        current.veces += 1;
-        bucket.set(key, current);
-      });
-      return Array.from(bucket.values());
-    }
-    function groupByRegistro(rows){
-      const bucket = new Map();
-      rows.forEach(r => {
-        const key = String(r.txn_id || r.issue || `${r.fecha}|${r.metodo_pago}|sin-id`).trim();
-        const current = bucket.get(key) || {
-          clave: key,
-          fecha: r.fecha || "",
-          txn_id: r.txn_id || "",
-          issue: r.issue || "",
-          metodo_pago: r.metodo_pago || "efectivo",
-          cantidad: 0,
-          importe: 0,
-          productos: []
-        };
-        const qty = Number(r.cantidad || 0);
-        const imp = Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0)));
-        current.cantidad += qty;
-        current.importe += imp;
-        current.productos.push({
-          nombre: r.descripcion || skuToNice(r.item || ""),
-          sku: r.item || "",
-          cantidad: qty,
-          importe: imp
-        });
-        bucket.set(key, current);
-      });
-      return Array.from(bucket.values()).map(reg => {
-        const merged = new Map();
-        reg.productos.forEach(p => {
-          const key = `${p.sku}|||${p.nombre}`;
-          const current = merged.get(key) || { nombre: p.nombre, sku: p.sku, cantidad: 0, importe: 0 };
-          current.cantidad += Number(p.cantidad || 0);
-          current.importe += Number(p.importe || 0);
-          merged.set(key, current);
-        });
-        reg.productos = Array.from(merged.values()).sort((a,b)=>a.nombre.localeCompare(b.nombre));
-        return reg;
-      });
-    }
-    function syncViewButtons(){
-      document.getElementById("viewProduct").classList.toggle("active", _vista === "producto");
-      document.getElementById("viewRegistro").classList.toggle("active", _vista === "registro");
-    }
-    function buildResumenPorProducto(rows){
-      return groupByProduct(rows).map(r => ({
-        "SKU": r.item || "",
-        "Producto": r.descripcion || skuToNice(r.item || ""),
-        "Cantidad": Number(r.cantidad || 0),
-        "Importe": Number(r.importe || 0)
-      })).sort((a,b)=>String(a["Producto"]).localeCompare(String(b["Producto"])));
-    }
-    function buildResumenPorRegistro(rows){
-      return groupByRegistro(rows).map(r => ({
-        "Fecha": r.fecha || "",
-        "Txn": r.txn_id || "",
-        "Issue": r.issue || "",
-        "Método de pago": r.metodo_pago || "efectivo",
-        "Productos": r.productos.map(p => `${p.nombre} (${p.cantidad})`).join(" | "),
-        "Cantidad total": Number(r.cantidad || 0),
-        "Importe total": Number(r.importe || 0)
-      }));
-    }
-    function render(){
-      const rows = rowsForCurrentView();
-      const list = document.getElementById("list");
-      if (_vista === "producto"){
-        const grouped = sortRows(groupByProduct(rows));
-        list.innerHTML = grouped.map(r => `
-          <article class="sale-card">
-            <div class="sale-head">
-              <div>
-                <div class="name">${r.descripcion || skuToNice(r.item || "")}</div>
-                <div class="sub">${r.item || ""}</div>
-              </div>
-              <div class="totals">
-                <div><strong>${Number(r.cantidad || 0)}</strong> pzas</div>
-                <div><strong>${money(r.importe || 0)}</strong></div>
-              </div>
-            </div>
-            <div class="sub">${r.veces || 0} ventas registradas</div>
-          </article>
-        `).join("");
-        const units = grouped.reduce((s,r)=>s+Number(r.cantidad||0),0);
-        const total = grouped.reduce((s,r)=>s+Number(r.importe||0),0);
-        document.getElementById("count").textContent = String(grouped.length);
-        document.getElementById("units").textContent = String(units);
-        document.getElementById("total").textContent = money(total);
-        document.getElementById("status").textContent = grouped.length ? "Vista por producto." : "No hay ventas para ese filtro.";
-      } else {
-        const grouped = sortRows(groupByRegistro(rows));
-        list.innerHTML = grouped.map(r => `
-          <article class="sale-card">
-            <div class="sale-head">
-              <div>
-                <div class="name">${r.txn_id || r.issue || "Venta registrada"}</div>
-                <div class="sub">${r.fecha || ""} · ${r.metodo_pago || "efectivo"}${r.issue ? ` · issue ${r.issue}` : ""}${r.txn_id ? ` · txn ${r.txn_id}` : ""}</div>
-              </div>
-              <div class="totals">
-                <div><strong>${Number(r.cantidad || 0)}</strong> pzas</div>
-                <div><strong>${money(r.importe || 0)}</strong></div>
-              </div>
-            </div>
-            <div class="products-box">
-              ${r.productos.map(p => `
-                <div class="prod-row">
-                  <div>
-                    <div class="prod-name">${p.nombre}</div>
-                    <div class="sub">${p.sku || ""}</div>
-                  </div>
-                  <div class="prod-meta">${Number(p.cantidad || 0)} · ${money(p.importe || 0)}</div>
-                </div>
-              `).join("")}
-            </div>
-          </article>
-        `).join("");
-        const units = grouped.reduce((s,r)=>s+Number(r.cantidad||0),0);
-        const total = grouped.reduce((s,r)=>s+Number(r.importe||0),0);
-        document.getElementById("count").textContent = String(grouped.length);
-        document.getElementById("units").textContent = String(units);
-        document.getElementById("total").textContent = money(total);
-        document.getElementById("status").textContent = grouped.length ? "Vista agrupada por venta registrada." : "No hay ventas para ese filtro.";
-      }
-      syncViewButtons();
-    }
-
-
-    const PALETAS_ORDEN = [["PALETA-CREMA-ALGODON","ALGODÓN"],["PALETA-CREMA-ARROZ","ARROZ"],["PALETA-CREMA-PREMIUM-BAILEYS","BAILEYS"],["PALETA-CREMA-BESO-DE-ANGEL","BESO D ÁNGEL"],["PALETA-CREMA-PREMIUM-CAJETA","CAJETA"],["PALETA-CREMA-CAPUCHINO","CAPUCHINO"],["PALETA-CREMA-CHICLE","CHICLE"],["PALETA-CREMA-CHOCOLATE","CHOCOLATE"],["PALETA-CREMA-PREMIUM-CHONGOS","CHONGOS"],["PALETA-CREMA-COCO","COCO"],["PALETA-CREMA-DURAZNOS-CON-CREMA","DURAZNO&CREMA"],["PALETA-CREMA-PREMIUM-FERRERO","FERRERO"],["PALETA-AGUA-FRESA","FRESA agua"],["PALETA-CREMA-FRESA-CREMA","FRESA crema"],["PALETA-CREMA-FRESA-CON-CREMA","FRESAS&CREAM"],["PALETA-AGUA-PREMIUM-FRUTOS-ROJOS","FRUTOS ROJOS"],["PALETA-AGUA-GROSSELLA","GROSELLA"],["PALETA-AGUA-GUANABANA","GUANABANA"],["PALETA-AGUA-GUAYABA","GUAYABA"],["PALETA-AGUA-KIWI","KIWI"],["PALETA-CREMA-PREMIUM-KAHLUA","KAHLÚA"],["PALETA-AGUA-LIMON","LIMÓN"],["PALETA-AGUA-PREMIUM-LIMON-CHAMOY","LIMÓN CHAMOY"],["PALETA-CREMA-MAMEY","MAMEY"],["PALETA-AGUA-MANDARINA","MANDARINA"],["PALETA-AGUA-MANGO","MANGO"],["PALETA-AGUA-PREMIUM-MANGO-CHAMOY","MANGO CHAMOY"],["PALETA-AGUA-MARACUYA","MARACUYÁ"],["PALETA-CREMA-MAZAPAN","MAZAPÁN"],["PALETA-AGUA-MELON","MELÓN"],["PALETA-CREMA-MENTA-CHOCOLATE","MENTA CON CH"],["PALETA-CREMA-PREMIUM-MOCTEZUMA","MOCTEZUMA"],["PALETA-CREMA-PREMIUM-NUEZ","NUEZ"],["PALETA-CREMA-PREMIUM-NUTELLA","NUTELLA"],["PALETA-CREMA-OREO","OREO"],["PALETA-CREMA-PAY-DE-LIMON","PAY DE LIMÓN"],["PALETAS-PERRO","PERRO"],["PALETA-AGUA-PREMIUM-PICAFRESA","PICAFRESA"],["PALETA-AGUA-PREMIUM-PICAPANDA","PICAPANDAS"],["PALETA-AGUA-PINA","PIÑA"],["PALETA-AGUA-PREMIUM-PINA-CHAMOY","PIÑA CHAMOY"],["PALETA-CREMA-PREMIUM-PINON","PIÑON"],["PALETA-CREMA-PREMIUM-PISTACHE","PISTACHE"],["PALETA-AGUA-PREMIUM-PULPARINDO","PULPARINDO"],["PALETA-CREMA-PREMIUM-QUESO","QUESO"],["PALETA-CREMA-PREMIUM-QUESO-CON-ZARZAMORA","QUESO/ZARZA"],["PALETA-CREMA-PREMIUM-RAFFAELLO","RAFFAELLO"],["PALETA-CREMA-ROMPOPE","ROMPOPE"],["PALETA-CREMA-PREMIUM-RON-CON-PASAS","RÓN PASAS"],["PALETA-CREMA-SALTED-CARAMEL","SALTED CARAMEL"],["PALETA-AGUA-SANDIA","SANDÍA"],["PALETA-AGUA-PREMIUM-SANDIA-CHAMOY","SANDÍA CHAMOY"],["PALETA-CREMA-PREMIUM-SELVA-BLANCA","SELVA BLANCA"],["PALETA-CREMA-PREMIUM-SELVA-NEGRA","SELVA NEGRA"],["PALETA-CREMA-PREMIUM-SNICKERS","SNICKERS"],["PALETA-AGUA-TAMARINDO","TAMARINDO"],["PALETA-CREMA-TARO","TARO"],["PALETA-CREMA-TRIX","TRIX"],["PALETA-AGUA-UVA","UVA"],["PALETA-CREMA-VAINILLA","VAINILLA"],["PALETA-CREMA-PREMIUM-VINO-TINTO-RELLENO","VINO"],["PALETA-AGUA-ZAPOTE","ZAPOTE"],["PALETA-ALCOHOL-PERLA-NEGRA","PERLA NEGRA"],["PALETA-ALCOHOL-PINA-COLADA","PIÑA COLADA"],["PALETA-ALCOHOL-TEQUILA","TEQUILA"],["PALETA-SIN-AZUCAR-CAJETA","CAJETA SA"],["PALETA-SIN-AZUCAR-CAPUCHINO","CAPUKETO"],["PALETA-SIN-AZUCAR-CHOCOLATE-CON-FRESA","CHOCOFRESA K"],["PALETA-SIN-AZUCAR-CHOCOLATE","CHOCOKETO"],["PALETA-SIN-AZUCAR-COCO","COCOKETO"],["PALETA-SIN-AZUCAR-FERRERO","FERREROKETO"],["PALETA-SIN-AZUCAR-FRESA-CHAMOY","FRESA SA"],["PALETA-SIN-AZUCAR-FRUTOS-ROJOS","FRUTOSKETO"],["PALETA-SIN-AZUCAR-GROSELLA","GROSELLA SA"],["PALETA-SIN-AZUCAR-GUANABANA","GUANABANASA"],["PALETA-SIN-AZUCAR-LIMON-CHAMOY","LIMONCHM SA"],["PALETA-SIN-AZUCAR-LIMON-MENTA","LIMÓNMENTA"],["PALETA-SIN-AZUCAR-MAMEY","MAMEY SA"],["PALETA-SIN-AZUCAR-MANGO","MANGO SA"],["PALETA-SIN-AZUCAR-MAZAPAN","MAZAKETO"],["PALETA-SIN-AZUCAR-MENTA","MENTAKETO"],["PALETA-SIN-AZUCAR-NUEZ","NUEZKETO"],["PALETA-SIN-AZUCAR-PINON","PIÑONKETO"],["PALETA-SIN-AZUCAR-PISTACHE","PISTAKETO"],["PALETA-SIN-AZUCAR-VAINILLA","VAINILLAKETO"]];
-    function buildPaletasResumen(rows){
-      const mapa = new Map();
-      rows.forEach(r => {
-        const sku = String(r.item || "").trim();
-        if (!sku) return;
-        const qty = Number(r.cantidad || 0);
-        const imp = Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0)));
-        const current = mapa.get(sku) || { cantidad: 0, importe: 0 };
-        current.cantidad += qty;
-        current.importe += imp;
-        mapa.set(sku, current);
-      });
-      return PALETAS_ORDEN.map(([sku, nombre]) => {
-        const found = mapa.get(sku) || { cantidad: 0, importe: 0 };
-        return {"SKU": sku, "Paleta": nombre, "Cantidad": Number(found.cantidad || 0), "Importe": Number(found.importe || 0)};
-      });
-    }
-    function exportPaletasExcel(prefix){
-      const fecha = document.getElementById("fecha").value;
-      const rows = rowsForCurrentView();
-      if (!fecha) return alert("Selecciona una fecha");
-      if (!window.XLSX) return alert("No se pudo cargar la librería de Excel");
-      const paletas = buildPaletasResumen(rows);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(paletas), "Paletas");
-      XLSX.writeFile(wb, `${prefix}-paletas-${fecha}-${_metodo}-${_orden}.xlsx`);
-    }
-
-    function exportExcelDelDia(){
-      const fecha = document.getElementById("fecha").value, rows = rowsForCurrentView();
-      if(!fecha) return alert("Selecciona una fecha");
-      if(!rows.length) return alert("No hay ventas para exportar");
-      if(!window.XLSX) return;
-      const wb = XLSX.utils.book_new();
-      if (_vista === "producto") XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(buildResumenPorProducto(rows)), "Por producto");
-      else XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(buildResumenPorRegistro(rows)), "Por venta");
-      XLSX.writeFile(wb, "ventas-" + _vista + "-" + fecha + "-" + _metodo + "-" + _orden + ".xlsx");
-    }
-    async function loadRowsByDate(fecha){
-      const dailyPath = `diario/${fecha}-ventas.csv`;
-      try {
-        const csv = await fetchText(dailyPath);
-        return parseCSV(csv).map(r => ({
-          fecha:r.fecha || r.Fecha || fecha,item:r.item || r.SKU || "",descripcion:r.descripcion || r.Producto || "",
-          cantidad:Number(r.cantidad || r.Cantidad || 0),precio_unit:Number(r.precio_unit || r["Precio unitario"] || 0),
-          importe:Number(r.importe || r.Importe || 0),metodo_pago:String(r.metodo_pago || r["Método de pago"] || "efectivo").toLowerCase(),
-          issue:r.issue || r.Issue || "",txn_id:r.txn_id || r.Txn || ""
-        })).filter(isValidSaleRow);
-      } catch (_) {
-        const csv = await fetchText("ventas_detalle.csv");
-        return parseCSV(csv).map(r => ({
-          fecha:r.fecha || r.Fecha || "",item:r.item || r.SKU || "",descripcion:r.descripcion || r.Producto || "",
-          cantidad:Number(r.cantidad || r.Cantidad || 0),precio_unit:Number(r.precio_unit || r["Precio unitario"] || 0),
-          importe:Number(r.importe || r.Importe || 0),metodo_pago:String(r.metodo_pago || r["Método de pago"] || "efectivo").toLowerCase(),
-          issue:r.issue || r.Issue || "",txn_id:r.txn_id || r.Txn || ""
-        })).filter(r => String(r.fecha || "").slice(0,10) === fecha).filter(isValidSaleRow);
-      }
-    }
-    async function cargar(){
-      const fecha = document.getElementById("fecha").value;
-      _metodo = document.getElementById("metodo").value;
-      _orden = document.getElementById("orden").value;
-      if(!fecha) return alert("Selecciona una fecha");
-      document.getElementById("status").textContent = "Cargando…";
-      try{ _rowsFull = await loadRowsByDate(fecha); render(); }
-      catch(error){ console.error(error); _rowsFull=[]; render(); document.getElementById("status").textContent = "Error al cargar ventas."; }
-    }
-    document.getElementById("fecha").value = todayISO();
-    document.getElementById("cargar").onclick = cargar;
-    document.getElementById("metodo").onchange = () => { _metodo = document.getElementById("metodo").value; render(); };
-    document.getElementById("orden").onchange = () => { _orden = document.getElementById("orden").value; render(); };
-    document.getElementById("viewProduct").onclick = () => { _vista = "producto"; render(); };
-    document.getElementById("viewRegistro").onclick = () => { _vista = "registro"; render(); };
-    document.getElementById("excel").onclick = () => exportExcelDelDia();
-    document.getElementById("excelPaletas").onclick = () => exportPaletasExcel("ventas");
-    document.getElementById("imprimir").onclick = () => window.print();
-    syncViewButtons();
-  </script>
-</body>
-</html>
+<div class="card">
+<div class="top"><div><h1 style="margin:0;font-size:20px;">Ventas del día</h1><div class="muted">Con botón para corregir ventas.</div></div><a class="back" href="index.html">← Menú</a></div>
+<div class="filters"><input id="fecha" type="date"><select id="metodo"><option value="todos">Todos</option><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta</option><option value="transferencia">Transferencia</option></select><select id="orden"><option value="reciente">Reciente a viejo</option><option value="viejo">Viejo a reciente</option><option value="az">A → Z</option><option value="za">Z → A</option><option value="mayor">Mayor a menor</option><option value="menor">Menor a mayor</option></select><button id="cargar" type="button">Cargar</button></div>
+<div class="views"><button id="viewProduct" type="button">Ventas por producto</button><button id="viewRegistro" type="button">Ventas por venta registrada</button></div>
+<div class="stats"><div><strong>Registros:</strong> <span id="count">0</span></div><div><strong>Unidades:</strong> <span id="units">0</span></div><div><strong>Total:</strong> <span id="total">$0.00</span></div></div>
+<div class="muted" id="status">Selecciona una fecha y presiona Cargar.</div>
+<div id="list" class="list"></div>
+<div class="actions"><button id="excel" type="button">Excel</button><button id="excelPaletas" type="button">Reporte paletas</button><button id="imprimir" type="button">Imprimir</button></div>
+</div>
+<script>
+let _rowsFull=[], _metodo="todos", _orden="reciente", _vista="producto";
+function money(n){ return `$${Number(n || 0).toFixed(2)}`; }
+function todayISO(){ const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+function skuToNice(sku){ return String(sku || "").replaceAll("-", " "); }
+function normalizeCsvText(text){ let t=String(text||"").replace(/\uFEFF/g,"").trim(); t=t.replace(/\r\n/g,"\n").replace(/\r/g,"\n"); if(!t.includes("\n")) t=t.replace(/\s+(?=[A-Z]{1,3}\d{6},\d{4}-\d{2}-\d{2},)/g,"\n"); return t;}
+function isValidSaleRow(r){ const f=[String(r.fecha||""),String(r.item||""),String(r.descripcion||""),String(r.issue||""),String(r.txn_id||"")].join(" "); const bad=["<<<<<<<","=======",">>>>>>>","Updated upstream","Stashed changes"]; if(bad.some(x=>f.includes(x))) return false; const item=String(r.item||"").trim(); const cantidad=Number(r.cantidad||0), precio=Number(r.precio_unit||0), importe=Number(r.importe||0); return Boolean(item)&&(cantidad>0||precio>0||importe>0);}
+function parseCSV(text){ const lines=normalizeCsvText(text).split(/\n+/).filter(Boolean); if(!lines.length) return []; const headers=[]; let current="", inQuotes=false; for(let i=0;i<lines[0].length;i++){ const ch=lines[0][i]; if(ch === '"') inQuotes=!inQuotes; else if(ch === "," && !inQuotes){ headers.push(current.trim()); current=""; } else current += ch; } headers.push(current.trim()); const rows=[]; for(let i=1;i<lines.length;i++){ const line=lines[i]; if(!line.trim()) continue; const cols=[]; let value="", quoted=false; for(let j=0;j<line.length;j++){ const ch=line[j]; if(ch === '"'){ if(quoted && line[j+1] === '"'){ value += '"'; j++; } else quoted=!quoted; } else if(ch === "," && !quoted){ cols.push(value); value=""; } else value += ch; } cols.push(value); const row={}; headers.forEach((h, idx)=> row[h]=cols[idx] ?? ""); rows.push(row);} return rows;}
+async function fetchText(url){ const r=await fetch(url+"?_="+Date.now(), {cache:"no-store"}); if(!r.ok) throw new Error(`${r.status} ${url}`); return r.text();}
+function sortRows(rows){ const s=rows.slice(); const byName=r=>String(r.descripcion||r.nombre||skuToNice(r.item||"")).toLowerCase(); const byAmount=r=>Number(r.importe||(Number(r.cantidad||0)*Number(r.precio_unit||0))); const byDate=r=>`${String(r.fecha || "")}|${String(r.txn_id || "")}|${String(r.issue || "")}`; if(_orden==="az") s.sort((a,b)=>byName(a).localeCompare(byName(b))); else if(_orden==="za") s.sort((a,b)=>byName(b).localeCompare(byName(a))); else if(_orden==="mayor") s.sort((a,b)=>byAmount(b)-byAmount(a)); else if(_orden==="menor") s.sort((a,b)=>byAmount(a)-byAmount(b)); else if(_orden==="viejo") s.sort((a,b)=>byDate(a).localeCompare(byDate(b))); else s.sort((a,b)=>byDate(b).localeCompare(byDate(a))); return s; }
+function rowsForCurrentView(){ let rows=Array.isArray(_rowsFull)?_rowsFull.filter(isValidSaleRow):[]; if(_metodo!=="todos") rows=rows.filter(r=>(r.metodo_pago||"efectivo")===_metodo); return sortRows(rows);}
+function groupByProduct(rows){ const bucket=new Map(); rows.forEach(r=>{ const key=`${r.item||""}|||${r.descripcion||skuToNice(r.item||"")}`; const current=bucket.get(key)||{item:r.item||"",descripcion:r.descripcion||skuToNice(r.item||""),cantidad:0,importe:0,veces:0}; current.cantidad += Number(r.cantidad||0); current.importe += Number(r.importe||(Number(r.cantidad||0)*Number(r.precio_unit||0))); current.veces += 1; bucket.set(key,current);}); return Array.from(bucket.values());}
+function groupByRegistro(rows){ const bucket=new Map(); rows.forEach(r=>{ const key=String(r.txn_id||r.issue||`${r.fecha}|${r.metodo_pago}|sin-id`).trim(); const current=bucket.get(key)||{clave:key,fecha:r.fecha||"",txn_id:r.txn_id||"",issue:r.issue||"",metodo_pago:r.metodo_pago||"efectivo",cantidad:0,importe:0,productos:[]}; const qty=Number(r.cantidad||0); const imp=Number(r.importe||(Number(r.cantidad||0)*Number(r.precio_unit||0))); current.cantidad += qty; current.importe += imp; current.productos.push({nombre:r.descripcion||skuToNice(r.item||""),sku:r.item||"",cantidad:qty,importe:imp}); bucket.set(key,current);}); return Array.from(bucket.values()).map(reg=>{ const merged=new Map(); reg.productos.forEach(p=>{ const key=`${p.sku}|||${p.nombre}`; const current=merged.get(key)||{nombre:p.nombre,sku:p.sku,cantidad:0,importe:0}; current.cantidad += Number(p.cantidad||0); current.importe += Number(p.importe||0); merged.set(key,current);}); reg.productos=Array.from(merged.values()).sort((a,b)=>a.nombre.localeCompare(b.nombre)); return reg;});}
+function syncViewButtons(){ document.getElementById("viewProduct").classList.toggle("active", _vista==="producto"); document.getElementById("viewRegistro").classList.toggle("active", _vista==="registro");}
+function buildResumenPorProducto(rows){ return groupByProduct(rows).map(r=>({"SKU":r.item||"","Producto":r.descripcion||skuToNice(r.item||""),"Cantidad":Number(r.cantidad||0),"Importe":Number(r.importe||0)})).sort((a,b)=>String(a["Producto"]).localeCompare(String(b["Producto"])));}
+function buildResumenPorRegistro(rows){ return groupByRegistro(rows).map(r=>({"Fecha":r.fecha||"","Txn":r.txn_id||"","Issue":r.issue||"","Método de pago":r.metodo_pago||"efectivo","Productos":r.productos.map(p=>`${p.nombre} (${p.cantidad})`).join(" | "),"Cantidad total":Number(r.cantidad||0),"Importe total":Number(r.importe||0)}));}
+const PALETAS_ORDEN=[]; function buildPaletasResumen(rows){ return []; } function exportPaletasExcel(prefix){ alert("Mantén tu versión actual de reporte paletas si la usas. Este archivo es para agregar corrección."); }
+function correctionUrl(reg){ const u=new URL("corregir_venta.html", location.href); u.searchParams.set("scope","normal"); u.searchParams.set("fecha", reg.fecha||""); if(reg.txn_id) u.searchParams.set("txn_id", reg.txn_id); if(reg.issue) u.searchParams.set("issue", reg.issue); return u.toString(); }
+function render(){ const rows=rowsForCurrentView(); const list=document.getElementById("list"); if(_vista==="producto"){ const grouped=sortRows(groupByProduct(rows)); list.innerHTML=grouped.map(r=>`<article class="sale-card"><div class="sale-head"><div><div class="name">${r.descripcion||skuToNice(r.item||"")}</div><div class="sub">${r.item||""}</div></div><div class="totals"><div><strong>${Number(r.cantidad||0)}</strong> pzas</div><div><strong>${money(r.importe||0)}</strong></div></div></div><div class="sub">${r.veces||0} ventas registradas</div></article>`).join(""); document.getElementById("count").textContent=String(grouped.length); document.getElementById("units").textContent=String(grouped.reduce((s,r)=>s+Number(r.cantidad||0),0)); document.getElementById("total").textContent=money(grouped.reduce((s,r)=>s+Number(r.importe||0),0)); document.getElementById("status").textContent=grouped.length?"Vista por producto.":"No hay ventas para ese filtro."; } else { const grouped=sortRows(groupByRegistro(rows)); list.innerHTML=grouped.map(r=>`<article class="sale-card"><div class="sale-head"><div><div class="name">${r.txn_id||r.issue||"Venta registrada"}</div><div class="sub">${r.fecha||""} · ${r.metodo_pago||"efectivo"}${r.issue ? ` · issue ${r.issue}` : ""}${r.txn_id ? ` · txn ${r.txn_id}` : ""}</div></div><div class="totals"><div><strong>${Number(r.cantidad||0)}</strong> pzas</div><div><strong>${money(r.importe||0)}</strong></div></div></div><div class="products-box">${r.productos.map(p=>`<div class="prod-row"><div><div class="prod-name">${p.nombre}</div><div class="sub">${p.sku||""}</div></div><div class="prod-meta">${Number(p.cantidad||0)} · ${money(p.importe||0)}</div></div>`).join("")}</div><button class="fix-btn" onclick="location.href='${correctionUrl.__name__}'"></button></article>`).join(""); list.querySelectorAll(".fix-btn").forEach((btn, idx)=>{ const reg=grouped[idx]; btn.textContent="Corregir esta venta"; btn.onclick=()=>location.href=correctionUrl(reg); }); document.getElementById("count").textContent=String(grouped.length); document.getElementById("units").textContent=String(grouped.reduce((s,r)=>s+Number(r.cantidad||0),0)); document.getElementById("total").textContent=money(grouped.reduce((s,r)=>s+Number(r.importe||0),0)); document.getElementById("status").textContent=grouped.length?"Vista agrupada por venta registrada.":"No hay ventas para ese filtro."; } syncViewButtons(); }
+function exportExcelDelDia(){ const fecha=document.getElementById("fecha").value, rows=rowsForCurrentView(); if(!fecha) return alert("Selecciona una fecha"); if(!rows.length) return alert("No hay ventas para exportar"); if(!window.XLSX) return; const wb=XLSX.utils.book_new(); if(_vista==="producto") XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(buildResumenPorProducto(rows)), "Por producto"); else XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(buildResumenPorRegistro(rows)), "Por venta"); XLSX.writeFile(wb, "ventas-"+_vista+"-"+fecha+"-"+_metodo+"-"+_orden+".xlsx"); }
+async function loadRowsByDate(fecha){ try{ const csv=await fetchText(`diario/${fecha}-ventas.csv`); return parseCSV(csv).map(r=>({fecha:r.fecha||r.Fecha||fecha,item:r.item||r.SKU||"",descripcion:r.descripcion||r.Producto||"",cantidad:Number(r.cantidad||r.Cantidad||0),precio_unit:Number(r.precio_unit||r["Precio unitario"]||0),importe:Number(r.importe||r.Importe||0),metodo_pago:String(r.metodo_pago||r["Método de pago"]||"efectivo").toLowerCase(),issue:r.issue||r.Issue||"",txn_id:r.txn_id||r.Txn||""})).filter(isValidSaleRow);} catch(_){ const csv=await fetchText("ventas_detalle.csv"); return parseCSV(csv).map(r=>({fecha:r.fecha||r.Fecha||"",item:r.item||r.SKU||"",descripcion:r.descripcion||r.Producto||"",cantidad:Number(r.cantidad||r.Cantidad||0),precio_unit:Number(r.precio_unit||r["Precio unitario"]||0),importe:Number(r.importe||r.Importe||0),metodo_pago:String(r.metodo_pago||r["Método de pago"]||"efectivo").toLowerCase(),issue:r.issue||r.Issue||"",txn_id:r.txn_id||r.Txn||""})).filter(r=>String(r.fecha||"").slice(0,10)===fecha).filter(isValidSaleRow);} }
+async function cargar(){ const fecha=document.getElementById("fecha").value; _metodo=document.getElementById("metodo").value; _orden=document.getElementById("orden").value; if(!fecha) return alert("Selecciona una fecha"); document.getElementById("status").textContent="Cargando…"; try{ _rowsFull=await loadRowsByDate(fecha); render(); }catch(error){ console.error(error); _rowsFull=[]; render(); document.getElementById("status").textContent="Error al cargar ventas."; }}
+document.getElementById("fecha").value=todayISO(); document.getElementById("cargar").onclick=cargar; document.getElementById("metodo").onchange=()=>{ _metodo=document.getElementById("metodo").value; render();}; document.getElementById("orden").onchange=()=>{ _orden=document.getElementById("orden").value; render();}; document.getElementById("viewProduct").onclick=()=>{_vista="producto"; render();}; document.getElementById("viewRegistro").onclick=()=>{_vista="registro"; render();}; document.getElementById("excel").onclick=()=>exportExcelDelDia(); document.getElementById("excelPaletas").onclick=()=>exportPaletasExcel("ventas"); document.getElementById("imprimir").onclick=()=>window.print(); syncViewButtons();
+</script>
+</body></html>

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Ajustar inventario</title>
+  <style>
+    :root{--bg:#f7f7fb;--card:#fff;--line:#e5e7eb;--text:#1f2937;--muted:#6b7280;--brand:#0f62fe;--shadow:0 6px 16px rgba(0,0,0,.05)}
+    *{box-sizing:border-box} body{font-family:system-ui,Arial,sans-serif;max-width:820px;margin:10px auto;padding:0 10px;background:var(--bg);color:var(--text)}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:var(--shadow)} .top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+    .back{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 10px;border:1px solid #d1d5db;border-radius:10px;background:#fff;color:var(--text);text-decoration:none;font-weight:700}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px} @media(max-width:700px){.grid{grid-template-columns:1fr}}
+    input,select,textarea,button{font:inherit} input,select,textarea{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:10px;background:#fff} textarea{min-height:96px;resize:vertical}
+    button{padding:10px 12px;border:1px solid #d1d5db;border-radius:10px;background:#fff;cursor:pointer;font-weight:700} .primary{background:var(--brand);border-color:var(--brand);color:#fff}
+    .muted{color:var(--muted);font-size:12px} .stack{display:grid;gap:8px}
+  </style>
+  <script src="config.js"></script>
+</head>
+<body>
+  <div class="card">
+    <div class="top">
+      <div><h1 style="margin:0;font-size:22px;">Ajustar inventario</h1><div class="muted">Corrige stock sin editar CSV a mano.</div></div>
+      <a class="back" href="index.html">← Menú</a>
+    </div>
+    <div class="stack">
+      <div class="grid">
+        <div><div class="muted">Alcance</div><select id="scope"><option value="normal">Normal</option><option value="mercado">Mercado</option></select></div>
+        <div><div class="muted">Fecha</div><input id="fecha" type="date"></div>
+        <div><div class="muted">SKU</div><input id="sku" type="text" placeholder="PALETA-CREMA-OREO"></div>
+        <div><div class="muted">Descripción</div><input id="descripcion" type="text" placeholder="Oreo"></div>
+        <div><div class="muted">Tipo de ajuste</div><select id="modo"><option value="delta">Sumar / restar</option><option value="set">Fijar stock exacto</option></select></div>
+        <div><div class="muted">Valor</div><input id="valor" type="number" step="1" placeholder="-3 o 25"></div>
+      </div>
+      <div><div class="muted">Razón</div><textarea id="razon" placeholder="Ej. conteo físico / error de captura / mermas"></textarea></div>
+      <div class="grid">
+        <button id="githubBtn" type="button">Abrir issue en GitHub</button>
+        <button id="apiBtn" class="primary" type="button">Enviar ajuste</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    const APP_CONFIG = window.APP_CONFIG || {};
+    const ORG = APP_CONFIG.ORG || "OswaldoCasillas";
+    const REPO = APP_CONFIG.REPO || "Ventas";
+    const API_URL = APP_CONFIG.API_URL || "https://ventas-backend-rose.vercel.app/api/create-issue";
+    function qs(k){ return new URLSearchParams(location.search).get(k) || ""; }
+    function todayISO(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+    document.getElementById("scope").value = qs("scope") || "normal";
+    document.getElementById("fecha").value = todayISO();
+    document.getElementById("sku").value = qs("sku");
+    document.getElementById("descripcion").value = qs("descripcion");
+    function buildPayload(){
+      const scope = document.getElementById("scope").value;
+      return {
+        type: scope === "mercado" ? "ajuste_inv_mkt" : "ajuste_inv",
+        fecha: document.getElementById("fecha").value,
+        sku: document.getElementById("sku").value.trim(),
+        descripcion: document.getElementById("descripcion").value.trim(),
+        modo: document.getElementById("modo").value,
+        valor: document.getElementById("valor").value,
+        razon: document.getElementById("razon").value
+      };
+    }
+    function buildGitHubUrl(){
+      const p = buildPayload();
+      const labels = p.type === "ajuste_inv_mkt" ? "ajuste-inventario,mercado" : "ajuste-inventario";
+      const title = `[${p.type}] ${p.sku}`;
+      const body = `tipo: ${p.type}\nfecha: ${p.fecha}\nsku: ${p.sku}\ndescripcion: ${p.descripcion}\nmodo: ${p.modo}\nvalor: ${p.valor}\n\nrazon:\n${p.razon}`;
+      const u = new URL(`https://github.com/${ORG}/${REPO}/issues/new`);
+      u.searchParams.set("title", title); u.searchParams.set("body", body); u.searchParams.set("labels", labels);
+      return u.toString();
+    }
+    document.getElementById("githubBtn").onclick = () => location.href = buildGitHubUrl();
+    document.getElementById("apiBtn").onclick = async () => {
+      const p = buildPayload();
+      if (!p.fecha || !p.sku || p.valor === "") return alert("Pon fecha, SKU y valor.");
+      if (!API_URL) return alert("Falta API_URL");
+      try {
+        const resp = await fetch(API_URL, {
+          method:"POST", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify(p)
+        });
+        if (!resp.ok) {
+          let msg = resp.statusText;
+          try { const j = await resp.json(); msg = j.error || JSON.stringify(j); } catch(_){
+          }
+          return alert("No se pudo enviar: " + msg);
+        }
+        const data = await resp.json().catch(()=>({}));
+        alert(`Ajuste enviado ✅${data.number ? ` (issue #${data.number})` : ""}`);
+      } catch(err) {
+        alert("No se pudo enviar el ajuste.");
+      }
+    };
+  </script>
+</body>
+</html>

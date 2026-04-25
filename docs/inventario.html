@@ -1,95 +1,14 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Inventario normal</title>
-  <style>
-    :root{--bg:#f7f7fb;--card:#fff;--line:#e5e7eb;--text:#1f2937;--muted:#6b7280;--shadow:0 6px 16px rgba(0,0,0,.05);--brand:#0f62fe;--brand-soft:#eaf1ff}
-    *{box-sizing:border-box} body{font-family:system-ui,Arial,sans-serif;max-width:1080px;margin:10px auto;padding:0 10px;background:var(--bg);color:var(--text)}
-    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:var(--shadow)}
-    .top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-    .back{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 10px;border:1px solid #d1d5db;border-radius:10px;background:#fff;color:var(--text);text-decoration:none;font-weight:700}
-    .filters{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
-    input,select,button{font:inherit;padding:9px 10px;border:1px solid #d1d5db;border-radius:10px;background:#fff} button{cursor:pointer}
-    .stats{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;margin:8px 0} .muted{color:var(--muted);font-size:12px}
-    .chipbar{display:flex;gap:6px;overflow:auto;margin:8px 0} .chip{padding:8px 10px;border:1px solid #d1d5db;border-radius:999px;background:#fff;cursor:pointer;font-weight:700;white-space:nowrap} .chip.active{background:var(--brand-soft);border-color:var(--brand);color:var(--brand)}
-    table{width:100%;border-collapse:collapse;font-size:12px} th,td{padding:7px 5px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top} .sku{font-size:10px;color:var(--muted)}
-  </style>
-</head>
-<body>
-  <div class="card">
-    <div class="top">
-      <div><h1 style="margin:0;font-size:22px;">Inventario normal</h1><div class="muted">Lee los menús publicados para mostrar stock actualizado.</div></div>
-      <a class="back" href="inventarios.html">← Inventarios</a>
-    </div>
-    <div class="filters">
-      <input id="search" type="text" placeholder="Buscar SKU o descripción">
-      <select id="category"></select>
-      <button id="reload" type="button">Recargar</button>
-      <button id="download" type="button">Descargar CSV</button>
-    </div>
-    <div id="chips" class="chipbar"></div>
-    <div class="stats"><div><strong>Total items:</strong> <span id="count">0</span></div><div><strong>Stock total:</strong> <span id="stockTotal">0</span></div></div>
-    <div class="muted" id="status">Cargando inventario…</div>
-    <table><thead><tr><th>SKU</th><th>Descripción</th><th>Stock</th><th>Precio</th><th>Categoría</th></tr></thead><tbody id="tbody"></tbody></table>
-  </div>
-  <script>
-    const CAT_LABELS = {
-      "ALL":"Todas","PALETA-AGUA":"Paleta de Agua","PALETA-AGUA-PREMIUM":"Paleta Agua Premium",
-      "PALETA-CREMA":"Paleta de Crema","PALETA-CREMA-PREMIUM":"Paleta Crema Premium",
-      "PALETA-SIN-AZUCAR":"Paleta Sin Azúcar/Keto","PALETA-MINI":"Paleta Mini","PALETAS-PERRO":"Paletas para perro",
-      "HELADO-NIEVE":"Helado Nieve","HELADO-CLASICO":"Helado Clásico","HELADO-GOURMET":"Helado Gourmet",
-      "HELADO-SIN-AZUCAR":"Helado Sin Azúcar","AGUA-FRESCA":"Aguas","BEBIDA":"Bebidas","BOTANA":"Botanas","EXTRA":"Extras"
-    };
-    let MENU = []; let FILTER_CATEGORY = "ALL";
-    
-    const SRC1 = "menu.json";
-    const SRC2 = null;
-    
-    function normalizeText(value){return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[-_/]/g," ").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();}
-    function getCategoryOf(sku){const parts=String(sku||"").split("-"); if(parts.length>=3){const c=`${parts[0]}-${parts[1]}-${parts[2]}`; if(CAT_LABELS[c]) return c;} if(parts.length>=2){const c=`${parts[0]}-${parts[1]}`; if(CAT_LABELS[c]) return c;} return "EXTRA";}
-    async function fetchJSON(url){const r=await fetch(url+"?_="+Date.now(),{cache:"no-store"}); if(!r.ok) throw new Error(`${r.status} ${url}`); return r.json();}
-    function normalizeProduct(raw){const item=String(raw?.item||"").trim(); const descripcion=String(raw?.descripcion||"").trim(); if(!item) return null; const bad=["<<<<<<<","=======",">>>>>>>","Updated upstream","Stashed changes"]; if(bad.some(x => `${item} ${descripcion}`.includes(x))) return null; return {item,descripcion,stock:Number(raw?.stock||0),precio:Number(raw?.precio||0),product_id:String(raw?.product_id||"").trim()};}
-    async function loadMenu(){
-      try {
-        const one = (await fetchJSON(SRC1)).map(normalizeProduct).filter(Boolean);
-        if (!SRC2) MENU = one;
-        else {
-          const two = (await fetchJSON(SRC2)).map(normalizeProduct).filter(Boolean);
-          const bySku = new Map();
-          one.forEach(r => bySku.set(r.item, {...r}));
-          two.forEach(r => {
-            if (bySku.has(r.item)) {
-              const cur = bySku.get(r.item);
-              cur.stock = Number(cur.stock||0) + Number(r.stock||0);
-            } else bySku.set(r.item, {...r});
-          });
-          MENU = Array.from(bySku.values());
-        }
-      } catch(err) {
-        console.error(err);
-        MENU = [];
-      }
-      buildFilters(); render();
-    }
-    function buildFilters(){
-      const cats=["ALL", ...Array.from(new Set(MENU.map(x => getCategoryOf(x.item)))).sort((a,b)=>(CAT_LABELS[a]||a).localeCompare(CAT_LABELS[b]||b))];
-      const sel=document.getElementById("category");
-      sel.innerHTML=cats.map(c=>`<option value="${c}">${CAT_LABELS[c]||c}</option>`).join("");
-      sel.value=FILTER_CATEGORY;
-      sel.onchange=()=>{FILTER_CATEGORY=sel.value; syncChips(); render();};
-      const chips=document.getElementById("chips");
-      chips.innerHTML=cats.slice(0,10).map(c=>`<button type="button" class="chip ${c===FILTER_CATEGORY?'active':''}" data-cat="${c}">${CAT_LABELS[c]||c}</button>`).join("");
-      chips.querySelectorAll(".chip").forEach(btn=>btn.onclick=()=>{FILTER_CATEGORY=btn.dataset.cat; sel.value=FILTER_CATEGORY; syncChips(); render();});
-    }
-    function syncChips(){document.querySelectorAll(".chip").forEach(btn=>btn.classList.toggle("active", btn.dataset.cat===FILTER_CATEGORY));}
-    function filteredRows(){const q=normalizeText(document.getElementById("search").value); const terms=q?q.split(" ").filter(Boolean):[]; return MENU.filter(r=>{ if(FILTER_CATEGORY!=="ALL"&&getCategoryOf(r.item)!==FILTER_CATEGORY)return false; if(!terms.length)return true; const hay=normalizeText(`${r.item} ${r.descripcion}`); return terms.every(t=>hay.includes(t)); }).sort((a,b)=>a.descripcion.localeCompare(b.descripcion));}
-    function render(){const rows=filteredRows(); document.getElementById("tbody").innerHTML=rows.map(r=>`<tr><td>${r.item}<div class="sku">${r.product_id||""}</div></td><td>${r.descripcion||""}</td><td>${Number(r.stock||0)}</td><td>$${Number(r.precio||0).toFixed(2)}</td><td>${CAT_LABELS[getCategoryOf(r.item)]||getCategoryOf(r.item)}</td></tr>`).join(""); document.getElementById("count").textContent=String(rows.length); document.getElementById("stockTotal").textContent=String(rows.reduce((s,r)=>s+Number(r.stock||0),0)); document.getElementById("status").textContent=rows.length?"Inventario cargado.":"No hay datos para ese filtro.";}
-    function downloadCSV(){const rows=filteredRows(); const header=["item","descripcion","stock","precio","product_id"]; const csv=[header.join(",")].concat(rows.map(r=>[r.item,`"${String(r.descripcion||"").replaceAll('"','""')}"`,Number(r.stock||0),Number(r.precio||0),r.product_id||""].join(","))).join("\n"); const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="inventario_normal.csv"; a.click(); URL.revokeObjectURL(a.href);}
-    document.getElementById("search").addEventListener("input", render);
-    document.getElementById("reload").onclick = loadMenu;
-    document.getElementById("download").onclick = downloadCSV;
-    loadMenu();
-  </script>
-</body>
-</html>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inventario normal</title>
+<style>
+:root{--bg:#f7f7fb;--card:#fff;--line:#e5e7eb;--text:#1f2937;--muted:#6b7280;--shadow:0 6px 16px rgba(0,0,0,.05)} *{box-sizing:border-box} body{font-family:system-ui,Arial,sans-serif;max-width:1080px;margin:10px auto;padding:0 10px;background:var(--bg);color:var(--text)}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:var(--shadow)} .top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.back{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 10px;border:1px solid #d1d5db;border-radius:10px;background:#fff;color:var(--text);text-decoration:none;font-weight:700}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px} input,select,button{font:inherit;padding:9px 10px;border:1px solid #d1d5db;border-radius:10px;background:#fff} button{cursor:pointer}
+table{width:100%;border-collapse:collapse;font-size:12px} th,td{padding:7px 5px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.sku{font-size:10px;color:var(--muted)}
+</style></head><body><div class="card"><div class="top"><div><h1 style="margin:0;font-size:22px;">Inventario normal</h1><div class="sku">Con botón de ajustar.</div></div><a class="back" href="inventarios.html">← Inventarios</a></div><div class="filters"><input id="search" type="text" placeholder="Buscar"><button id="reload" type="button">Recargar</button></div><table><thead><tr><th>SKU</th><th>Descripción</th><th>Stock</th><th>Precio</th><th></th></tr></thead><tbody id="tbody"></tbody></table></div><script>
+let MENU=[]; async function fetchJSON(url){const r=await fetch(url+"?_="+Date.now(),{cache:"no-store"}); if(!r.ok) throw new Error(url); return r.json();}
+function qs(v){return String(v||"").toLowerCase();} function filtered(){const q=qs(document.getElementById("search").value); return MENU.filter(r=>!q || qs(r.item).includes(q) || qs(r.descripcion).includes(q)).sort((a,b)=>String(a.descripcion||"").localeCompare(String(b.descripcion||"")));} 
+function adjustUrl(r){ const u=new URL("ajustar_inventario.html", location.href); u.searchParams.set("scope","normal"); u.searchParams.set("sku", r.item||""); u.searchParams.set("descripcion", r.descripcion||""); return u.toString(); }
+function render(){ const rows=filtered(); document.getElementById("tbody").innerHTML=rows.map(r=>`<tr><td>${r.item}<div class="sku">${r.product_id||""}</div></td><td>${r.descripcion||""}</td><td>${Number(r.stock||0)}</td><td>$${Number(r.precio||0).toFixed(2)}</td><td><button class="adj">Ajustar</button></td></tr>`).join(""); document.querySelectorAll(".adj").forEach((btn,idx)=>btn.onclick=()=>location.href=adjustUrl(rows[idx]));}
+async function load(){ try{ MENU=await fetchJSON("menu.json"); render(); }catch(err){ console.error(err); }} document.getElementById("search").addEventListener("input", render); document.getElementById("reload").onclick=load; load();
+</script></body></html>
