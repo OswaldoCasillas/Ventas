@@ -101,8 +101,8 @@ jobs:
           branch="${BRANCH_NAME:-$(git rev-parse --abbrev-ref HEAD)}"
           git fetch origin "$branch" --prune
 
-          git add docs/index.html docs/register_merma.html docs/register_merma_mercado.html
-          git add scripts/process_issue.py .github/workflows/inventory.yml
+          git add .github/workflows/inventory.yml scripts/process_issue.py
+          git add docs/index.html docs/register_merma.html docs/register_merma_mercado.html 2>/dev/null || true
           git add docs/menu.json docs/menu_mercado.json 2>/dev/null || true
           git add data/inventory.csv data/inventory_mercado.csv data/sales.csv data/sales_mercado.csv data/production.csv data/transfer_mercado.csv data/processed_events.csv 2>/dev/null || true
           git add docs/diario docs/mercado/diario docs/ventas_detalle.csv docs/mercado/ventas_detalle.csv docs/ventas_por_dia.csv docs/ventas_por_item.csv docs/produccion_detalle.csv docs/reporte.html 2>/dev/null || true
