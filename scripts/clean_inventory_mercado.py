@@ -11,15 +11,33 @@ REMOVE_TOKENS = [
     "SENCILLO",
     "DOBLE",
     "EXTRA",
+    "MALTEADA",
+    "CHAMOYADA",
+    "CHOCOLATE-CALIENTE",
+    "FRAPUCHINO",
+    "DORILOCOS",
+    "PLATANITO",
 ]
 
+REMOVE_EXACT = {
+    "BEBIDA-CHAMOYADA",
+    "BEBIDA-CHOCOLATE-CALIENTE",
+    "BEBIDA-CHOCOLATE-CALIENTE-VEGANO",
+    "BEBIDA-FRAPUCHINO",
+    "BOTANA-DORILOCOS",
+    "BOTANA-PLATANITOS",
+}
+
 def should_remove(item: str, descripcion: str) -> bool:
+    item_up = item.upper().strip()
     text = f"{item} {descripcion}".upper()
+    if item_up in REMOVE_EXACT:
+        return True
     return any(token in text for token in REMOVE_TOKENS)
 
 def main() -> None:
     if not INVENTORY_MERCADO_CSV.exists():
-      raise FileNotFoundError(f"No existe: {INVENTORY_MERCADO_CSV}")
+        raise FileNotFoundError(f"No existe: {INVENTORY_MERCADO_CSV}")
 
     with INVENTORY_MERCADO_CSV.open("r", encoding="utf-8-sig", newline="") as f:
         reader = csv.DictReader(f)
@@ -30,6 +48,8 @@ def main() -> None:
             row = {str(k).strip(): (v if v is not None else "") for k, v in raw.items()}
             item = str(row.get("item", "")).strip()
             descripcion = str(row.get("descripcion", "")).strip()
+            if not item:
+                continue
             if should_remove(item, descripcion):
                 removed += 1
                 continue
