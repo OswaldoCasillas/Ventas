@@ -7,6 +7,12 @@
     "stock": 9999999999999
   },
   {
+  "item": "BEBIDA-CHAMOYADA-PEQUENA",
+  "descripcion": "BEBIDA Chamoyada Pequeña",
+  "precio": 40,
+  "product_id": "CHAM40P"
+},
+  {
     "product_id": "9C1B04E4",
     "item": "AGUA-FRESCA-GRANDE",
     "descripcion": "AGUA FRESCA Grande",
