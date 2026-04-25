@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Merma / regaladas</title>
+  <style>
+    :root{
+      --bg:#f6f7fb;--card:#fff;--text:#162033;--muted:#6b7280;--line:#d9deea;
+      --brand:#0f62fe;--brand-soft:#eaf1ff;--danger:#b42318;--danger-soft:#fff2f1;
+      --shadow:0 6px 16px rgba(15,35,95,.08)
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{width:min(980px,calc(100% - 12px));margin:8px auto 16px}
+    .top{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+    h1{margin:0;font-size:20px;line-height:1.1}
+    .muted{color:var(--muted);font-size:12px}
+    .back{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--text);text-decoration:none;font-weight:700}
+    .grid{display:grid;gap:10px}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:9px}
+    .stack{display:grid;gap:8px}
+    .bar{display:grid;grid-template-columns:1fr auto;gap:6px}
+    .bar2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+    input,select,textarea,button{font:inherit}
+    input[type="text"],input[type="date"],select,textarea{width:100%;min-height:38px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff}
+    textarea{min-height:42px;resize:vertical}
+    .mini-btn,.primary,.ghost{min-height:38px;padding:0 10px;border:1px solid var(--line);border-radius:10px;background:#fff;font-weight:700}
+    .primary{background:var(--brand);border-color:var(--brand);color:#fff}
+    .row-scroll{display:flex;gap:6px;overflow:auto;padding-bottom:2px}
+    .quick-btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 9px;min-width:94px;text-align:left;cursor:pointer}
+    .quick-btn .q1{display:block;font-size:12px;font-weight:800;line-height:1.1}
+    .quick-btn .q2{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+    .chips{display:flex;gap:6px;overflow:auto;padding-bottom:2px}
+    .chip,.pill{min-height:34px;padding:7px 10px;border:1px solid var(--line);border-radius:999px;background:#fff;font-weight:700;cursor:pointer}
+    .chip.active,.pill.active{background:var(--brand-soft);border-color:var(--brand);color:var(--brand)}
+    .products{display:grid;gap:6px}
+    .product{border:1px solid var(--line);border-radius:11px;padding:8px;background:#fff}
+    .p-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+    .p-title{font-size:14px;font-weight:800;line-height:1.1}
+    .price{font-size:16px;font-weight:900;white-space:nowrap}
+    .sku{font-size:10px;color:var(--muted);word-break:break-word;margin-top:3px}
+    .actions{display:grid;grid-template-columns:1fr;gap:5px;margin-top:6px}
+    .actions button{min-height:36px;border:1px solid var(--line);border-radius:9px;background:#fff;font-weight:800;cursor:pointer}
+    .actions .add{background:var(--brand);border-color:var(--brand);color:#fff}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th,td{padding:6px 4px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+    .qty-wrap{display:inline-flex;align-items:center;gap:5px}
+    .mini{width:28px;height:28px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
+    .cart-name{font-size:12px;font-weight:700;line-height:1.1}
+    .summary{display:grid;gap:7px;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
+    .footer{display:grid;gap:6px;margin-top:8px}
+    .empty{padding:8px;border:1px dashed var(--line);border-radius:10px;text-align:center;color:var(--muted);font-size:12px}
+    .search-focused{border-color:var(--brand)!important;box-shadow:0 0 0 3px rgba(15,98,254,.12)}
+    .label{font-size:11px;color:var(--muted);font-weight:800;text-transform:uppercase}
+    .warn{padding:8px;border:1px solid #efc1be;border-radius:10px;background:#fff2f1;color:#7a271a;font-size:12px}
+    @media(min-width:900px){.grid{grid-template-columns:.78fr 1.22fr;gap:10px}}
+  </style>
+  <script src="config.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div><h1>Merma / regaladas</h1><div class="muted">Descuenta inventario y registra importe en $0.00.</div></div>
+      <a class="back" href="index.html">← Menú</a>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+          <strong>Carrito</strong>
+          <div class="muted"><span id="totalItems">0</span> items · <span id="totalAmount">$0.00</span></div>
+        </div>
+        <table>
+          <thead><tr><th>Producto</th><th>Importe</th><th>Cant.</th></tr></thead>
+          <tbody id="cartBody"></tbody>
+        </table>
+        <div id="cartEmpty" class="empty">Todavía no agregas productos.</div>
+
+        <div class="summary">
+          <div class="bar2">
+            <div>
+              <div class="label">Alcance</div>
+              <div class="chips">
+                <button id="scopeNormal" class="pill active" type="button">Normal</button>
+                <button id="scopeMercado" class="pill" type="button">Mercado</button>
+              </div>
+            </div>
+            <div>
+              <div class="label">Fecha</div>
+              <input id="fecha" type="date">
+            </div>
+          </div>
+          <div>
+            <div class="label">Motivo</div>
+            <textarea id="notas" placeholder="Ej. merma, degustación, regalo, promo"></textarea>
+          </div>
+          <div class="warn">Todo se registrará con precio $0.00, pero sí descuenta inventario.</div>
+        </div>
+
+        <div class="footer">
+          <button id="clearCart" class="ghost" type="button">Vaciar carrito</button>
+          <button id="confirm" class="primary" type="button">Confirmar merma / regaladas</button>
+        </div>
+      </section>
+
+      <section class="card stack">
+        <div class="bar">
+          <input id="search" type="text" placeholder="Buscar">
+          <button id="clearSearch" class="mini-btn" type="button">Limpiar</button>
+        </div>
+        <div class="bar2">
+          <select id="category"></select>
+          <div class="muted" style="display:flex;align-items:center;padding:0 6px;">Catálogo según alcance</div>
+        </div>
+
+        <div class="label">Más agregados</div>
+        <div id="quickPicks" class="row-scroll"></div>
+
+        <div class="label">Categorías rápidas</div>
+        <div id="quickCats" class="chips"></div>
+
+        <div id="products" class="products"></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const APP_CONFIG = window.APP_CONFIG || {};
+    const ORG = APP_CONFIG.ORG || "OswaldoCasillas";
+    const REPO = APP_CONFIG.REPO || "Ventas";
+    const API_URL = APP_CONFIG.API_URL || "https://ventas-backend-rose.vercel.app/api/create-issue";
+    const CAT_LABELS = {
+      "ALL":"Todas","PALETA-AGUA":"Agua","PALETA-AGUA-PREMIUM":"Agua Premium",
+      "PALETA-CREMA":"Crema","PALETA-CREMA-PREMIUM":"Crema Premium",
+      "PALETA-SIN-AZUCAR":"Sin Azúcar","PALETA-MINI":"Mini","PALETAS-PERRO":"Perro",
+      "HELADO-NIEVE":"Nieve","HELADO-CLASICO":"Clásico","HELADO-GOURMET":"Gourmet",
+      "HELADO-SIN-AZUCAR":"Helado SA","AGUA-FRESCA":"Aguas","BEBIDA":"Bebidas",
+      "POSTRE":"Postres","BOTANA":"Botanas","EXTRA":"Extras"
+    };
+
+    let MENU = [];
+    let FILTER_CATEGORY = "ALL";
+    let scope = "normal";
+    const cart = [];
+
+    function menuLocal(){ return scope === "mercado" ? "menu_mercado.json" : "menu.json"; }
+    function menuFallback(){ return `https://${ORG.toLowerCase()}.github.io/${REPO}/${menuLocal()}`; }
+    function money(v){ return `$${Number(v || 0).toFixed(2)}`; }
+    function todayISO(){ const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+    function fetchJSON(url){ return fetch(url + "?_=" + Date.now(), { cache:"no-store" }).then(r => { if (!r.ok) throw new Error(`${r.status} ${url}`); return r.json(); }); }
+    function normalizeText(value){ return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[-_/]/g," ").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim(); }
+
+    function normalizeProduct(raw){
+      const item = String(raw?.item || "").trim();
+      const descripcion = String(raw?.descripcion || "").trim();
+      const invalidTokens = ["<<<<<<<","=======",">>>>>>>","Updated upstream","Stashed changes"];
+      if (!item) return null;
+      if (invalidTokens.some(token => `${item} ${descripcion}`.includes(token))) return null;
+      const precioNum = Number(raw?.precio);
+      return { item, descripcion, precio:Number.isFinite(precioNum) ? precioNum : 0, product_id:String(raw?.product_id || "").trim(), stock:Number(raw?.stock || 0) };
+    }
+
+    async function loadMenu(){
+      try { MENU = (await fetchJSON(menuLocal())).map(normalizeProduct).filter(Boolean); }
+      catch { MENU = (await fetchJSON(menuFallback())).map(normalizeProduct).filter(Boolean); }
+      buildCategoryUI(); renderQuickPicks(); renderProducts();
+    }
+
+    function getCategoryOf(sku){
+      const parts = String(sku || "").split("-");
+      if (parts.length >= 3){ const c = `${parts[0]}-${parts[1]}-${parts[2]}`; if (CAT_LABELS[c]) return c; }
+      if (parts.length >= 2){ const c = `${parts[0]}-${parts[1]}`; if (CAT_LABELS[c]) return c; }
+      return "EXTRA";
+    }
+    function niceLabel(p){ return p.descripcion || p.item; }
+    function resetSearch(){ document.getElementById("search").value = ""; }
+    function focusSearch(){ const i = document.getElementById("search"); i.focus(); i.classList.add("search-focused"); setTimeout(() => i.classList.remove("search-focused"), 700); }
+
+    function buildCategoryUI(){
+      const categories = Array.from(new Set(MENU.map(p => getCategoryOf(p.item)))).sort((a,b) => (CAT_LABELS[a] || a).localeCompare(CAT_LABELS[b] || b));
+      const all = ["ALL", ...categories];
+
+      const select = document.getElementById("category");
+      select.innerHTML = all.map(k => `<option value="${k}">${CAT_LABELS[k] || k}</option>`).join("");
+      select.value = FILTER_CATEGORY;
+      select.onchange = () => { FILTER_CATEGORY = select.value; resetSearch(); renderProducts(); focusSearch(); };
+
+      const chips = document.getElementById("quickCats");
+      chips.innerHTML = all.slice(0,8).map(k => `<button type="button" class="chip ${k===FILTER_CATEGORY?'active':''}" data-cat="${k}">${CAT_LABELS[k] || k}</button>`).join("");
+      chips.querySelectorAll(".chip").forEach(chip => {
+        chip.onclick = () => {
+          FILTER_CATEGORY = chip.dataset.cat;
+          select.value = FILTER_CATEGORY;
+          resetSearch();
+          buildCategoryUI();
+          renderProducts();
+          focusSearch();
+        };
+      });
+    }
+
+    function filteredProducts(){
+      const search = normalizeText(document.getElementById("search").value);
+      const terms = search ? search.split(" ").filter(Boolean) : [];
+      return MENU.filter(p => {
+        const byCat = FILTER_CATEGORY === "ALL" || getCategoryOf(p.item) === FILTER_CATEGORY;
+        if (!byCat) return false;
+        if (!terms.length) return true;
+        const hay = normalizeText(`${p.item} ${p.descripcion} ${CAT_LABELS[getCategoryOf(p.item)] || ""}`);
+        return terms.every(t => hay.includes(t));
+      });
+    }
+
+    function getQuickPickProducts(){
+      const ranked = [], seen = new Set();
+      const patterns = [/MINI/i,/PERRO/i,/PALETA\-CREMA/i,/PALETA\-AGUA/i];
+      for (const pattern of patterns){
+        for (const p of MENU){
+          if (seen.has(p.item)) continue;
+          if (pattern.test(p.item) || pattern.test(p.descripcion || "")) {
+            ranked.push(p); seen.add(p.item);
+            if (ranked.length >= 8) return ranked;
+          }
+        }
+      }
+      return ranked;
+    }
+
+    function renderQuickPicks(){
+      const wrap = document.getElementById("quickPicks");
+      const picks = getQuickPickProducts();
+      wrap.innerHTML = picks.map(p => `
+        <button type="button" class="quick-btn" data-quick="${p.item}">
+          <span class="q1">${niceLabel(p)}</span>
+          <span class="q2">$0.00</span>
+        </button>
+      `).join("");
+      wrap.querySelectorAll("[data-quick]").forEach(btn => btn.onclick = () => {
+        const p = MENU.find(x => x.item === btn.dataset.quick);
+        if (p) addToCart(p);
+      });
+    }
+
+    function addToCart(product){
+      const found = cart.find(item => item.item === product.item);
+      if (found) found.cantidad += 1;
+      else cart.push({ item:product.item, descripcion:product.descripcion, precio:0, cantidad:1 });
+      renderCart();
+      resetSearch(); renderProducts(); focusSearch();
+    }
+
+    function updateQty(item, delta){
+      const found = cart.find(row => row.item === item);
+      if (!found) return;
+      found.cantidad += delta;
+      if (found.cantidad <= 0) return removeFromCart(item);
+      renderCart();
+    }
+
+    function removeFromCart(item){
+      const idx = cart.findIndex(row => row.item === item);
+      if (idx >= 0) cart.splice(idx, 1);
+      renderCart();
+    }
+
+    function clearCart(){ cart.splice(0, cart.length); renderCart(); }
+
+    function renderProducts(){
+      const list = filteredProducts();
+      const container = document.getElementById("products");
+      if (!list.length){ container.innerHTML = `<div class="empty">No hay productos para este filtro.</div>`; return; }
+
+      container.innerHTML = list.map(p => `
+        <article class="product">
+          <div class="p-top">
+            <div class="p-title">${niceLabel(p)}</div>
+            <div class="price">$0.00</div>
+          </div>
+          <div class="sku">${p.item}</div>
+          <div class="actions">
+            <button class="add" type="button" data-add="${p.item}">Agregar</button>
+          </div>
+        </article>
+      `).join("");
+
+      container.querySelectorAll("[data-add]").forEach(btn => btn.onclick = () => {
+        const p = MENU.find(x => x.item === btn.dataset.add);
+        if (p) addToCart(p);
+      });
+    }
+
+    function renderCart(){
+      const body = document.getElementById("cartBody");
+      const empty = document.getElementById("cartEmpty");
+      if (!cart.length){
+        body.innerHTML = "";
+        empty.style.display = "block";
+      } else {
+        empty.style.display = "none";
+        body.innerHTML = cart.map(row => `
+          <tr>
+            <td>
+              <div class="cart-name">${row.descripcion || row.item}</div>
+              <div class="sku">${row.item}</div>
+            </td>
+            <td>${money(0)}</td>
+            <td>
+              <div class="qty-wrap">
+                <button type="button" class="mini" data-minus="${row.item}">−</button>
+                <strong>${row.cantidad}</strong>
+                <button type="button" class="mini" data-plus="${row.item}">+</button>
+              </div>
+            </td>
+          </tr>
+        `).join("");
+      }
+      body.querySelectorAll("[data-minus]").forEach(btn => btn.onclick = () => updateQty(btn.dataset.minus, -1));
+      body.querySelectorAll("[data-plus]").forEach(btn => btn.onclick = () => updateQty(btn.dataset.plus, +1));
+      document.getElementById("totalItems").textContent = String(cart.reduce((s, r) => s + r.cantidad, 0));
+      document.getElementById("totalAmount").textContent = money(0);
+    }
+
+    function setScope(v){
+      scope = v === "mercado" ? "mercado" : "normal";
+      document.getElementById("scopeNormal").classList.toggle("active", scope === "normal");
+      document.getElementById("scopeMercado").classList.toggle("active", scope === "mercado");
+      FILTER_CATEGORY = "ALL";
+      clearCart();
+      loadMenu().catch(err => {
+        console.error(err);
+        document.getElementById("products").innerHTML = `<div class="empty">No se pudo cargar el catálogo.</div>`;
+      });
+    }
+
+    function newClientTxnId(){
+      return (window.crypto && typeof window.crypto.randomUUID === "function")
+        ? window.crypto.randomUUID()
+        : `txn-${Date.now()}-${Math.random().toString(16).slice(2,10)}`;
+    }
+
+    async function submitMerma(){
+      const btn = document.getElementById("confirm");
+      if (btn.dataset.sending === "1") return;
+      btn.dataset.sending = "1";
+      btn.disabled = true;
+
+      try{
+        const fecha = document.getElementById("fecha").value;
+        const notas = document.getElementById("notas").value;
+        if (!fecha){ alert("Falta la fecha"); return; }
+        if (cart.length === 0){ alert("Agrega al menos un producto"); return; }
+        if (!API_URL){ alert("Falta API_URL en config.js"); return; }
+
+        const payload = {
+          type: scope === "mercado" ? "merma_mkt" : "merma",
+          fecha,
+          notas,
+          metodo_pago: "merma",
+          client_txn_id: newClientTxnId(),
+          items: cart.map(c => ({ item:c.item, cantidad:c.cantidad, precio:0, descripcion:c.descripcion }))
+        };
+
+        const resp = await fetch(API_URL, {
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify(payload)
+        });
+
+        if (!resp.ok){
+          let errText = "";
+          try{
+            const err = await resp.json();
+            errText = err.error || JSON.stringify(err);
+          }catch(_){}
+          alert("Error creando la salida: " + (errText || resp.statusText));
+          return;
+        }
+
+        const data = await resp.json().catch(() => ({}));
+        alert(`Salida registrada ✅${data.number ? ` (issue #${data.number})` : ""}`);
+        clearCart();
+        document.getElementById("notas").value = "";
+        focusSearch();
+      }catch(error){
+        alert("No se pudo confirmar si la salida quedó registrada. No cambies el carrito y vuelve a intentar.");
+      }finally{
+        btn.disabled = false;
+        btn.dataset.sending = "0";
+      }
+    }
+
+    document.getElementById("search").addEventListener("input", renderProducts);
+    document.getElementById("clearSearch").onclick = () => { resetSearch(); renderProducts(); focusSearch(); };
+    document.getElementById("clearCart").onclick = clearCart;
+    document.getElementById("confirm").onclick = submitMerma;
+    document.getElementById("scopeNormal").onclick = () => setScope("normal");
+    document.getElementById("scopeMercado").onclick = () => setScope("mercado");
+    document.getElementById("fecha").value = todayISO();
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      try{ await loadMenu(); }
+      catch(error){
+        console.error(error);
+        document.getElementById("products").innerHTML = `<div class="empty">No se pudo cargar el catálogo.</div>`;
+      }
+      renderCart();
+      focusSearch();
+    });
+  </script>
+</body>
+</html>
