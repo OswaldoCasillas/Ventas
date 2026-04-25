@@ -186,13 +186,6 @@ def inventory_adjust(path: Path, sku: str, descripcion: str, mode: str, value: i
     csv_write(path, rows, fieldnames=["item", "descripcion", "stock", "precio", "product_id"])
 
 
-def inventory_move_between(normal_sku: str, descripcion: str, qty: int) -> None:
-    if qty <= 0:
-        raise ValueError("La cantidad para abasto mercado debe ser mayor a 0")
-    inventory_adjust(INVENTORY_CSV, normal_sku, descripcion, "delta", -qty)
-    inventory_adjust(INVENTORY_MERCADO_CSV, normal_sku, descripcion, "delta", qty)
-
-
 def parse_issue_event() -> dict[str, Any]:
     event_path = os.environ.get("GITHUB_EVENT_PATH")
     if not event_path:
@@ -290,6 +283,50 @@ def parse_json_body(body: str) -> dict[str, Any] | None:
         return None
 
 
+def guess_type_from_title(title: str) -> str:
+    t = str(title or "").strip().lower().replace(" ", "_").replace("-", "_")
+    if "venta_mkt" in t or "venta_mercado" in t:
+        return "venta_mkt"
+    if "abasto_mkt" in t or "abasto_mercado" in t:
+        return "abasto_mkt"
+    if "produccion" in t or "prod" in t:
+        return "prod"
+    if "correccion_venta_mkt" in t:
+        return "correccion_venta_mkt"
+    if "correccion_venta" in t:
+        return "correccion_venta"
+    if "ajuste_inv_mkt" in t:
+        return "ajuste_inv_mkt"
+    if "ajuste_inv" in t:
+        return "ajuste_inv"
+    if "merma_mkt" in t:
+        return "merma_mkt"
+    if "merma" in t or "regalada" in t or "regaladas" in t:
+        return "merma"
+    if "venta" in t:
+        return "venta"
+    return ""
+
+
+def guess_type_from_labels(labels: list[str]) -> str:
+    normalized = [normalize_type(x) for x in labels]
+    for p in ["correccion_venta_mkt", "correccion_venta", "ajuste_inv_mkt", "ajuste_inv", "abasto_mkt", "venta_mkt", "merma_mkt", "merma", "prod", "venta"]:
+        if p in normalized:
+            return p
+    return ""
+
+
+def is_probable_merma(title: str, labels: list[str], items: list[dict[str, Any]]) -> bool:
+    title_norm = str(title or "").strip().lower()
+    if "movimiento" not in title_norm:
+        return False
+    if labels:
+        return False
+    if not items:
+        return False
+    return all(to_float(item.get("precio", 0), 0.0) == 0.0 for item in items)
+
+
 def parse_items_from_any(body: str, sections: dict[str, str], json_body: dict[str, Any] | None, fields: dict[str, str]) -> list[dict[str, Any]]:
     if json_body and isinstance(json_body.get("items"), list):
         out = []
@@ -345,39 +382,6 @@ def parse_items_from_any(body: str, sections: dict[str, str], json_body: dict[st
     return [r for r in parsed if r["item"] and to_int(r["cantidad"], 0) != 0]
 
 
-def guess_type_from_title(title: str) -> str:
-    t = str(title or "").strip().lower().replace(" ", "_").replace("-", "_")
-    if "venta_mkt" in t or "venta_mercado" in t:
-        return "venta_mkt"
-    if "abasto_mkt" in t or "abasto_mercado" in t:
-        return "abasto_mkt"
-    if "produccion" in t or "prod" in t:
-        return "prod"
-    if "correccion_venta_mkt" in t:
-        return "correccion_venta_mkt"
-    if "correccion_venta" in t:
-        return "correccion_venta"
-    if "ajuste_inv_mkt" in t:
-        return "ajuste_inv_mkt"
-    if "ajuste_inv" in t:
-        return "ajuste_inv"
-    if "merma_mkt" in t:
-        return "merma_mkt"
-    if "merma" in t or "regalada" in t or "regaladas" in t:
-        return "merma"
-    if "venta" in t:
-        return "venta"
-    return ""
-
-
-def guess_type_from_labels(labels: list[str]) -> str:
-    normalized = [normalize_type(x) for x in labels]
-    for p in ["correccion_venta_mkt", "correccion_venta", "ajuste_inv_mkt", "ajuste_inv", "abasto_mkt", "venta_mkt", "merma_mkt", "merma", "prod", "venta"]:
-        if p in normalized:
-            return p
-    return ""
-
-
 def parse_issue_payload(event: dict[str, Any]) -> ParsedPayload:
     issue = event.get("issue", {}) or {}
     title = str(issue.get("title", "")).strip()
@@ -389,8 +393,18 @@ def parse_issue_payload(event: dict[str, Any]) -> ParsedPayload:
     json_body = parse_json_body(body)
     sections = extract_multiline_sections(body)
     fields = extract_simple_fields(body)
-    payload_type = normalize_type((json_body or {}).get("type") or fields.get("type") or fields.get("tipo") or guess_type_from_title(title) or guess_type_from_labels(labels))
     items = parse_items_from_any(body, sections, json_body, fields)
+
+    payload_type = normalize_type(
+        (json_body or {}).get("type")
+        or fields.get("type")
+        or fields.get("tipo")
+        or guess_type_from_title(title)
+        or guess_type_from_labels(labels)
+    )
+
+    if not payload_type and is_probable_merma(title, labels, items):
+        payload_type = "merma"
 
     fecha = str((json_body or {}).get("fecha", "")).strip() or fields.get("fecha", "").strip() or ""
     metodo_pago = normalize_payment(str((json_body or {}).get("metodo_pago", "")).strip() or fields.get("metodo_pago", "").strip())
@@ -404,6 +418,9 @@ def parse_issue_payload(event: dict[str, Any]) -> ParsedPayload:
     razon = sections.get("razon", "") or str((json_body or {}).get("razon", "")).strip()
     detalle = sections.get("detalle", "") or str((json_body or {}).get("detalle", "")).strip()
     notas = sections.get("notas", "") or str((json_body or {}).get("notas", "")).strip() or fields.get("notas", "").strip()
+
+    if payload_type == "merma":
+        metodo_pago = "merma"
 
     if not txn_id and payload_type in {"venta", "venta_mkt", "merma", "merma_mkt"}:
         txn_id = f"txn-issue-{number}"
@@ -476,10 +493,7 @@ def register_sale(payload: ParsedPayload, mercado: bool, zero_price: bool = Fals
     inventory_path = INVENTORY_MERCADO_CSV if mercado else INVENTORY_CSV
     sales_path = SALES_MERCADO_CSV if mercado else SALES_CSV
     txn_id = payload.txn_id or f"txn-issue-{payload.issue_number}"
-
-    fecha = str(payload.fecha or "").strip()
-    if not fecha:
-        fecha = datetime.now().strftime("%Y-%m-%d")
+    fecha = str(payload.fecha or "").strip() or datetime.now().strftime("%Y-%m-%d")
 
     items = resolve_items_with_inventory(payload.items, inventory_path, zero_price=zero_price)
     if not items:
@@ -498,7 +512,7 @@ def register_sale(payload: ParsedPayload, mercado: bool, zero_price: bool = Fals
                 "precio_unit": f"{price:.2f}",
                 "importe": f"{qty * price:.2f}",
                 "issue": payload.issue_number,
-                "metodo_pago": normalize_payment(payload.metodo_pago),
+                "metodo_pago": "merma" if zero_price else normalize_payment(payload.metodo_pago),
                 "source_id": payload.issue_number,
                 "descripcion": item["descripcion"] or item["item"],
                 "status": "activa",
@@ -509,115 +523,6 @@ def register_sale(payload: ParsedPayload, mercado: bool, zero_price: bool = Fals
         )
         inventory_adjust(inventory_path, item["item"], item["descripcion"] or item["item"], "delta", -qty)
     return txn_id
-
-
-def register_production(payload: ParsedPayload) -> None:
-    items = resolve_items_with_inventory(payload.items, INVENTORY_CSV)
-    if not items:
-        raise ValueError("Producción sin items válidos")
-    fecha = str(payload.fecha or "").strip() or datetime.now().strftime("%Y-%m-%d")
-    for item in items:
-        qty = to_int(item["cantidad"], 0)
-        if qty <= 0:
-            continue
-        inventory_adjust(INVENTORY_CSV, item["item"], item["descripcion"], "delta", qty)
-        append_csv_row(PRODUCTION_CSV, {"fecha": fecha, "item": item["item"], "cantidad": qty, "issue": payload.issue_number, "source_id": payload.issue_number, "descripcion": item["descripcion"]}, ["fecha", "item", "cantidad", "issue", "source_id", "descripcion"])
-
-
-def register_abasto_mercado(payload: ParsedPayload) -> None:
-    items = resolve_items_with_inventory(payload.items, INVENTORY_CSV)
-    if not items:
-        raise ValueError("Abasto mercado sin items válidos")
-    fecha = str(payload.fecha or "").strip() or datetime.now().strftime("%Y-%m-%d")
-    for item in items:
-        qty = to_int(item["cantidad"], 0)
-        if qty <= 0:
-            continue
-        inventory_move_between(item["item"], item["descripcion"], qty)
-        append_csv_row(TRANSFER_MERCADO_CSV, {"fecha": fecha, "item": item["item"], "cantidad": qty, "issue": payload.issue_number, "source_id": payload.issue_number, "descripcion": item["descripcion"]}, ["fecha", "item", "cantidad", "issue", "source_id", "descripcion"])
-
-
-def parse_correction_detail_lines(text: str) -> list[dict[str, Any]]:
-    return parse_markdown_table_items(text)
-
-
-def find_sale_rows(sales_path: Path, txn_id: str, issue_ref: str) -> tuple[list[dict[str, str]], list[int]]:
-    rows = csv_read(sales_path)
-    matches, indexes = [], []
-    for idx, row in enumerate(rows):
-        status = str(row.get("status", "activa")).strip().lower() or "activa"
-        if status in {"cancelada", "corregida"}:
-            continue
-        if txn_id and str(row.get("txn_id", "")).strip() == txn_id:
-            matches.append(row); indexes.append(idx)
-        elif issue_ref and str(row.get("issue", "")).strip() == issue_ref:
-            matches.append(row); indexes.append(idx)
-    return matches, indexes
-
-
-def mark_sale_rows_status(sales_path: Path, indexes: list[int], status: str, correction_ref: str) -> None:
-    rows = csv_read(sales_path)
-    for idx in indexes:
-        if 0 <= idx < len(rows):
-            rows[idx]["status"] = status
-            rows[idx]["correction_ref"] = correction_ref
-    csv_write(sales_path, rows, ["txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue", "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"])
-
-
-def revert_sale_rows_to_inventory(matches: list[dict[str, str]], inventory_path: Path) -> None:
-    for row in matches:
-        qty = to_int(row.get("cantidad", 0), 0)
-        if qty > 0:
-            inventory_adjust(inventory_path, str(row.get("item", "")).strip(), str(row.get("descripcion", "")).strip(), "delta", qty)
-
-
-def append_corrected_sale(sales_path: Path, inventory_path: Path, payload: ParsedPayload, base_matches: list[dict[str, str]]) -> str:
-    fecha = str(payload.fecha or "").strip() or str(base_matches[0].get("fecha", "") if base_matches else "").strip() or datetime.now().strftime("%Y-%m-%d")
-    metodo = normalize_payment(payload.metodo_pago or (base_matches[0].get("metodo_pago", "") if base_matches else ""))
-    new_txn = f"corr-{payload.issue_number}"
-    items = resolve_items_with_inventory(parse_correction_detail_lines(payload.detalle), inventory_path)
-    if not items:
-        raise ValueError("La corrección no trae detalle válido")
-    for item in items:
-        qty = to_int(item["cantidad"], 0)
-        if qty <= 0:
-            continue
-        price = to_float(item["precio"], 0.0)
-        append_csv_row(sales_path, {
-            "txn_id": new_txn, "fecha": fecha, "item": item["item"], "cantidad": qty,
-            "precio_unit": f"{price:.2f}", "importe": f"{qty * price:.2f}",
-            "issue": payload.issue_number, "metodo_pago": metodo, "source_id": payload.issue_number,
-            "descripcion": item["descripcion"] or item["item"], "status": "activa", "correction_ref": "", "notas": payload.razon,
-        }, ["txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue", "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"])
-        inventory_adjust(inventory_path, item["item"], item["descripcion"] or item["item"], "delta", -qty)
-    return new_txn
-
-
-def handle_sale_correction(payload: ParsedPayload, mercado: bool) -> str:
-    inventory_path = INVENTORY_MERCADO_CSV if mercado else INVENTORY_CSV
-    sales_path = SALES_MERCADO_CSV if mercado else SALES_CSV
-    matches, indexes = find_sale_rows(sales_path, payload.txn_id, payload.issue_ref)
-    if not matches:
-        raise ValueError("No encontré la venta a corregir")
-    revert_sale_rows_to_inventory(matches, inventory_path)
-    action = str(payload.accion or "").strip().lower()
-    if action == "cancelar":
-        mark_sale_rows_status(sales_path, indexes, "cancelada", payload.issue_number)
-        return "cancelada"
-    if action == "ajustar":
-        mark_sale_rows_status(sales_path, indexes, "corregida", payload.issue_number)
-        return append_corrected_sale(sales_path, inventory_path, payload, matches)
-    raise ValueError("Acción de corrección no válida. Usa cancelar o ajustar")
-
-
-def handle_inventory_adjust(payload: ParsedPayload, mercado: bool) -> None:
-    inventory_path = INVENTORY_MERCADO_CSV if mercado else INVENTORY_CSV
-    mode = str(payload.modo or "delta").strip().lower()
-    if mode not in {"delta", "set"}:
-        raise ValueError("Modo inválido, usa delta o set")
-    if not str(payload.sku or "").strip():
-        raise ValueError("Falta sku para ajuste de inventario")
-    inventory_adjust(inventory_path, str(payload.sku).strip(), str(payload.descripcion or "").strip(), mode, to_int(payload.valor, 0))
 
 
 def build_event_hash(payload: ParsedPayload) -> str:
@@ -641,18 +546,6 @@ def process_payload(payload: ParsedPayload) -> str:
         return f"Merma/regaladas normal registrada. txn={register_sale(payload, mercado=False, zero_price=True)}"
     if ptype == "merma_mkt":
         return f"Merma/regaladas mercado registrada. txn={register_sale(payload, mercado=True, zero_price=True)}"
-    if ptype == "prod":
-        register_production(payload); return "Producción aplicada a inventory.csv"
-    if ptype == "abasto_mkt":
-        register_abasto_mercado(payload); return "Abasto mercado aplicado (normal -> mercado)"
-    if ptype == "ajuste_inv":
-        handle_inventory_adjust(payload, mercado=False); return "Ajuste de inventario normal aplicado"
-    if ptype == "ajuste_inv_mkt":
-        handle_inventory_adjust(payload, mercado=True); return "Ajuste de inventario mercado aplicado"
-    if ptype == "correccion_venta":
-        return f"Corrección de venta normal aplicada: {handle_sale_correction(payload, mercado=False)}"
-    if ptype == "correccion_venta_mkt":
-        return f"Corrección de venta mercado aplicada: {handle_sale_correction(payload, mercado=True)}"
     raise ValueError(f"Tipo no soportado: {ptype}")
 
 
