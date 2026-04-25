@@ -18,7 +18,7 @@
     "item": "BEBIDA-CHAMOYADA",
     "descripcion": "BEBIDA Chamoyada",
     "precio": 60.0,
-    "stock": 9999998
+    "stock": 9999997
   },
   {
     "product_id": "F76E2099",
@@ -291,7 +291,7 @@
     "item": "PALETA-AGUA-PREMIUM-FRUTOS-ROJOS",
     "descripcion": "PALETA AGUA PREMIUM Frutos Rojos",
     "precio": 30.0,
-    "stock": 9999993
+    "stock": 9999992
   },
   {
     "product_id": "BBF0DD66",
@@ -550,7 +550,7 @@
     "item": "PALETA-CREMA-PREMIUM-NUTELLA",
     "descripcion": "PALETA CREMA PREMIUM Nutella",
     "precio": 40.0,
-    "stock": 23
+    "stock": 22
   },
   {
     "product_id": "F6F917A9",
@@ -830,7 +830,7 @@
     "item": "PALETAS-PERRO",
     "descripcion": "Paletas para Perro",
     "precio": 30.0,
-    "stock": 136
+    "stock": 135
   },
   {
     "product_id": "3B6B12C9",
