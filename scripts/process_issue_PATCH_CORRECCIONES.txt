@@ -1,0 +1,69 @@
+APLICA ESTO EN scripts/process_issue.py
+
+Necesitas soportar 4 tipos nuevos:
+- correccion_venta
+- correccion_venta_mkt
+- ajuste_inv
+- ajuste_inv_mkt
+
+REGLAS:
+
+1) ajuste_inv
+- busca sku en inventory.csv
+- si modo == "delta": stock = stock + valor
+- si modo == "set": stock = valor
+- guarda cambio
+- registra evento en processed_events / log
+
+2) ajuste_inv_mkt
+- igual que ajuste_inv, pero sobre inventory_mercado.csv
+
+3) correccion_venta
+- identifica la venta por txn_id o issue_ref dentro de sales.csv
+- si accion == "cancelar":
+  - por cada renglón de esa venta, regresa cantidad al inventory.csv
+  - elimina o marca como cancelados esos renglones en sales.csv
+- si accion == "ajustar":
+  - primero revierte la venta original: regresa cantidades al inventory.csv
+  - elimina o marca original
+  - luego lee 'detalle' con formato:
+    SKU | CANTIDAD | PRECIO
+  - vuelve a insertar los renglones corregidos en sales.csv
+  - vuelve a descontar inventario.csv
+  - si metodo_pago viene informado, úsalo en la nueva venta
+
+4) correccion_venta_mkt
+- igual que correccion_venta pero usando:
+  - sales_mercado.csv
+  - inventory_mercado.csv
+
+5) transferencia
+En normalize_payment(), acepta también:
+- transferencia
+
+ejemplo:
+def normalize_payment(value: str) -> str:
+    v = str(value or "").strip().lower()
+    if v in {"tarjeta", "transferencia"}:
+        return v
+    return "efectivo"
+
+6) parser de body
+cuando el issue/body tenga líneas como:
+tipo: correccion_venta
+fecha: 2026-01-01
+txn_id: ...
+issue_ref: ...
+accion: ajustar
+metodo_pago: transferencia
+detalle:
+SKU | CANTIDAD | PRECIO
+PALETA-CREMA-OREO | 2 | 30
+razon:
+...
+extrae esos campos y llama al handler correcto
+
+Si quieres que quede más seguro:
+- no borres físicamente la venta original
+- marca una columna status = cancelada / corregida
+- y agrega una venta nueva corregida con nuevo txn_id
