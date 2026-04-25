@@ -792,6 +792,11 @@ def main() -> None:
     ensure_core_files()
     event = parse_issue_event()
     payload = parse_issue_payload(event)
+
+    if not payload.payload_type:
+        log("No hay tipo de operación en este evento. Se omite sin error.")
+        return
+
     event_hash = build_event_hash(payload)
 
     if processed_event_exists(payload.issue_number, event_hash):
@@ -816,5 +821,9 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as exc:
+        msg = str(exc)
+        if "No pude detectar el tipo de operación" in msg:
+            log(f"Sin operación para procesar: {msg}")
+            sys.exit(0)
         log(f"Fallo fatal: {exc}")
         sys.exit(1)
