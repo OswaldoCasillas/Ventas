@@ -1,198 +1,313 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Agregar producción</title>
-<style>
-  body{font-family:system-ui;margin:16px;max-width:900px}
-  h1{font-size:32px;margin:0 0 12px}
-  label{display:block;margin:12px 0 6px}
-  input,select,button{font-size:16px;padding:10px;border:1px solid #ccc;border-radius:8px}
-  select,input{width:100%}
-  .cats{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
-  .cat{border:1px solid #ccc;border-radius:999px;padding:6px 12px;background:#f5f5f5;cursor:pointer}
-  .cat.active{outline:2px solid #000;background:#fff}
-  table{border-collapse:collapse;width:100%;margin-top:12px}
-  th,td{border:1px solid #ddd;padding:6px;text-align:left}
-  th{background:#f7f7f7}
-  .right{text-align:right}
-  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-  .primary{background:#111;color:#fff;border-color:#111}
-  .danger{background:#c62828;color:#fff;border-color:#c62828}
-  .muted{color:#667;font-size:12px}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Agregar producción</title>
+  <style>
+    :root{
+      --bg:#f6f7fb;--card:#fff;--text:#162033;--muted:#6b7280;--line:#d9deea;
+      --brand:#0f62fe;--brand-soft:#eaf1ff;--shadow:0 6px 16px rgba(15,35,95,.08)
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{width:min(980px,calc(100% - 12px));margin:10px auto 18px}
+    .top{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+    h1{margin:0;font-size:20px;line-height:1.1}
+    .muted{color:var(--muted);font-size:12px}
+    .back{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--text);text-decoration:none;font-weight:700}
+    .grid{display:grid;gap:10px}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:10px}
+    .stack{display:grid;gap:8px}
+    .bar{display:grid;grid-template-columns:1fr auto;gap:6px}
+    .bar2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+    input,select,textarea,button{font:inherit}
+    input[type="text"],input[type="date"],input[type="number"],select,textarea{
+      width:100%;min-height:38px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff
+    }
+    textarea{min-height:52px;resize:vertical}
+    .mini-btn,.primary,.ghost,.pill{
+      min-height:38px;padding:0 10px;border:1px solid var(--line);border-radius:10px;background:#fff;font-weight:700;cursor:pointer
+    }
+    .primary{background:var(--brand);border-color:var(--brand);color:#fff}
+    .chips{display:flex;gap:6px;overflow:auto;padding-bottom:2px}
+    .chip{min-height:34px;padding:7px 10px;border:1px solid var(--line);border-radius:999px;background:#fff;font-weight:700;cursor:pointer}
+    .chip.active{background:var(--brand-soft);border-color:var(--brand);color:var(--brand)}
+    .products{display:grid;gap:6px}
+    .product{border:1px solid var(--line);border-radius:11px;padding:8px;background:#fff}
+    .p-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+    .p-title{font-size:14px;font-weight:800;line-height:1.1}
+    .sku{font-size:10px;color:var(--muted);word-break:break-word;margin-top:3px}
+    .actions{display:grid;grid-template-columns:1fr 82px;gap:6px;margin-top:6px}
+    .actions .add{background:var(--brand);border-color:var(--brand);color:#fff;border-radius:9px;border:1px solid}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th,td{padding:6px 4px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+    .cart-name{font-size:12px;font-weight:700;line-height:1.1}
+    .summary{display:grid;gap:7px;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
+    .footer{display:grid;gap:6px;margin-top:8px}
+    .empty{padding:8px;border:1px dashed var(--line);border-radius:10px;text-align:center;color:var(--muted);font-size:12px}
+    .label{font-size:11px;color:var(--muted);font-weight:800;text-transform:uppercase}
+    @media(min-width:900px){.grid{grid-template-columns:.78fr 1.22fr;gap:10px}}
+  </style>
+  <script src="config.js"></script>
 </head>
 <body>
-<h1>Agregar producción</h1>
-<p class="muted">Agrega varios productos al carrito y confirma para sumar stock.</p>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1>Agregar producción</h1>
+        <div class="muted">Genera una issue de producción para sumar stock al inventario.</div>
+      </div>
+      <a class="back" href="index.html">← Menú</a>
+    </div>
 
-<label>Fecha</label>
-<input id="fecha" type="date">
+    <div class="grid">
+      <section class="card">
+        <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+          <strong>Carrito de producción</strong>
+          <div class="muted"><span id="totalItems">0</span> renglones · <span id="totalQty">0</span> pzas</div>
+        </div>
+        <table>
+          <thead><tr><th>Producto</th><th>Cant.</th></tr></thead>
+          <tbody id="cartBody"></tbody>
+        </table>
+        <div id="cartEmpty" class="empty">Todavía no agregas productos.</div>
 
-<label>Categoría</label>
-<div class="cats" id="cats"></div>
+        <div class="summary">
+          <div class="bar2">
+            <div>
+              <div class="label">Fecha</div>
+              <input id="fecha" type="date">
+            </div>
+            <div>
+              <div class="label">Categoría</div>
+              <select id="category"></select>
+            </div>
+          </div>
+          <div>
+            <div class="label">Notas</div>
+            <textarea id="notas" placeholder="Opcional"></textarea>
+          </div>
+        </div>
 
-<label>Producto</label>
-<select id="item"></select>
+        <div class="footer">
+          <button id="clearCart" class="ghost" type="button">Vaciar carrito</button>
+          <button id="confirm" class="primary" type="button">Confirmar producción</button>
+        </div>
+      </section>
 
-<label>Cantidad</label>
-<input id="cantidad" type="number" min="1" value="10">
+      <section class="card stack">
+        <div class="bar">
+          <input id="search" type="text" placeholder="Buscar producto">
+          <button id="clearSearch" class="mini-btn" type="button">Limpiar</button>
+        </div>
+        <div class="label">Categorías rápidas</div>
+        <div id="quickCats" class="chips"></div>
+        <div id="products" class="products"></div>
+      </section>
+    </div>
+  </div>
 
-<div class="actions">
-  <button id="add">Agregar al carrito</button>
-  <button id="clear" class="danger">Vaciar carrito</button>
-</div>
+  <script>
+    const APP_CONFIG = window.APP_CONFIG || {};
+    const ORG = APP_CONFIG.ORG || "OswaldoCasillas";
+    const REPO = APP_CONFIG.REPO || "Ventas";
+    const MENU_LOCAL = "menu.json";
+    const MENU_FALLBACK = `https://${ORG.toLowerCase()}.github.io/${REPO}/menu.json`;
 
-<h3>Carrito</h3>
-<table id="cartTbl">
-  <thead><tr><th>SKU</th><th>Descripción</th><th class="right">Cantidad</th><th></th></tr></thead>
-  <tbody></tbody>
-</table>
+    const CAT_LABELS = {
+      "ALL":"Todas","PALETA-AGUA":"Agua","PALETA-AGUA-PREMIUM":"Agua Premium",
+      "PALETA-CREMA":"Crema","PALETA-CREMA-PREMIUM":"Crema Premium",
+      "PALETA-SIN-AZUCAR":"Sin Azúcar","PALETA-MINI":"Mini","PALETAS-PERRO":"Perro",
+      "HELADO-NIEVE":"Nieve","HELADO-CLASICO":"Clásico","HELADO-GOURMET":"Gourmet",
+      "HELADO-SIN-AZUCAR":"Helado SA","AGUA-FRESCA":"Aguas","BEBIDA":"Bebidas",
+      "POSTRE":"Postres","BOTANA":"Botanas","EXTRA":"Extras"
+    };
 
-<label>Notas (opcional)</label>
-<input id="notas" type="text" placeholder="Lote, turno, etc.">
+    let MENU = [];
+    let FILTER_CATEGORY = "ALL";
+    const cart = [];
 
-<div class="actions">
-  <button id="confirm" class="primary">Confirmar producción</button>
-</div>
-
-<script>
-  const ORG  = "OswaldoCasillas";
-  const REPO = "Ventas";
-
-  const CAT_LABELS = {
-    "PALETA-AGUA": "Paleta de Agua",
-    "PALETA-AGUA-PREMIUM": "Paleta Agua Premium",
-    "PALETA-CREMA": "Paleta de Crema",
-    "PALETA-CREMA-PREMIUM": "Paleta Crema Premium",
-    "PALETA-SIN-AZUCAR": "Paleta Sin Azúcar/Keto",
-    "PALETA-MINI": "Paleta Mini",
-    "HELADO-NIEVE": "Helado Nieve",
-    "HELADO-CLASICO": "Helado Clásico",
-    "HELADO-GOURMET": "Helado Gourmet",
-    "HELADO-SIN-AZUCAR": "Helado Sin Azúcar",
-    "MALTEADA": "Malteada",
-    "AGUA-FRESCA": "Aguas Frescas",
-    "BEBIDA": "Bebidas",
-    "POSTRE": "Postres",
-    "BOTANA": "Botanas",
-    "EXTRA": "Extras"
-  };
-
-  let MENU = [];
-  let FILTER = null;
-  const cart = [];
-
-  document.getElementById('fecha').valueAsDate = new Date();
-
-  // ---------- Helpers de nombres bonitos ----------
-  function getCategoryOf(sku){
-    const keys = Object.keys(CAT_LABELS).sort((a,b)=>b.length-a.length);
-    for(const k of keys){ if(sku.startsWith(k)) return k; }
-    return "OTROS";
-  }
-  function skuToNice(sku){
-    const prefixes = [
-      "PALETA-AGUA-PREMIUM","PALETA-CREMA-PREMIUM","PALETA-SIN-AZUCAR",
-      "PALETA-AGUA","PALETA-CREMA","PALETA-MINI",
-      "HELADO-NIEVE","HELADO-CLASICO","HELADO-GOURMET","HELADO-SIN-AZUCAR",
-      "AGUA-FRESCA","MALTEADA","BEBIDA","POSTRE","BOTANA","EXTRA"
-    ];
-    let name = sku;
-    for(const p of prefixes){
-      if(name.startsWith(p+"-")) { name = name.slice(p.length+1); break; }
-    }
-    name = name.replace(/-/g," ").toLowerCase()
-               .replace(/\b\w/g, c=>c.toUpperCase())
-               .replace(/\bS\/?Azucar\b/gi,'Sin Azúcar');
-    return name.trim();
-  }
-  function niceLabel(prod){
-    const base = (prod.descripcion && prod.descripcion.trim()) ? prod.descripcion : skuToNice(prod.item);
-    const cat  = CAT_LABELS[getCategoryOf(prod.item)] || "";
-    const price = (prod.precio!==undefined && prod.precio!=="") ? ` ($${prod.precio})` : "";
-    return `${base}${price}${cat?` — ${cat}`:''}`;
-  }
-
-  // ---------- Carga menú ----------
-  async function loadMenu(){
-    const r = await fetch('menu.json?_='+Date.now());
-    if(!r.ok){ alert("No encuentro el menú (menu.json). Ve a GitHub → Actions → 'Inventory Bot' → Run workflow para generarlo desde data/inventory.csv."); return; }
-    MENU = await r.json();
-    buildCategories();
-    renderOptions();
-  }
-
-  function buildCategories(){
-    const set = new Set(MENU.map(x=>getCategoryOf(x.item)).filter(k=>k!=="OTROS"));
-    const wrap = document.getElementById('cats');
-    wrap.innerHTML = `<span class="cat ${FILTER===null?'active':''}" data-k="">Todos</span>` +
-      [...set].map(k=>`<span class="cat ${FILTER===k?'active':''}" data-k="${k}">${CAT_LABELS[k]||k}</span>`).join('');
-    wrap.querySelectorAll('.cat').forEach(btn=>{
-      btn.onclick = ()=>{
-        FILTER = btn.dataset.k || null;
-        wrap.querySelectorAll('.cat').forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-        renderOptions();
+    function todayISO(){ const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+    function fetchJSON(url){ return fetch(url + "?_=" + Date.now(), { cache:"no-store" }).then(r => { if (!r.ok) throw new Error(`${r.status} ${url}`); return r.json(); }); }
+    function normalizeText(value){ return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[-_/]/g," ").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim(); }
+    function normalizeProduct(raw){
+      const item = String(raw?.item || "").trim();
+      const descripcion = String(raw?.descripcion || "").trim();
+      const invalidTokens = ["<<<<<<<","=======",">>>>>>>","Updated upstream","Stashed changes"];
+      if (!item) return null;
+      if (invalidTokens.some(token => `${item} ${descripcion}`.includes(token))) return null;
+      return {
+        item,
+        descripcion,
+        precio:Number(raw?.precio || 0),
+        product_id:String(raw?.product_id || "").trim()
       };
+    }
+
+    async function loadMenu(){
+      try { MENU = (await fetchJSON(MENU_LOCAL)).map(normalizeProduct).filter(Boolean); }
+      catch { MENU = (await fetchJSON(MENU_FALLBACK)).map(normalizeProduct).filter(Boolean); }
+      buildCategoryUI();
+      renderProducts();
+    }
+
+    function getCategoryOf(sku){
+      const parts = String(sku || "").split("-");
+      if (parts.length >= 3){
+        const c = `${parts[0]}-${parts[1]}-${parts[2]}`;
+        if (CAT_LABELS[c]) return c;
+      }
+      if (parts.length >= 2){
+        const c = `${parts[0]}-${parts[1]}`;
+        if (CAT_LABELS[c]) return c;
+      }
+      return "EXTRA";
+    }
+
+    function buildCategoryUI(){
+      const categories = Array.from(new Set(MENU.map(p => getCategoryOf(p.item)))).sort((a,b) => (CAT_LABELS[a] || a).localeCompare(CAT_LABELS[b] || b));
+      const all = ["ALL", ...categories];
+      const select = document.getElementById("category");
+      select.innerHTML = all.map(k => `<option value="${k}">${CAT_LABELS[k] || k}</option>`).join("");
+      select.value = FILTER_CATEGORY;
+      select.onchange = () => { FILTER_CATEGORY = select.value; renderProducts(); };
+
+      const chips = document.getElementById("quickCats");
+      chips.innerHTML = all.slice(0,8).map(k => `<button type="button" class="chip ${k===FILTER_CATEGORY?'active':''}" data-cat="${k}">${CAT_LABELS[k] || k}</button>`).join("");
+      chips.querySelectorAll(".chip").forEach(chip => {
+        chip.onclick = () => {
+          FILTER_CATEGORY = chip.dataset.cat;
+          select.value = FILTER_CATEGORY;
+          buildCategoryUI();
+          renderProducts();
+        };
+      });
+    }
+
+    function filteredProducts(){
+      const search = normalizeText(document.getElementById("search").value);
+      const terms = search ? search.split(" ").filter(Boolean) : [];
+      return MENU.filter(p => {
+        const byCat = FILTER_CATEGORY === "ALL" || getCategoryOf(p.item) === FILTER_CATEGORY;
+        if (!byCat) return false;
+        if (!terms.length) return true;
+        const hay = normalizeText(`${p.item} ${p.descripcion} ${CAT_LABELS[getCategoryOf(p.item)] || ""}`);
+        return terms.every(t => hay.includes(t));
+      });
+    }
+
+    function addToCart(product, qty){
+      const cantidad = Math.max(1, Number(qty || 1));
+      const found = cart.find(row => row.item === product.item);
+      if (found) found.cantidad += cantidad;
+      else cart.push({ item:product.item, descripcion:product.descripcion, cantidad });
+      renderCart();
+    }
+
+    function updateQty(item, delta){
+      const found = cart.find(row => row.item === item);
+      if (!found) return;
+      found.cantidad += delta;
+      if (found.cantidad <= 0){
+        const idx = cart.findIndex(row => row.item === item);
+        if (idx >= 0) cart.splice(idx, 1);
+      }
+      renderCart();
+    }
+
+    function clearCart(){ cart.splice(0, cart.length); renderCart(); }
+
+    function renderProducts(){
+      const list = filteredProducts();
+      const container = document.getElementById("products");
+      if (!list.length){ container.innerHTML = `<div class="empty">No hay productos para este filtro.</div>`; return; }
+      container.innerHTML = list.map((p, i) => `
+        <article class="product">
+          <div class="p-top"><div class="p-title">${p.descripcion || p.item}</div></div>
+          <div class="sku">${p.item}</div>
+          <div class="actions">
+            <button class="add" type="button" data-add="${p.item}">Agregar</button>
+            <input id="qty-${i}" type="number" min="1" step="1" value="1">
+          </div>
+        </article>
+      `).join("");
+
+      container.querySelectorAll("[data-add]").forEach((btn, idx) => {
+        btn.onclick = () => {
+          const p = MENU.find(x => x.item === btn.dataset.add);
+          const qty = Number(document.getElementById(`qty-${idx}`).value || 1);
+          if (p) addToCart(p, qty);
+        };
+      });
+    }
+
+    function renderCart(){
+      const body = document.getElementById("cartBody");
+      const empty = document.getElementById("cartEmpty");
+      if (!cart.length){
+        body.innerHTML = "";
+        empty.style.display = "block";
+      } else {
+        empty.style.display = "none";
+        body.innerHTML = cart.map(row => `
+          <tr>
+            <td>
+              <div class="cart-name">${row.descripcion || row.item}</div>
+              <div class="sku">${row.item}</div>
+            </td>
+            <td>
+              <div style="display:inline-flex;align-items:center;gap:5px;">
+                <button type="button" class="pill" data-minus="${row.item}">−</button>
+                <strong>${row.cantidad}</strong>
+                <button type="button" class="pill" data-plus="${row.item}">+</button>
+              </div>
+            </td>
+          </tr>
+        `).join("");
+      }
+      body.querySelectorAll("[data-minus]").forEach(btn => btn.onclick = () => updateQty(btn.dataset.minus, -1));
+      body.querySelectorAll("[data-plus]").forEach(btn => btn.onclick = () => updateQty(btn.dataset.plus, 1));
+      document.getElementById("totalItems").textContent = String(cart.length);
+      document.getElementById("totalQty").textContent = String(cart.reduce((s, r) => s + r.cantidad, 0));
+    }
+
+    function buildGitHubIssueUrl(){
+      const fecha = document.getElementById("fecha").value;
+      const notas = document.getElementById("notas").value;
+      const base = `https://github.com/${ORG}/${REPO}/issues/new`;
+      const title = `Producción: ${cart.length} items @ ${fecha}`;
+      let body = `**Fecha**: ${fecha}\n**Notas**: ${notas || ""}\n\n**Items**\nSKU | Cantidad\n--- | ---\n`;
+      cart.forEach(c => { body += `${c.item} | ${c.cantidad}\n`; });
+      const params = new URLSearchParams({
+        title,
+        body,
+        labels: "produccion"
+      });
+      return `${base}?${params.toString()}`;
+    }
+
+    function confirmProduction(){
+      const fecha = document.getElementById("fecha").value;
+      if (!fecha) return alert("Falta la fecha");
+      if (!cart.length) return alert("Agrega al menos un producto");
+      location.href = buildGitHubIssueUrl();
+    }
+
+    document.getElementById("search").addEventListener("input", renderProducts);
+    document.getElementById("clearSearch").onclick = () => { document.getElementById("search").value = ""; renderProducts(); };
+    document.getElementById("clearCart").onclick = clearCart;
+    document.getElementById("confirm").onclick = confirmProduction;
+    document.getElementById("fecha").value = todayISO();
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      try { await loadMenu(); }
+      catch (error) {
+        console.error(error);
+        document.getElementById("products").innerHTML = `<div class="empty">No se pudo cargar el catálogo.</div>`;
+      }
+      renderCart();
     });
-  }
-
-  function renderOptions(){
-    const sel = document.getElementById('item');
-    let items = MENU.slice();
-    if(FILTER) items = items.filter(x=>getCategoryOf(x.item)===FILTER);
-    items.sort((a,b)=>niceLabel(a).localeCompare(niceLabel(b),'es'));
-    sel.innerHTML = items.map(x =>
-      `<option value="${x.item}">${niceLabel(x)}</option>`
-    ).join('');
-  }
-
-  // ---------- Carrito ----------
-  function renderCart(){
-    const tb = document.querySelector('#cartTbl tbody');
-    tb.innerHTML = cart.map((c,i)=>`<tr>
-      <td>${c.item}</td><td>${c.descripcion||''}</td>
-      <td class="right">${c.cantidad}</td>
-      <td><button data-i="${i}" class="rm">Quitar</button></td></tr>`).join('');
-    tb.querySelectorAll('.rm').forEach(b=>b.onclick=()=>{ cart.splice(Number(b.dataset.i),1); renderCart(); });
-  }
-
-  document.getElementById('add').onclick = ()=>{
-    const sku = document.getElementById('item').value;
-    const cantidad = Number(document.getElementById('cantidad').value||1);
-    if(!sku || cantidad<=0) return alert("Selecciona producto y cantidad válida");
-    const prod = MENU.find(x=>x.item===sku) || {descripcion:''};
-    const idx = cart.findIndex(c=>c.item===sku);
-    if(idx>=0) cart[idx].cantidad += cantidad;
-    else cart.push({item:sku, descripcion:niceLabel(prod).split(' — ')[0], cantidad});
-    renderCart();
-  };
-
-  document.getElementById('clear').onclick = ()=>{ cart.splice(0,cart.length); renderCart(); };
-
-  function buildIssueUrl(){
-    const fecha = document.getElementById('fecha').value;
-    const notas = document.getElementById('notas').value;
-    if(!fecha) return alert("Falta la fecha");
-    if(cart.length===0) return alert("Agrega al menos un producto");
-    const base = `https://github.com/${ORG}/${REPO}/issues/new`;
-    const title = `Producción: ${cart.length} items @ ${fecha}`;
-    let body = `**Fecha**: ${fecha}\n**Notas**: ${notas||''}\n\n**Items**\nSKU | Cantidad\n`;
-    cart.forEach(c=>{ body += `${c.item} | ${c.cantidad}\n`; });
-    const params = new URLSearchParams({ template:'produccion.md', title, body });
-    return `${base}?${params.toString()}`;
-  }
-
-  document.getElementById('confirm').onclick = ()=>{
-    location.href = buildIssueUrl();
-  };
-
-  loadMenu();
-</script> <!-- ✅ cerramos el script principal -->
-
-<!-- Botón universal "Volver al menú" -->
-<script src="back-button.js?v=1" defer></script>
-
+  </script>
 </body>
 </html>
