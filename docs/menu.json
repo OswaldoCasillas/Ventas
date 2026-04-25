@@ -221,14 +221,14 @@
     "item": "PALETA-AGUA-GROSSELLA",
     "descripcion": "PALETA AGUA Grosella",
     "precio": 25.0,
-    "stock": 30
+    "stock": 29
   },
   {
     "product_id": "K2F6E9F9",
     "item": "PALETA-AGUA-GUANABANA",
     "descripcion": "PALETA AGUA Guanabana",
     "precio": 25.0,
-    "stock": 25
+    "stock": 24
   },
   {
     "product_id": "F2E6E9F9",
@@ -284,7 +284,7 @@
     "item": "PALETA-AGUA-PINA",
     "descripcion": "PALETA AGUA Pina",
     "precio": 25.0,
-    "stock": 18
+    "stock": 17
   },
   {
     "product_id": "746FF175",
@@ -431,7 +431,7 @@
     "item": "PALETA-CREMA-CHOCOLATE",
     "descripcion": "PALETA CREMA Chocolate",
     "precio": 35.0,
-    "stock": 14
+    "stock": 13
   },
   {
     "product_id": "7B6778AE",
@@ -466,7 +466,7 @@
     "item": "PALETA-CREMA-MAMEY",
     "descripcion": "PALETA CREMA Mamey",
     "precio": 35.0,
-    "stock": 31
+    "stock": 30
   },
   {
     "product_id": "07A7679E",
@@ -564,7 +564,7 @@
     "item": "PALETA-CREMA-PREMIUM-PISTACHE",
     "descripcion": "PALETA CREMA PREMIUM Pistache",
     "precio": 40.0,
-    "stock": 3
+    "stock": 2
   },
   {
     "product_id": "02298024",
@@ -627,7 +627,7 @@
     "item": "PALETA-CREMA-ROMPOPE",
     "descripcion": "PALETA CREMA Rompope",
     "precio": 35.0,
-    "stock": 30
+    "stock": 29
   },
   {
     "product_id": "05908024",
