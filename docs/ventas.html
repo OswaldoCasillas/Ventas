@@ -12,26 +12,8 @@
     .filters{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px} input,select,button{font:inherit;padding:9px 10px;border:1px solid #d1d5db;border-radius:10px;background:#fff} button{cursor:pointer}
     .stats{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;margin:8px 0} .muted{color:var(--muted);font-size:12px}
     table{width:100%;border-collapse:collapse;font-size:12px} th,td{padding:7px 5px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top} .cart-name{font-size:12px;font-weight:700;line-height:1.1} .sku{font-size:10px;color:var(--muted)}
-    .actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+    .actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px}
   </style>
-
-<script>
-let _rowsFull = [], _metodo = "todos", _orden = "reciente";
-
-function money(n){ return `$${Number(n || 0).toFixed(2)}`; }
-function todayISO(){ const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
-function skuToNice(sku){ return String(sku || "").replaceAll("-", " "); }
-function normalizeCsvText(text){ let t = String(text || "").replace(/\uFEFF/g,"").trim(); t = t.replace(/\r\n/g,"\n").replace(/\r/g,"\n"); if (!t.includes("\n")) t = t.replace(/\s+(?=[A-Z]{1,3}\d{6},\d{4}-\d{2}-\d{2},)/g,"\n"); return t; }
-function isValidSaleRow(r){ const f = [String(r.fecha||""),String(r.item||""),String(r.descripcion||""),String(r.issue||""),String(r.txn_id||"")].join(" "); const bad = ["<<<<<<<","=======",">>>>>>>","Updated upstream","Stashed changes"]; if (bad.some(x => f.includes(x))) return false; const item = String(r.item||"").trim(), descripcion = String(r.descripcion||"").trim(), cantidad = Number(r.cantidad||0), precio = Number(r.precio_unit||0), importe = Number(r.importe||0); return Boolean(item || descripcion) && (cantidad > 0 || precio > 0 || importe > 0); }
-function parseCSV(text){ const lines = normalizeCsvText(text).split(/\n+/).filter(Boolean); if (!lines.length) return []; const headers=[]; let current="", inQuotes=false; for (let i=0;i<lines[0].length;i++){ const ch=lines[0][i]; if(ch === '"') inQuotes=!inQuotes; else if(ch === "," && !inQuotes){ headers.push(current.trim()); current=""; } else current += ch; } headers.push(current.trim()); const rows=[]; for (let i=1;i<lines.length;i++){ const line=lines[i]; if(!line.trim()) continue; const cols=[]; let value="", quoted=false; for (let j=0;j<line.length;j++){ const ch=line[j]; if(ch === '"'){ if(quoted && line[j+1] === '"'){ value += '"'; j++; } else quoted=!quoted; } else if(ch === "," && !quoted){ cols.push(value); value=""; } else value += ch; } cols.push(value); const row={}; headers.forEach((h, idx)=> row[h]=cols[idx] ?? ""); rows.push(row); } return rows; }
-async function fetchText(url){ const r = await fetch(url + "?_=" + Date.now(), { cache:"no-store" }); if(!r.ok) throw new Error(`${r.status} ${url}`); return r.text(); }
-function sortRows(rows){ const s = rows.slice(), byName = r => String(r.descripcion || skuToNice(r.item || "")).toLowerCase(), byAmount = r => Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0))), byDate = r => `${String(r.fecha || "")}|${String(r.txn_id || "")}|${String(r.issue || "")}`; if(_orden === "az") s.sort((a,b)=>byName(a).localeCompare(byName(b))); else if(_orden === "za") s.sort((a,b)=>byName(b).localeCompare(byName(a))); else if(_orden === "mayor") s.sort((a,b)=>byAmount(b)-byAmount(a)); else if(_orden === "menor") s.sort((a,b)=>byAmount(a)-byAmount(b)); else if(_orden === "viejo") s.sort((a,b)=>byDate(a).localeCompare(byDate(b))); else s.sort((a,b)=>byDate(b).localeCompare(byDate(a))); return s; }
-function rowsForCurrentView(){ let rows = Array.isArray(_rowsFull) ? _rowsFull.filter(isValidSaleRow) : []; if(_metodo !== "todos") rows = rows.filter(r => (r.metodo_pago || "efectivo") === _metodo); return sortRows(rows); }
-function render(){ const rows = rowsForCurrentView(), tbody = document.getElementById("tbody"); tbody.innerHTML = rows.map(r => `<tr><td><div class="cart-name">${r.descripcion || skuToNice(r.item || "")}</div><div class="sku">${r.item || ""}</div><div class="sku">${r.fecha || ""} · ${r.metodo_pago || "efectivo"}</div></td><td>${Number(r.cantidad || 0)}</td><td>${money(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0)))}</td></tr>`).join(""); const units = rows.reduce((s,r)=>s+Number(r.cantidad||0),0), total = rows.reduce((s,r)=>s+Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0))),0); document.getElementById("count").textContent=String(rows.length); document.getElementById("units").textContent=String(units); document.getElementById("total").textContent=money(total); document.getElementById("status").textContent=rows.length ? "Ventas cargadas." : "No hay ventas para ese filtro."; }
-function buildResumenPorProducto(rows){ const bucket = new Map(); rows.forEach(r => { const key = `${r.item || ""}|||${r.descripcion || skuToNice(r.item || "")}`; const current = bucket.get(key) || {"SKU":r.item || "","Producto":r.descripcion || skuToNice(r.item || ""),"Cantidad":0,"Importe":0}; current["Cantidad"] += Number(r.cantidad || 0); current["Importe"] += Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0))); bucket.set(key, current); }); return Array.from(bucket.values()).sort((a,b)=>String(a["Producto"]).localeCompare(String(b["Producto"]))); }
-function exportExcelDelDia(prefix){ const fecha = document.getElementById("fecha").value, rows = rowsForCurrentView(); if(!fecha) return alert("Selecciona una fecha"); if(!rows.length) return alert("No hay ventas para exportar"); if(!window.XLSX) return; const detalle = rows.map(r => ({"Fecha":r.fecha || fecha,"SKU":r.item || "","Producto":r.descripcion || skuToNice(r.item || ""),"Cantidad":Number(r.cantidad || 0),"Precio unitario":Number(r.precio_unit || 0),"Importe":Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0))),"Método de pago":(r.metodo_pago || "efectivo"),"Issue":r.issue || "","Txn":r.txn_id || ""})); const resumenProducto = buildResumenPorProducto(rows), totalUnidades = detalle.reduce((s,r)=>s+Number(r["Cantidad"] || 0),0), totalImporte = detalle.reduce((s,r)=>s+Number(r["Importe"] || 0),0); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(resumenProducto), "Resumen por producto"); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(detalle), "Detalle"); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([["Fecha",fecha],["Filtro",_metodo],["Orden",_orden],["Registros",detalle.length],["Unidades",totalUnidades],["Importe",totalImporte]]), "Resumen"); XLSX.writeFile(wb, prefix + "-" + fecha + "-" + _metodo + "-" + _orden + ".xlsx"); }
-</script>
-
 </head>
 <body>
   <div class="card">
@@ -45,44 +27,173 @@ function exportExcelDelDia(prefix){ const fecha = document.getElementById("fecha
     <div class="stats"><div><strong>Registros:</strong> <span id="count">0</span></div><div><strong>Unidades:</strong> <span id="units">0</span></div><div><strong>Total:</strong> <span id="total">$0.00</span></div></div>
     <div class="muted" id="status">Selecciona una fecha y presiona Cargar.</div>
     <table><thead><tr><th>Producto</th><th>Cant.</th><th>Importe</th></tr></thead><tbody id="tbody"></tbody></table>
-    <div class="actions"><button id="excel" type="button">Excel</button><button id="imprimir" type="button">Imprimir</button></div>
+    <div class="actions"><button id="excel" type="button">Excel</button><button id="excelPaletas" type="button">Reporte paletas</button><button id="imprimir" type="button">Imprimir</button></div>
   </div>
+
   <script>
-    async function loadRowsByDate(fecha){
-      const dailyPath = `diario/${fecha}-ventas.csv`;
-      try {
-        const csv = await fetchText(dailyPath);
-        return parseCSV(csv).map(r => ({
-          fecha:r.fecha || r.Fecha || fecha,item:r.item || r.SKU || "",descripcion:r.descripcion || r.Producto || "",
-          cantidad:Number(r.cantidad || r.Cantidad || 0),precio_unit:Number(r.precio_unit || r["Precio unitario"] || 0),
-          importe:Number(r.importe || r.Importe || 0),metodo_pago:String(r.metodo_pago || r["Método de pago"] || "efectivo").toLowerCase(),
-          issue:r.issue || r.Issue || "",txn_id:r.txn_id || r.Txn || ""
-        })).filter(isValidSaleRow);
-      } catch (_) {
-        const csv = await fetchText("ventas_detalle.csv");
-        return parseCSV(csv).map(r => ({
-          fecha:r.fecha || r.Fecha || "",item:r.item || r.SKU || "",descripcion:r.descripcion || r.Producto || "",
-          cantidad:Number(r.cantidad || r.Cantidad || 0),precio_unit:Number(r.precio_unit || r["Precio unitario"] || 0),
-          importe:Number(r.importe || r.Importe || 0),metodo_pago:String(r.metodo_pago || r["Método de pago"] || "efectivo").toLowerCase(),
-          issue:r.issue || r.Issue || "",txn_id:r.txn_id || r.Txn || ""
-        })).filter(r => String(r.fecha || "").slice(0,10) === fecha).filter(isValidSaleRow);
-      }
-    }
-    async function cargar(){
-      const fecha = document.getElementById("fecha").value;
-      _metodo = document.getElementById("metodo").value;
-      _orden = document.getElementById("orden").value;
-      if(!fecha) return alert("Selecciona una fecha");
-      document.getElementById("status").textContent = "Cargando…";
-      try{ _rowsFull = await loadRowsByDate(fecha); render(); }
-      catch(error){ console.error(error); _rowsFull=[]; render(); document.getElementById("status").textContent = "Error al cargar ventas."; }
-    }
-    document.getElementById("fecha").value = todayISO();
-    document.getElementById("cargar").onclick = cargar;
-    document.getElementById("metodo").onchange = () => { _metodo = document.getElementById("metodo").value; render(); };
-    document.getElementById("orden").onchange = () => { _orden = document.getElementById("orden").value; render(); };
-    document.getElementById("excel").onclick = () => exportExcelDelDia("ventas");
-    document.getElementById("imprimir").onclick = () => window.print();
+    let _rowsFull = [], _metodo = "todos", _orden = "reciente";
+    function money(n){ return `$${Number(n || 0).toFixed(2)}`; }
+    function todayISO(){ const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+    function skuToNice(sku){ return String(sku || "").replaceAll("-", " "); }
+    function normalizeCsvText(text){ let t = String(text || "").replace(/\uFEFF/g,"").trim(); t = t.replace(/\r\n/g,"\n").replace(/\r/g,"\n"); if (!t.includes("\n")) t = t.replace(/\s+(?=[A-Z]{1,3}\d{6},\d{4}-\d{2}-\d{2},)/g,"\n"); return t; }
+    function isValidSaleRow(r){ const f = [String(r.fecha||""),String(r.item||""),String(r.descripcion||""),String(r.issue||""),String(r.txn_id||"")].join(" "); const bad = ["<<<<<<<","=======",">>>>>>>","Updated upstream","Stashed changes"]; if (bad.some(x => f.includes(x))) return false; const item = String(r.item||"").trim(), descripcion = String(r.descripcion||"").trim(), cantidad = Number(r.cantidad||0), precio = Number(r.precio_unit||0), importe = Number(r.importe||0); return Boolean(item || descripcion) && (cantidad > 0 || precio > 0 || importe > 0); }
+    function parseCSV(text){ const lines = normalizeCsvText(text).split(/\n+/).filter(Boolean); if (!lines.length) return []; const headers=[]; let current="", inQuotes=false; for (let i=0;i<lines[0].length;i++){ const ch=lines[0][i]; if(ch === '"') inQuotes=!inQuotes; else if(ch === "," && !inQuotes){ headers.push(current.trim()); current=""; } else current += ch; } headers.push(current.trim()); const rows=[]; for (let i=1;i<lines.length;i++){ const line=lines[i]; if(!line.trim()) continue; const cols=[]; let value="", quoted=false; for (let j=0;j<line.length;j++){ const ch=line[j]; if(ch === '"'){ if(quoted && line[j+1] === '"'){ value += '"'; j++; } else quoted=!quoted; } else if(ch === "," && !quoted){ cols.push(value); value=""; } else value += ch; } cols.push(value); const row={}; headers.forEach((h, idx)=> row[h]=cols[idx] ?? ""); rows.push(row); } return rows; }
+    async function fetchText(url){ const r = await fetch(url + "?_=" + Date.now(), { cache:"no-store" }); if(!r.ok) throw new Error(`${r.status} ${url}`); return r.text(); }
+    function sortRows(rows){ const s = rows.slice(), byName = r => String(r.descripcion || skuToNice(r.item || "")).toLowerCase(), byAmount = r => Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0))), byDate = r => `${String(r.fecha || "")}|${String(r.txn_id || "")}|${String(r.issue || "")}`; if(_orden === "az") s.sort((a,b)=>byName(a).localeCompare(byName(b))); else if(_orden === "za") s.sort((a,b)=>byName(b).localeCompare(byName(a))); else if(_orden === "mayor") s.sort((a,b)=>byAmount(b)-byAmount(a)); else if(_orden === "menor") s.sort((a,b)=>byAmount(a)-byAmount(b)); else if(_orden === "viejo") s.sort((a,b)=>byDate(a).localeCompare(byDate(b))); else s.sort((a,b)=>byDate(b).localeCompare(byDate(a))); return s; }
+    function rowsForCurrentView(){ let rows = Array.isArray(_rowsFull) ? _rowsFull.filter(isValidSaleRow) : []; if(_metodo !== "todos") rows = rows.filter(r => (r.metodo_pago || "efectivo") === _metodo); return sortRows(rows); }
+    function render(){ const rows = rowsForCurrentView(), tbody = document.getElementById("tbody"); tbody.innerHTML = rows.map(r => `<tr><td><div class="cart-name">${r.descripcion || skuToNice(r.item || "")}</div><div class="sku">${r.item || ""}</div><div class="sku">${r.fecha || ""} · ${r.metodo_pago || "efectivo"}</div></td><td>${Number(r.cantidad || 0)}</td><td>${money(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0)))}</td></tr>`).join(""); const units = rows.reduce((s,r)=>s+Number(r.cantidad||0),0), total = rows.reduce((s,r)=>s+Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0))),0); document.getElementById("count").textContent=String(rows.length); document.getElementById("units").textContent=String(units); document.getElementById("total").textContent=money(total); document.getElementById("status").textContent=rows.length ? "Ventas cargadas." : "No hay ventas para ese filtro."; }
+    function buildResumenPorProducto(rows){ const bucket = new Map(); rows.forEach(r => { const key = `${r.item || ""}|||${r.descripcion || skuToNice(r.item || "")}`; const current = bucket.get(key) || {"SKU":r.item || "","Producto":r.descripcion || skuToNice(r.item || ""),"Cantidad":0,"Importe":0}; current["Cantidad"] += Number(r.cantidad || 0); current["Importe"] += Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0))); bucket.set(key, current); }); return Array.from(bucket.values()).sort((a,b)=>String(a["Producto"]).localeCompare(String(b["Producto"]))); }
+    function exportExcelDelDia(){ const fecha = document.getElementById("fecha").value, rows = rowsForCurrentView(); if(!fecha) return alert("Selecciona una fecha"); if(!rows.length) return alert("No hay ventas para exportar"); if(!window.XLSX) return; const detalle = rows.map(r => ({"Fecha":r.fecha || fecha,"SKU":r.item || "","Producto":r.descripcion || skuToNice(r.item || ""),"Cantidad":Number(r.cantidad || 0),"Precio unitario":Number(r.precio_unit || 0),"Importe":Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0))),"Método de pago":(r.metodo_pago || "efectivo"),"Issue":r.issue || "","Txn":r.txn_id || ""})); const resumenProducto = buildResumenPorProducto(rows), totalUnidades = detalle.reduce((s,r)=>s+Number(r["Cantidad"] || 0),0), totalImporte = detalle.reduce((s,r)=>s+Number(r["Importe"] || 0),0); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(resumenProducto), "Resumen por producto"); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(detalle), "Detalle"); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([["Fecha",fecha],["Filtro",_metodo],["Orden",_orden],["Registros",detalle.length],["Unidades",totalUnidades],["Importe",totalImporte]]), "Resumen"); XLSX.writeFile(wb, "ventas-" + fecha + "-" + _metodo + "-" + _orden + ".xlsx"); }
+    
+const PALETAS_ORDEN = [
+  ["PALETA-CREMA-ALGODON","ALGODÓN"],
+  ["PALETA-CREMA-ARROZ","ARROZ"],
+  ["PALETA-CREMA-PREMIUM-BAILEYS","BAILEYS"],
+  ["PALETA-CREMA-BESO-DE-ANGEL","BESO D ÁNGEL"],
+  ["PALETA-CREMA-PREMIUM-CAJETA","CAJETA"],
+  ["PALETA-CREMA-CAPUCHINO","CAPUCHINO"],
+  ["PALETA-CREMA-CHICLE","CHICLE"],
+  ["PALETA-CREMA-CHOCOLATE","CHOCOLATE"],
+  ["PALETA-CREMA-PREMIUM-CHONGOS","CHONGOS"],
+  ["PALETA-CREMA-COCO","COCO"],
+  ["PALETA-CREMA-DURAZNOS-CON-CREMA","DURAZNO&CREMA"],
+  ["PALETA-CREMA-PREMIUM-FERRERO","FERRERO"],
+  ["PALETA-AGUA-FRESA","FRESA agua"],
+  ["PALETA-CREMA-FRESA-CREMA","FRESA crema"],
+  ["PALETA-CREMA-FRESA-CON-CREMA","FRESAS&CREAM"],
+  ["PALETA-AGUA-PREMIUM-FRUTOS-ROJOS","FRUTOS ROJOS"],
+  ["PALETA-AGUA-GROSSELLA","GROSELLA"],
+  ["PALETA-AGUA-GUANABANA","GUANABANA"],
+  ["PALETA-AGUA-GUAYABA","GUAYABA"],
+  ["PALETA-AGUA-KIWI","KIWI"],
+  ["PALETA-CREMA-PREMIUM-KAHLUA","KAHLÚA"],
+  ["PALETA-AGUA-LIMON","LIMÓN"],
+  ["PALETA-AGUA-PREMIUM-LIMON-CHAMOY","LIMÓN CHAMOY"],
+  ["PALETA-CREMA-MAMEY","MAMEY"],
+  ["PALETA-AGUA-MANDARINA","MANDARINA"],
+  ["PALETA-AGUA-MANGO","MANGO"],
+  ["PALETA-AGUA-PREMIUM-MANGO-CHAMOY","MANGO CHAMOY"],
+  ["PALETA-AGUA-MARACUYA","MARACUYÁ"],
+  ["PALETA-CREMA-MAZAPAN","MAZAPÁN"],
+  ["PALETA-AGUA-MELON","MELÓN"],
+  ["PALETA-CREMA-MENTA-CHOCOLATE","MENTA CON CH"],
+  ["PALETA-CREMA-PREMIUM-MOCTEZUMA","MOCTEZUMA"],
+  ["PALETA-CREMA-PREMIUM-NUEZ","NUEZ"],
+  ["PALETA-CREMA-PREMIUM-NUTELLA","NUTELLA"],
+  ["PALETA-CREMA-OREO","OREO"],
+  ["PALETA-CREMA-PAY-DE-LIMON","PAY DE LIMÓN"],
+  ["PALETAS-PERRO","PERRO"],
+  ["PALETA-AGUA-PREMIUM-PICAFRESA","PICAFRESA"],
+  ["PALETA-AGUA-PREMIUM-PICAPANDA","PICAPANDAS"],
+  ["PALETA-AGUA-PINA","PIÑA"],
+  ["PALETA-AGUA-PREMIUM-PINA-CHAMOY","PIÑA CHAMOY"],
+  ["PALETA-CREMA-PREMIUM-PINON","PIÑON"],
+  ["PALETA-CREMA-PREMIUM-PISTACHE","PISTACHE"],
+  ["PALETA-AGUA-PREMIUM-PULPARINDO","PULPARINDO"],
+  ["PALETA-CREMA-PREMIUM-QUESO","QUESO"],
+  ["PALETA-CREMA-PREMIUM-QUESO-CON-ZARZAMORA","QUESO/ZARZA"],
+  ["PALETA-CREMA-PREMIUM-RAFFAELLO","RAFFAELLO"],
+  ["PALETA-CREMA-ROMPOPE","ROMPOPE"],
+  ["PALETA-CREMA-PREMIUM-RON-CON-PASAS","RÓN PASAS"],
+  ["PALETA-CREMA-SALTED-CARAMEL","SALTED CARAMEL"],
+  ["PALETA-AGUA-SANDIA","SANDÍA"],
+  ["PALETA-AGUA-PREMIUM-SANDIA-CHAMOY","SANDÍA CHAMOY"],
+  ["PALETA-CREMA-PREMIUM-SELVA-BLANCA","SELVA BLANCA"],
+  ["PALETA-CREMA-PREMIUM-SELVA-NEGRA","SELVA NEGRA"],
+  ["PALETA-CREMA-PREMIUM-SNICKERS","SNICKERS"],
+  ["PALETA-AGUA-TAMARINDO","TAMARINDO"],
+  ["PALETA-CREMA-TARO","TARO"],
+  ["PALETA-CREMA-TRIX","TRIX"],
+  ["PALETA-AGUA-UVA","UVA"],
+  ["PALETA-CREMA-VAINILLA","VAINILLA"],
+  ["PALETA-CREMA-PREMIUM-VINO-TINTO-RELLENO","VINO"],
+  ["PALETA-AGUA-ZAPOTE","ZAPOTE"],
+  ["PALETA-ALCOHOL-PERLA-NEGRA","PERLA NEGRA"],
+  ["PALETA-ALCOHOL-PINA-COLADA","PIÑA COLADA"],
+  ["PALETA-ALCOHOL-TEQUILA","TEQUILA"],
+  ["PALETA-SIN-AZUCAR-CAJETA","CAJETA SA"],
+  ["PALETA-SIN-AZUCAR-CAPUCHINO","CAPUKETO"],
+  ["PALETA-SIN-AZUCAR-CHOCOLATE-CON-FRESA","CHOCOFRESA K"],
+  ["PALETA-SIN-AZUCAR-CHOCOLATE","CHOCOKETO"],
+  ["PALETA-SIN-AZUCAR-COCO","COCOKETO"],
+  ["PALETA-SIN-AZUCAR-FERRERO","FERREROKETO"],
+  ["PALETA-SIN-AZUCAR-FRESA-CHAMOY","FRESA SA"],
+  ["PALETA-SIN-AZUCAR-FRUTOS-ROJOS","FRUTOSKETO"],
+  ["PALETA-SIN-AZUCAR-GROSELLA","GROSELLA SA"],
+  ["PALETA-SIN-AZUCAR-GUANABANA","GUANABANASA"],
+  ["PALETA-SIN-AZUCAR-LIMON-CHAMOY","LIMONCHM SA"],
+  ["PALETA-SIN-AZUCAR-LIMON-MENTA","LIMÓNMENTA"],
+  ["PALETA-SIN-AZUCAR-MAMEY","MAMEY SA"],
+  ["PALETA-SIN-AZUCAR-MANGO","MANGO SA"],
+  ["PALETA-SIN-AZUCAR-MAZAPAN","MAZAKETO"],
+  ["PALETA-SIN-AZUCAR-MENTA","MENTAKETO"],
+  ["PALETA-SIN-AZUCAR-NUEZ","NUEZKETO"],
+  ["PALETA-SIN-AZUCAR-PINON","PIÑONKETO"],
+  ["PALETA-SIN-AZUCAR-PISTACHE","PISTAKETO"],
+  ["PALETA-SIN-AZUCAR-VAINILLA","VAINILLAKETO"]
+];
+
+function buildPaletasResumen(rows){
+  const mapa = new Map();
+  rows.forEach(r => {
+    const sku = String(r.item || "").trim();
+    if (!sku) return;
+    const qty = Number(r.cantidad || 0);
+    const imp = Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0)));
+    const current = mapa.get(sku) || { cantidad: 0, importe: 0 };
+    current.cantidad += qty;
+    current.importe += imp;
+    mapa.set(sku, current);
+  });
+
+  return PALETAS_ORDEN.map(([sku, nombre]) => {
+    const found = mapa.get(sku) || { cantidad: 0, importe: 0 };
+    return {
+      "SKU": sku,
+      "Paleta": nombre,
+      "Cantidad": Number(found.cantidad || 0),
+      "Importe": Number(found.importe || 0)
+    };
+  });
+}
+
+function exportPaletasExcel(prefix){
+  const fecha = document.getElementById("fecha").value;
+  const rows = rowsForCurrentView();
+  if (!fecha) return alert("Selecciona una fecha");
+  if (!window.XLSX) return alert("No se pudo cargar la librería de Excel");
+
+  const paletas = buildPaletasResumen(rows);
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet(paletas);
+  ws["!cols"] = [{ wch: 42 }, { wch: 24 }, { wch: 10 }, { wch: 12 }];
+  XLSX.utils.book_append_sheet(wb, ws, "Paletas");
+
+  const resumen = [
+    ["Fecha", fecha],
+    ["Filtro pago", _metodo],
+    ["Orden", _orden],
+    ["Total paletas catálogo", paletas.length],
+    ["Vendidas", paletas.reduce((s, r) => s + (r["Cantidad"] > 0 ? 1 : 0), 0)],
+    ["Unidades", paletas.reduce((s, r) => s + Number(r["Cantidad"] || 0), 0)],
+    ["Importe", paletas.reduce((s, r) => s + Number(r["Importe"] || 0), 0)]
+  ];
+  const wsResumen = XLSX.utils.aoa_to_sheet(resumen);
+  wsResumen["!cols"] = [{ wch: 20 }, { wch: 16 }];
+  XLSX.utils.book_append_sheet(wb, wsResumen, "Resumen");
+
+  XLSX.writeFile(wb, `${prefix}-paletas-${fecha}-${_metodo}-${_orden}.xlsx`);
+}
+
+    async function loadRowsByDate(fecha){ const dailyPath = `diario/${fecha}-ventas.csv`; try{ const csv = await fetchText(dailyPath); return parseCSV(csv).map(r => ({fecha:r.fecha || r.Fecha || fecha,item:r.item || r.SKU || "",descripcion:r.descripcion || r.Producto || "",cantidad:Number(r.cantidad || r.Cantidad || 0),precio_unit:Number(r.precio_unit || r["Precio unitario"] || 0),importe:Number(r.importe || r.Importe || 0),metodo_pago:String(r.metodo_pago || r["Método de pago"] || "efectivo").toLowerCase(),issue:r.issue || r.Issue || "",txn_id:r.txn_id || r.Txn || ""})).filter(isValidSaleRow); }catch(_){ const csv = await fetchText("ventas_detalle.csv"); return parseCSV(csv).map(r => ({fecha:r.fecha || r.Fecha || "",item:r.item || r.SKU || "",descripcion:r.descripcion || r.Producto || "",cantidad:Number(r.cantidad || r.Cantidad || 0),precio_unit:Number(r.precio_unit || r["Precio unitario"] || 0),importe:Number(r.importe || r.Importe || 0),metodo_pago:String(r.metodo_pago || r["Método de pago"] || "efectivo").toLowerCase(),issue:r.issue || r.Issue || "",txn_id:r.txn_id || r.Txn || ""})).filter(r => String(r.fecha || "").slice(0,10) === fecha).filter(isValidSaleRow); } }
+    async function cargar(){ const fecha = document.getElementById("fecha").value; _metodo = document.getElementById("metodo").value; _orden = document.getElementById("orden").value; if(!fecha) return alert("Selecciona una fecha"); document.getElementById("status").textContent="Cargando…"; try{ _rowsFull = await loadRowsByDate(fecha); render(); }catch(error){ console.error(error); _rowsFull=[]; render(); document.getElementById("status").textContent="Error al cargar ventas."; } }
+    document.getElementById("fecha").value=todayISO();
+    document.getElementById("cargar").onclick=cargar;
+    document.getElementById("metodo").onchange=()=>{ _metodo=document.getElementById("metodo").value; render(); };
+    document.getElementById("orden").onchange=()=>{ _orden=document.getElementById("orden").value; render(); };
+    document.getElementById("excel").onclick=()=>exportExcelDelDia();
+    document.getElementById("excelPaletas").onclick=()=>exportPaletasExcel("ventas");
+    document.getElementById("imprimir").onclick=()=>window.print();
   </script>
 </body>
 </html>
