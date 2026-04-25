@@ -403,3 +403,5 @@ S000153,2026-04-24,HELADO-CLASICO-SENCILLO,1,35.00,35.00,https://github.com/Oswa
 S000153,2026-04-24,HELADO-NIEVE-SENCILLO,1,25.00,25.00,https://github.com/OswaldoCasillas/Ventas/issues/277,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/277#1,,,,
 txn-issue-292,2026-04-25,HELADO-SIN-AZUCAR-DOBLE,1,75.00,75.00,292,efectivo,292,Helado Sin Azucar Doble,activa,,
 txn-issue-292,2026-04-25,POSTRE-DANONINO-GRANDE,2,30.00,60.00,292,efectivo,292,POSTRE Danonino Grande,activa,,
+txn-issue-294,2026-04-25,PALETA-AGUA-LIMON,1,25.00,25.00,294,efectivo,294,PALETA AGUA Limon,activa,,
+txn-issue-294,2026-04-25,PALETA-AGUA-TAMARINDO,1,25.00,25.00,294,efectivo,294,PALETA AGUA Tamarindo,activa,,
