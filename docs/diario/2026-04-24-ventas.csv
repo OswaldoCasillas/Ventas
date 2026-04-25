@@ -1,75 +1,75 @@
-txn_id,fecha,item,cantidad,precio_unit,importe,issue,metodo_pago,source_id,descripcion,product_id,payment
-S000135,2026-04-24,AGUA-FRESCA-CHICA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/258,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/258#0,AGUA FRESCA Chica,74CEF70C,efectivo
-S000124,2026-04-24,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/247,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/247#0,AGUA FRESCA Grande,9C1B04E4,efectivo
-S000135,2026-04-24,AGUA-FRESCA-GRANDE,2,35.0,70.0,https://github.com/OswaldoCasillas/Ventas/issues/258,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/258#1,AGUA FRESCA Grande,9C1B04E4,efectivo
-S000149,2026-04-24,BEBIDA-CHAMOYADA,1,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/272,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/272#3,BEBIDA Chamoyada,1C271C39,efectivo
-S000147,2026-04-24,EXTRA-CONO,1,5.0,5.0,https://github.com/OswaldoCasillas/Ventas/issues/270,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/270#2,EXTRA Cono,7E9B8EC1,efectivo
-S000145,2026-04-24,HELADO-CLASICO-DOBLE,1,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/268,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/268#0,Helado Clasico Doble,BD4D8B7F,efectivo
-S000151,2026-04-24,HELADO-CLASICO-DOBLE,1,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/275,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/275#0,Helado Clasico Doble,BD4D8B7F,efectivo
-S000125,2026-04-24,HELADO-CLASICO-SENCILLO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/248,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/248#0,Helado Clasico Sencillo,9D68612D,efectivo
-S000129,2026-04-24,HELADO-CLASICO-SENCILLO,3,35.0,105.0,https://github.com/OswaldoCasillas/Ventas/issues/252,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/252#2,Helado Clasico Sencillo,9D68612D,efectivo
-S000135,2026-04-24,HELADO-CLASICO-SENCILLO,2,35.0,70.0,https://github.com/OswaldoCasillas/Ventas/issues/258,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/258#2,Helado Clasico Sencillo,9D68612D,efectivo
-S000153,2026-04-24,HELADO-CLASICO-SENCILLO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/277,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/277#0,Helado Clasico Sencillo,9D68612D,efectivo
-S000137,2026-04-24,HELADO-GOURMET-DOBLE,1,70.0,70.0,https://github.com/OswaldoCasillas/Ventas/issues/260,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/260#0,Helado Gourmet Doble,7888486E,efectivo
-S000147,2026-04-24,HELADO-GOURMET-DOBLE,1,70.0,70.0,https://github.com/OswaldoCasillas/Ventas/issues/270,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/270#3,Helado Gourmet Doble,7888486E,efectivo
-S000129,2026-04-24,HELADO-GOURMET-SENCILLO,2,40.0,80.0,https://github.com/OswaldoCasillas/Ventas/issues/252,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/252#1,Helado Gourmet Sencillo,97EEAB91,efectivo
-S000146,2026-04-24,HELADO-GOURMET-SENCILLO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/269,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/269#0,Helado Gourmet Sencillo,97EEAB91,efectivo
-S000125,2026-04-24,HELADO-NIEVE-MEDIO-LITRO,1,75.0,75.0,https://github.com/OswaldoCasillas/Ventas/issues/248,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/248#3,Helado Nieve Medio Litro,7081D5FB,efectivo
-S000137,2026-04-24,HELADO-NIEVE-MEDIO-LITRO,1,75.0,75.0,https://github.com/OswaldoCasillas/Ventas/issues/260,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/260#1,Helado Nieve Medio Litro,7081D5FB,efectivo
-S000129,2026-04-24,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/252,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/252#0,Helado Nieve Sencillo,641AA19F,efectivo
-S000153,2026-04-24,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/277,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/277#1,Helado Nieve Sencillo,641AA19F,efectivo
-S000133,2026-04-24,HELADO-SIN-AZUCAR-MEDIO-LITRO,1,95.0,95.0,https://github.com/OswaldoCasillas/Ventas/issues/256,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/256#0,Helado Sin Azucar Medio Litro,DA2364A6,efectivo
-S000147,2026-04-24,HELADO-SIN-AZUCAR-SENCILLO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/270,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/270#1,Helado Sin Azucar Sencillo,9E69701A,efectivo
-S000134,2026-04-24,PALETA-AGUA-FRESA,2,25.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/257,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/257#0,PALETA AGUA Fresa,6D8A2D50,efectivo
-S000148,2026-04-24,PALETA-AGUA-GROSSELLA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/271,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/271#0,PALETA AGUA Grosella,81CEF3B7,efectivo
-S000148,2026-04-24,PALETA-AGUA-GUANABANA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/271,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/271#1,PALETA AGUA Guanabana,K2F6E9F9,efectivo
-S000138,2026-04-24,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/261,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/261#0,PALETA AGUA Limon,FFFB8948,efectivo
-S000140,2026-04-24,PALETA-AGUA-LIMON,2,25.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/263,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/263#0,PALETA AGUA Limon,FFFB8948,efectivo
-S000143,2026-04-24,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/266,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/266#0,PALETA AGUA Limon,FFFB8948,efectivo
-S000125,2026-04-24,PALETA-AGUA-MANDARINA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/248,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/248#1,PALETA AGUA Mandarina,3D2B18C9,efectivo
-S000139,2026-04-24,PALETA-AGUA-MANGO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/262,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/262#2,PALETA AGUA Mango,6263D0A1,efectivo
-S000136,2026-04-24,PALETA-AGUA-PINA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/259,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/259#0,PALETA AGUA Pina,BFE88BE3,efectivo
-S000148,2026-04-24,PALETA-AGUA-PINA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/271,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/271#2,PALETA AGUA Pina,BFE88BE3,efectivo
-S000136,2026-04-24,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/259,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/259#1,PALETA AGUA PREMIUM Frutos Rojos,746FF175,efectivo
-S000137,2026-04-24,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/260,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/260#3,PALETA AGUA PREMIUM Frutos Rojos,746FF175,efectivo
-S000149,2026-04-24,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/272,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/272#2,PALETA AGUA PREMIUM Frutos Rojos,746FF175,efectivo
-S000146,2026-04-24,PALETA-AGUA-PREMIUM-PICAFRESA,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/269,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/269#1,PALETA AGUA PREMIUM Picafresa,331378B8,efectivo
-S000130,2026-04-24,PALETA-AGUA-UVA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/253,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/253#0,PALETA AGUA Uva,27D27C45,efectivo
-S000144,2026-04-24,PALETA-CREMA-ARROZ,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/267,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/267#0,PALETA CREMA Arroz,D24145B9,efectivo
-S000147,2026-04-24,PALETA-CREMA-ARROZ,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/270,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/270#0,PALETA CREMA Arroz,D24145B9,efectivo
-S000148,2026-04-24,PALETA-CREMA-CHOCOLATE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/271,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/271#3,PALETA CREMA Chocolate,3D836156,efectivo
-S000139,2026-04-24,PALETA-CREMA-FRESA-CON-CREMA,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/262,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/262#1,PALETA CREMA Fresa con Crema,03C761CC,efectivo
-S000148,2026-04-24,PALETA-CREMA-MAMEY,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/271,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/271#5,PALETA CREMA Mamey,07A7670E,efectivo
-S000144,2026-04-24,PALETA-CREMA-MAZAPAN,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/267,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/267#1,PALETA CREMA Mazapan,07A7679E,efectivo
-S000146,2026-04-24,PALETA-CREMA-OREO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/269,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/269#2,PALETA CREMA Oreo,02298874,efectivo
-S000128,2026-04-24,PALETA-CREMA-PREMIUM-FERRERO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/251,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/251#0,PALETA CREMA PREMIUM Ferrero,516E1BCF,efectivo
-S000142,2026-04-24,PALETA-CREMA-PREMIUM-FERRERO,2,40.0,80.0,https://github.com/OswaldoCasillas/Ventas/issues/265,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/265#0,PALETA CREMA PREMIUM Ferrero,516E1BCF,efectivo
-S000136,2026-04-24,PALETA-CREMA-PREMIUM-NUEZ,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/259,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/259#2,PALETA CREMA PREMIUM Nuez,92CFB2A5,efectivo
-S000149,2026-04-24,PALETA-CREMA-PREMIUM-NUTELLA,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/272,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/272#0,PALETA CREMA PREMIUM Nutella,92CFB2A5,efectivo
-S000139,2026-04-24,PALETA-CREMA-PREMIUM-PINON,2,40.0,80.0,https://github.com/OswaldoCasillas/Ventas/issues/262,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/262#0,PALETA CREMA PREMIUM Pinon,F6F917A9,efectivo
-S000138,2026-04-24,PALETA-CREMA-PREMIUM-PISTACHE,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/261,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/261#1,PALETA CREMA PREMIUM Pistache,E4F287A9,efectivo
-S000142,2026-04-24,PALETA-CREMA-PREMIUM-PISTACHE,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/265,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/265#1,PALETA CREMA PREMIUM Pistache,E4F287A9,efectivo
-S000148,2026-04-24,PALETA-CREMA-PREMIUM-PISTACHE,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/271,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/271#6,PALETA CREMA PREMIUM Pistache,E4F287A9,efectivo
-S000137,2026-04-24,PALETA-CREMA-PREMIUM-SELVA-NEGRA,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/260,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/260#2,PALETA CREMA PREMIUM Selva Negra,05833CE3,efectivo
-S000148,2026-04-24,PALETA-CREMA-ROMPOPE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/271,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/271#4,PALETA CREMA Rompope,ACF8DA00,efectivo
-S000144,2026-04-24,PALETA-CREMA-TRIX,2,35.0,70.0,https://github.com/OswaldoCasillas/Ventas/issues/267,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/267#2,PALETA CREMA Trix,866K9AED,efectivo
-S000126,2026-04-24,PALETA-MINI-MINI-AGUA,1,6.0,6.0,https://github.com/OswaldoCasillas/Ventas/issues/249,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/249#0,PALETA MINI Mini Agua,MINIAGUA6,efectivo
-S000127,2026-04-24,PALETA-MINI-MINI-AGUA,2,6.0,12.0,https://github.com/OswaldoCasillas/Ventas/issues/250,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/250#0,PALETA MINI Mini Agua,MINIAGUA6,efectivo
-S000131,2026-04-24,PALETA-MINI-MINI-AGUA,2,6.0,12.0,https://github.com/OswaldoCasillas/Ventas/issues/254,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/254#0,PALETA MINI Mini Agua,MINIAGUA6,efectivo
-S000126,2026-04-24,PALETA-MINI-MINI-CREMA,1,8.0,8.0,https://github.com/OswaldoCasillas/Ventas/issues/249,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/249#1,PALETA MINI Mini Crema,C371ED40,efectivo
-S000127,2026-04-24,PALETA-MINI-MINI-CREMA,2,8.0,16.0,https://github.com/OswaldoCasillas/Ventas/issues/250,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/250#1,PALETA MINI Mini Crema,C371ED40,efectivo
-S000132,2026-04-24,PALETA-MINI-MINI-CREMA,1,8.0,8.0,https://github.com/OswaldoCasillas/Ventas/issues/255,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/255#0,PALETA MINI Mini Crema,C371ED40,efectivo
-S000150,2026-04-24,PALETA-MINI-MINI-CREMA,5,8.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/274,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/274#0,PALETA MINI Mini Crema,C371ED40,efectivo
-S000123,2026-04-24,PALETA-MINI-MINI-SIN-AZUCAR,5,10.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/246,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/246#0,PALETA MINI Sin Azucar,D189174D,efectivo
-S000150,2026-04-24,PALETA-MINI-MINI-SIN-AZUCAR,1,10.0,10.0,https://github.com/OswaldoCasillas/Ventas/issues/274,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/274#1,PALETA MINI Sin Azucar,D189174D,efectivo
-S000141,2026-04-24,PALETA-SIN-AZUCAR-CAJETA,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/264,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/264#0,PALETA SIN AZUCAR Cajeta,68DJ885D,efectivo
-S000125,2026-04-24,PALETA-SIN-AZUCAR-COCO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/248,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/248#2,PALETA SIN AZUCAR Cocoketo,68D4185D,efectivo
-S000139,2026-04-24,PALETA-SIN-AZUCAR-COCO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/262,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/262#3,PALETA SIN AZUCAR Cocoketo,68D4185D,efectivo
-S000141,2026-04-24,PALETA-SIN-AZUCAR-COCO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/264,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/264#1,PALETA SIN AZUCAR Cocoketo,68D4185D,efectivo
-S000152,2026-04-24,PALETA-SIN-AZUCAR-COCO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/276,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/276#0,PALETA SIN AZUCAR Cocoketo,68D4185D,efectivo
-S000141,2026-04-24,PALETA-SIN-AZUCAR-MAMEY,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/264,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/264#2,PALETA SIN AZUCAR Mamey,43F5B285,efectivo
-S000141,2026-04-24,PALETA-SIN-AZUCAR-NUEZ,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/264,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/264#3,PALETA SIN AZUCAR Nuez,24E6A7FD,efectivo
-S000141,2026-04-24,PALETA-SIN-AZUCAR-PINON,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/264,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/264#4,PALETA SIN AZUCAR Pinon,F797E587,efectivo
-S000141,2026-04-24,PALETA-SIN-AZUCAR-PISTACHE,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/264,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/264#5,PALETA Pistaketo,66B31F3E,efectivo
-S000141,2026-04-24,PALETA-SIN-AZUCAR-VAINILLA,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/264,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/264#6,PALETA SIN AZUCAR Vainilla,6A09314A,efectivo
-S000149,2026-04-24,PALETAS-PERRO,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/272,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/272#1,Paletas para Perro,6A3513FD,efectivo
+txn_id,fecha,item,cantidad,precio_unit,importe,issue,metodo_pago,source_id,descripcion,status,correction_ref,notas
+S000123,2026-04-24,PALETA-MINI-MINI-SIN-AZUCAR,5,10.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/246,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/246#0,,,,
+S000124,2026-04-24,AGUA-FRESCA-GRANDE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/247,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/247#0,,,,
+S000125,2026-04-24,HELADO-CLASICO-SENCILLO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/248,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/248#0,,,,
+S000125,2026-04-24,HELADO-NIEVE-MEDIO-LITRO,1,75.0,75.0,https://github.com/OswaldoCasillas/Ventas/issues/248,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/248#3,,,,
+S000125,2026-04-24,PALETA-AGUA-MANDARINA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/248,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/248#1,,,,
+S000125,2026-04-24,PALETA-SIN-AZUCAR-COCO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/248,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/248#2,,,,
+S000126,2026-04-24,PALETA-MINI-MINI-AGUA,1,6.0,6.0,https://github.com/OswaldoCasillas/Ventas/issues/249,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/249#0,,,,
+S000126,2026-04-24,PALETA-MINI-MINI-CREMA,1,8.0,8.0,https://github.com/OswaldoCasillas/Ventas/issues/249,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/249#1,,,,
+S000127,2026-04-24,PALETA-MINI-MINI-AGUA,2,6.0,12.0,https://github.com/OswaldoCasillas/Ventas/issues/250,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/250#0,,,,
+S000127,2026-04-24,PALETA-MINI-MINI-CREMA,2,8.0,16.0,https://github.com/OswaldoCasillas/Ventas/issues/250,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/250#1,,,,
+S000128,2026-04-24,PALETA-CREMA-PREMIUM-FERRERO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/251,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/251#0,,,,
+S000129,2026-04-24,HELADO-CLASICO-SENCILLO,3,35.0,105.0,https://github.com/OswaldoCasillas/Ventas/issues/252,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/252#2,,,,
+S000129,2026-04-24,HELADO-GOURMET-SENCILLO,2,40.0,80.0,https://github.com/OswaldoCasillas/Ventas/issues/252,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/252#1,,,,
+S000129,2026-04-24,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/252,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/252#0,,,,
+S000130,2026-04-24,PALETA-AGUA-UVA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/253,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/253#0,,,,
+S000131,2026-04-24,PALETA-MINI-MINI-AGUA,2,6.0,12.0,https://github.com/OswaldoCasillas/Ventas/issues/254,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/254#0,,,,
+S000132,2026-04-24,PALETA-MINI-MINI-CREMA,1,8.0,8.0,https://github.com/OswaldoCasillas/Ventas/issues/255,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/255#0,,,,
+S000133,2026-04-24,HELADO-SIN-AZUCAR-MEDIO-LITRO,1,95.0,95.0,https://github.com/OswaldoCasillas/Ventas/issues/256,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/256#0,,,,
+S000134,2026-04-24,PALETA-AGUA-FRESA,2,25.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/257,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/257#0,,,,
+S000135,2026-04-24,AGUA-FRESCA-CHICA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/258,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/258#0,,,,
+S000135,2026-04-24,AGUA-FRESCA-GRANDE,2,35.0,70.0,https://github.com/OswaldoCasillas/Ventas/issues/258,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/258#1,,,,
+S000135,2026-04-24,HELADO-CLASICO-SENCILLO,2,35.0,70.0,https://github.com/OswaldoCasillas/Ventas/issues/258,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/258#2,,,,
+S000136,2026-04-24,PALETA-AGUA-PINA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/259,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/259#0,,,,
+S000136,2026-04-24,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/259,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/259#1,,,,
+S000136,2026-04-24,PALETA-CREMA-PREMIUM-NUEZ,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/259,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/259#2,,,,
+S000137,2026-04-24,HELADO-GOURMET-DOBLE,1,70.0,70.0,https://github.com/OswaldoCasillas/Ventas/issues/260,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/260#0,,,,
+S000137,2026-04-24,HELADO-NIEVE-MEDIO-LITRO,1,75.0,75.0,https://github.com/OswaldoCasillas/Ventas/issues/260,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/260#1,,,,
+S000137,2026-04-24,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/260,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/260#3,,,,
+S000137,2026-04-24,PALETA-CREMA-PREMIUM-SELVA-NEGRA,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/260,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/260#2,,,,
+S000138,2026-04-24,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/261,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/261#0,,,,
+S000138,2026-04-24,PALETA-CREMA-PREMIUM-PISTACHE,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/261,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/261#1,,,,
+S000139,2026-04-24,PALETA-AGUA-MANGO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/262,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/262#2,,,,
+S000139,2026-04-24,PALETA-CREMA-FRESA-CON-CREMA,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/262,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/262#1,,,,
+S000139,2026-04-24,PALETA-CREMA-PREMIUM-PINON,2,40.0,80.0,https://github.com/OswaldoCasillas/Ventas/issues/262,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/262#0,,,,
+S000139,2026-04-24,PALETA-SIN-AZUCAR-COCO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/262,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/262#3,,,,
+S000140,2026-04-24,PALETA-AGUA-LIMON,2,25.0,50.0,https://github.com/OswaldoCasillas/Ventas/issues/263,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/263#0,,,,
+S000141,2026-04-24,PALETA-SIN-AZUCAR-CAJETA,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/264,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/264#0,,,,
+S000141,2026-04-24,PALETA-SIN-AZUCAR-COCO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/264,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/264#1,,,,
+S000141,2026-04-24,PALETA-SIN-AZUCAR-MAMEY,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/264,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/264#2,,,,
+S000141,2026-04-24,PALETA-SIN-AZUCAR-NUEZ,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/264,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/264#3,,,,
+S000141,2026-04-24,PALETA-SIN-AZUCAR-PINON,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/264,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/264#4,,,,
+S000141,2026-04-24,PALETA-SIN-AZUCAR-PISTACHE,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/264,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/264#5,,,,
+S000141,2026-04-24,PALETA-SIN-AZUCAR-VAINILLA,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/264,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/264#6,,,,
+S000142,2026-04-24,PALETA-CREMA-PREMIUM-FERRERO,2,40.0,80.0,https://github.com/OswaldoCasillas/Ventas/issues/265,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/265#0,,,,
+S000142,2026-04-24,PALETA-CREMA-PREMIUM-PISTACHE,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/265,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/265#1,,,,
+S000143,2026-04-24,PALETA-AGUA-LIMON,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/266,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/266#0,,,,
+S000144,2026-04-24,PALETA-CREMA-ARROZ,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/267,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/267#0,,,,
+S000144,2026-04-24,PALETA-CREMA-MAZAPAN,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/267,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/267#1,,,,
+S000144,2026-04-24,PALETA-CREMA-TRIX,2,35.0,70.0,https://github.com/OswaldoCasillas/Ventas/issues/267,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/267#2,,,,
+S000145,2026-04-24,HELADO-CLASICO-DOBLE,1,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/268,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/268#0,,,,
+S000146,2026-04-24,HELADO-GOURMET-SENCILLO,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/269,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/269#0,,,,
+S000146,2026-04-24,PALETA-AGUA-PREMIUM-PICAFRESA,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/269,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/269#1,,,,
+S000146,2026-04-24,PALETA-CREMA-OREO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/269,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/269#2,,,,
+S000147,2026-04-24,EXTRA-CONO,1,5.0,5.0,https://github.com/OswaldoCasillas/Ventas/issues/270,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/270#2,,,,
+S000147,2026-04-24,HELADO-GOURMET-DOBLE,1,70.0,70.0,https://github.com/OswaldoCasillas/Ventas/issues/270,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/270#3,,,,
+S000147,2026-04-24,HELADO-SIN-AZUCAR-SENCILLO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/270,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/270#1,,,,
+S000147,2026-04-24,PALETA-CREMA-ARROZ,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/270,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/270#0,,,,
+S000148,2026-04-24,PALETA-AGUA-GROSSELLA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/271,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/271#0,,,,
+S000148,2026-04-24,PALETA-AGUA-GUANABANA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/271,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/271#1,,,,
+S000148,2026-04-24,PALETA-AGUA-PINA,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/271,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/271#2,,,,
+S000148,2026-04-24,PALETA-CREMA-CHOCOLATE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/271,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/271#3,,,,
+S000148,2026-04-24,PALETA-CREMA-MAMEY,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/271,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/271#5,,,,
+S000148,2026-04-24,PALETA-CREMA-PREMIUM-PISTACHE,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/271,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/271#6,,,,
+S000148,2026-04-24,PALETA-CREMA-ROMPOPE,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/271,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/271#4,,,,
+S000149,2026-04-24,BEBIDA-CHAMOYADA,1,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/272,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/272#3,,,,
+S000149,2026-04-24,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/272,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/272#2,,,,
+S000149,2026-04-24,PALETA-CREMA-PREMIUM-NUTELLA,1,40.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/272,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/272#0,,,,
+S000149,2026-04-24,PALETAS-PERRO,1,30.0,30.0,https://github.com/OswaldoCasillas/Ventas/issues/272,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/272#1,,,,
+S000150,2026-04-24,PALETA-MINI-MINI-CREMA,5,8.0,40.0,https://github.com/OswaldoCasillas/Ventas/issues/274,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/274#0,,,,
+S000150,2026-04-24,PALETA-MINI-MINI-SIN-AZUCAR,1,10.0,10.0,https://github.com/OswaldoCasillas/Ventas/issues/274,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/274#1,,,,
+S000151,2026-04-24,HELADO-CLASICO-DOBLE,1,60.0,60.0,https://github.com/OswaldoCasillas/Ventas/issues/275,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/275#0,,,,
+S000152,2026-04-24,PALETA-SIN-AZUCAR-COCO,1,45.0,45.0,https://github.com/OswaldoCasillas/Ventas/issues/276,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/276#0,,,,
+S000153,2026-04-24,HELADO-CLASICO-SENCILLO,1,35.0,35.0,https://github.com/OswaldoCasillas/Ventas/issues/277,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/277#0,,,,
+S000153,2026-04-24,HELADO-NIEVE-SENCILLO,1,25.0,25.0,https://github.com/OswaldoCasillas/Ventas/issues/277,efectivo,issue:https://github.com/OswaldoCasillas/Ventas/issues/277#1,,,,
