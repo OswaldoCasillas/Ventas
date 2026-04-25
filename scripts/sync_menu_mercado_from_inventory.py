@@ -5,8 +5,8 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-INVENTORY_CSV = ROOT / "data" / "inventory.csv"
-MENU_JSON = ROOT / "docs" / "menu.json"
+INVENTORY_MERCADO_CSV = ROOT / "data" / "inventory_mercado.csv"
+MENU_MERCADO_JSON = ROOT / "docs" / "menu_mercado.json"
 
 def to_int(value: str) -> int:
     try:
@@ -43,9 +43,9 @@ def write_menu(path: Path, rows: list[dict]) -> None:
     path.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8", newline="\n")
 
 def main() -> None:
-    rows = load_inventory(INVENTORY_CSV)
-    write_menu(MENU_JSON, rows)
-    print(f"Menu normal generado: {MENU_JSON} ({len(rows)} productos)")
+    rows = load_inventory(INVENTORY_MERCADO_CSV)
+    write_menu(MENU_MERCADO_JSON, rows)
+    print(f"Menu mercado generado: {MENU_MERCADO_JSON} ({len(rows)} productos)")
 
 if __name__ == "__main__":
     main()
