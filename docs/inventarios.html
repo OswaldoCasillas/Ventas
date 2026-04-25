@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Inventarios</title>
+  <style>
+    :root{--bg:#f7f7fb;--card:#fff;--line:#e5e7eb;--text:#1f2937;--muted:#6b7280;--shadow:0 6px 16px rgba(0,0,0,.05)}
+    *{box-sizing:border-box} body{font-family:system-ui,Arial,sans-serif;max-width:920px;margin:10px auto;padding:0 10px;background:var(--bg);color:var(--text)}
+    .top{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+    .back{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 10px;border:1px solid #d1d5db;border-radius:10px;background:#fff;color:var(--text);text-decoration:none;font-weight:700}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+    .card{display:block;text-decoration:none;color:inherit;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
+    .title{font-size:18px;font-weight:800;margin-bottom:4px}.muted{color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="top">
+    <div><h1 style="margin:0;font-size:24px;">Inventarios</h1><div class="muted">Elige qué inventario cargar.</div></div>
+    <a class="back" href="index.html">← Menú</a>
+  </div>
+  <div class="grid">
+    <a class="card" href="inventario.html"><div class="title">Inventario normal</div><div class="muted">Carga el stock publicado de menu.json.</div></a>
+    <a class="card" href="inventario_mercado.html"><div class="title">Inventario mercado</div><div class="muted">Carga el stock publicado de menu_mercado.json.</div></a>
+    <a class="card" href="inventario_total.html"><div class="title">Inventario total</div><div class="muted">Combina normal y mercado en una sola vista.</div></a>
+  </div>
+</body>
+</html>

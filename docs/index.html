@@ -5,186 +5,48 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Panel de ventas</title>
   <style>
-    :root{
-      --bg:#f5f7fb;
-      --card:#ffffff;
-      --line:#dde3ee;
-      --text:#162033;
-      --muted:#667085;
-      --brand:#1459ff;
-      --brand-soft:#edf3ff;
-      --shadow:0 14px 32px rgba(15,35,95,.10);
-      --radius:18px;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:linear-gradient(180deg,#f7f9ff 0%,#f3f6fb 100%);
-      color:var(--text);
-    }
-    .wrap{
-      width:min(1180px,calc(100% - 24px));
-      margin:24px auto 40px;
-    }
-    .hero{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:24px;
-      box-shadow:var(--shadow);
-      padding:22px;
-      margin-bottom:20px;
-    }
-    .hero h1{
-      margin:0 0 8px;
-      font-size:32px;
-      line-height:1.1;
-    }
-    .hero p{
-      margin:0;
-      color:var(--muted);
-      font-size:16px;
-    }
-    .section-title{
-      margin:22px 0 12px;
-      font-size:18px;
-      font-weight:800;
-    }
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:14px;
-    }
-    .card-btn{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      text-decoration:none;
-      color:var(--text);
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:20px;
-      box-shadow:var(--shadow);
-      padding:18px;
-      min-height:140px;
-      transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;
-    }
-    .card-btn:hover{
-      transform:translateY(-2px);
-      border-color:#bdd0ff;
-      box-shadow:0 16px 36px rgba(15,35,95,.13);
-    }
-    .icon{
-      width:52px;
-      height:52px;
-      border-radius:16px;
-      background:var(--brand-soft);
-      color:var(--brand);
-      display:grid;
-      place-items:center;
-      font-size:24px;
-      font-weight:900;
-    }
-    .card-btn h2{
-      margin:0;
-      font-size:20px;
-      line-height:1.15;
-    }
-    .card-btn p{
-      margin:0;
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.35;
-    }
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:6px 10px;
-      border-radius:999px;
-      background:#f7f9fc;
-      border:1px solid var(--line);
-      width:max-content;
-      font-size:12px;
-      font-weight:700;
-      color:#344054;
-    }
-    @media (max-width:680px){
-      .hero h1{font-size:28px}
-    }
+    :root{--bg:#f6f7fb;--card:#fff;--line:#e5e7eb;--text:#14213d;--muted:#6b7280;--brand:#0f62fe;--shadow:0 6px 16px rgba(0,0,0,.05)}
+    *{box-sizing:border-box} body{margin:0;font-family:system-ui,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:1100px;margin:14px auto;padding:0 12px}
+    h1{margin:0 0 6px;font-size:28px}.muted{color:var(--muted)}
+    .section{margin-top:18px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+    .card{display:block;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+    .tag{display:inline-block;font-size:12px;font-weight:800;color:var(--brand);margin-bottom:6px}
+    .title{font-size:18px;font-weight:800;margin-bottom:4px}
+    .desc{font-size:13px;color:var(--muted);line-height:1.35}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <section class="hero">
-      <h1>Panel de ventas</h1>
-      <p>Accesos rápidos para registrar ventas, revisar reportes y abrir módulos de operación.</p>
-    </section>
+    <h1>Panel de ventas</h1>
+    <div class="muted">Accesos rápidos para registrar ventas, revisar reportes e inventarios.</div>
 
-    <div class="section-title">Ventas normales</div>
-    <section class="grid">
-      <a class="card-btn" href="register.html">
-        <div class="icon">＋</div>
-        <div class="badge">Captura rápida</div>
-        <h2>Registrar venta</h2>
-        <p>Agregar productos al carrito, seleccionar método de pago y registrar sin salir de la página.</p>
-      </a>
+    <div class="section">
+      <div class="muted">Ventas normales</div>
+      <div class="grid">
+        <a class="card" href="register.html"><div class="tag">Captura rápida</div><div class="title">Registrar venta</div><div class="desc">Agregar productos al carrito y registrar.</div></a>
+        <a class="card" href="ventas.html"><div class="tag">Excel + impresión</div><div class="title">Ventas del día</div><div class="desc">Consultar ventas, filtrar y descargar Excel.</div></a>
+        <a class="card" href="produccion.html"><div class="tag">Inventario</div><div class="title">Producción</div><div class="desc">Capturar producción para aumentar stock.</div></a>
+      </div>
+    </div>
 
-      <a class="card-btn" href="ventas.html">
-        <div class="icon">📊</div>
-        <div class="badge">Excel + impresión</div>
-        <h2>Ventas del día</h2>
-        <p>Consultar ventas, filtrar por método de pago y descargar Excel con detalle, resumen y paletas grandes.</p>
-      </a>
+    <div class="section">
+      <div class="muted">Mercado</div>
+      <div class="grid">
+        <a class="card" href="register_mercado.html"><div class="tag">Captura rápida</div><div class="title">Registrar venta mercado</div><div class="desc">Registrar ventas del módulo de mercado.</div></a>
+        <a class="card" href="reportes_mercado.html"><div class="tag">Excel + impresión</div><div class="title">Reportes mercado</div><div class="desc">Consultar ventas de mercado del día.</div></a>
+        <a class="card" href="abasto_mercado.html"><div class="tag">⇄ Movimiento</div><div class="title">Abasto mercado</div><div class="desc">Mover producto del inventario general al mercado.</div></a>
+      </div>
+    </div>
 
-      <a class="card-btn" href="produccion.html">
-        <div class="icon">🧪</div>
-        <div class="badge">Inventario</div>
-        <h2>Producción</h2>
-        <p>Capturar producción para aumentar stock cuando prepares paletas o productos.</p>
-      </a>
-    </section>
-
-    <div class="section-title">Mercado</div>
-    <section class="grid">
-      <a class="card-btn" href="register_mercado.html">
-        <div class="icon">🛒</div>
-        <div class="badge">Captura rápida</div>
-        <h2>Registrar venta mercado</h2>
-        <p>Registrar ventas del módulo de mercado con el mismo flujo de carrito y envío seguro.</p>
-      </a>
-
-      <a class="card-btn" href="reportes_mercado.html">
-        <div class="icon">📁</div>
-        <div class="badge">Excel + impresión</div>
-        <h2>Reportes mercado</h2>
-        <p>Consultar ventas de mercado del día y exportar resumen por producto y hoja de paletas grandes.</p>
-      </a>
-
-      <a class="card-btn" href="abasto_mercado.html">
-        <div class="icon">⇄</div>
-        <div class="badge">Movimiento</div>
-        <h2>Abasto mercado</h2>
-        <p>Enviar producto desde inventario general al inventario de mercado.</p>
-      </a>
-    </section>
-
-    <div class="section-title">Apoyo</div>
-    <section class="grid">
-      <a class="card-btn" href="inventario_mercado.html">
-        <div class="icon">📦</div>
-        <div class="badge">Consulta</div>
-        <h2>Inventario mercado</h2>
-        <p>Revisar existencias del inventario de mercado.</p>
-      </a>
-
-      <a class="card-btn" href="reporte.html">
-        <div class="icon">🧾</div>
-        <div class="badge">Resumen</div>
-        <h2>Reporte general</h2>
-        <p>Abrir el resumen general del sistema.</p>
-      </a>
-    </section>
+    <div class="section">
+      <div class="muted">Apoyo</div>
+      <div class="grid">
+        <a class="card" href="inventarios.html"><div class="tag">Consulta</div><div class="title">Inventarios</div><div class="desc">Abrir inventario normal, mercado y total desde un mismo módulo.</div></a>
+        <a class="card" href="reporte.html"><div class="tag">Resumen</div><div class="title">Reporte general</div><div class="desc">Ver resumen actualizado del sistema.</div></a>
+      </div>
+    </div>
   </div>
 </body>
 </html>

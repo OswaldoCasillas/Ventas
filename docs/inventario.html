@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Inventario mercado</title>
+  <title>Inventario normal</title>
   <style>
     :root{--bg:#f7f7fb;--card:#fff;--line:#e5e7eb;--text:#1f2937;--muted:#6b7280;--shadow:0 6px 16px rgba(0,0,0,.05);--brand:#0f62fe;--brand-soft:#eaf1ff}
     *{box-sizing:border-box} body{font-family:system-ui,Arial,sans-serif;max-width:1080px;margin:10px auto;padding:0 10px;background:var(--bg);color:var(--text)}
@@ -19,7 +19,7 @@
 <body>
   <div class="card">
     <div class="top">
-      <div><h1 style="margin:0;font-size:22px;">Inventario mercado</h1><div class="muted">Lee los menús publicados para mostrar stock actualizado.</div></div>
+      <div><h1 style="margin:0;font-size:22px;">Inventario normal</h1><div class="muted">Lee los menús publicados para mostrar stock actualizado.</div></div>
       <a class="back" href="inventarios.html">← Inventarios</a>
     </div>
     <div class="filters">
@@ -43,8 +43,8 @@
     };
     let MENU = []; let FILTER_CATEGORY = "ALL";
     
-    const SRC1 = "menu_mercado.json";
-    const SRC2 = "menu.json";
+    const SRC1 = "menu.json";
+    const SRC2 = null;
     
     function normalizeText(value){return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[-_/]/g," ").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();}
     function getCategoryOf(sku){const parts=String(sku||"").split("-"); if(parts.length>=3){const c=`${parts[0]}-${parts[1]}-${parts[2]}`; if(CAT_LABELS[c]) return c;} if(parts.length>=2){const c=`${parts[0]}-${parts[1]}`; if(CAT_LABELS[c]) return c;} return "EXTRA";}
@@ -85,7 +85,7 @@
     function syncChips(){document.querySelectorAll(".chip").forEach(btn=>btn.classList.toggle("active", btn.dataset.cat===FILTER_CATEGORY));}
     function filteredRows(){const q=normalizeText(document.getElementById("search").value); const terms=q?q.split(" ").filter(Boolean):[]; return MENU.filter(r=>{ if(FILTER_CATEGORY!=="ALL"&&getCategoryOf(r.item)!==FILTER_CATEGORY)return false; if(!terms.length)return true; const hay=normalizeText(`${r.item} ${r.descripcion}`); return terms.every(t=>hay.includes(t)); }).sort((a,b)=>a.descripcion.localeCompare(b.descripcion));}
     function render(){const rows=filteredRows(); document.getElementById("tbody").innerHTML=rows.map(r=>`<tr><td>${r.item}<div class="sku">${r.product_id||""}</div></td><td>${r.descripcion||""}</td><td>${Number(r.stock||0)}</td><td>$${Number(r.precio||0).toFixed(2)}</td><td>${CAT_LABELS[getCategoryOf(r.item)]||getCategoryOf(r.item)}</td></tr>`).join(""); document.getElementById("count").textContent=String(rows.length); document.getElementById("stockTotal").textContent=String(rows.reduce((s,r)=>s+Number(r.stock||0),0)); document.getElementById("status").textContent=rows.length?"Inventario cargado.":"No hay datos para ese filtro.";}
-    function downloadCSV(){const rows=filteredRows(); const header=["item","descripcion","stock","precio","product_id"]; const csv=[header.join(",")].concat(rows.map(r=>[r.item,`"${String(r.descripcion||"").replaceAll('"','""')}"`,Number(r.stock||0),Number(r.precio||0),r.product_id||""].join(","))).join("\n"); const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="inventario_mercado.csv"; a.click(); URL.revokeObjectURL(a.href);}
+    function downloadCSV(){const rows=filteredRows(); const header=["item","descripcion","stock","precio","product_id"]; const csv=[header.join(",")].concat(rows.map(r=>[r.item,`"${String(r.descripcion||"").replaceAll('"','""')}"`,Number(r.stock||0),Number(r.precio||0),r.product_id||""].join(","))).join("\n"); const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="inventario_normal.csv"; a.click(); URL.revokeObjectURL(a.href);}
     document.getElementById("search").addEventListener("input", render);
     document.getElementById("reload").onclick = loadMenu;
     document.getElementById("download").onclick = downloadCSV;

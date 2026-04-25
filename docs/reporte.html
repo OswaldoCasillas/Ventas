@@ -1,160 +1,45 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Reporte general</title>
   <style>
     :root{--bg:#f7f7fb;--card:#fff;--line:#e5e7eb;--text:#1f2937;--muted:#6b7280;--shadow:0 6px 16px rgba(0,0,0,.05)}
-    *{box-sizing:border-box}
-    body{font-family:system-ui,Arial,sans-serif;max-width:1100px;margin:10px auto;padding:0 10px;background:var(--bg);color:var(--text)}
+    *{box-sizing:border-box} body{font-family:system-ui,Arial,sans-serif;max-width:1100px;margin:10px auto;padding:0 10px;background:var(--bg);color:var(--text)}
     .top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
     .back{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 10px;border:1px solid #d1d5db;border-radius:10px;background:#fff;color:var(--text);text-decoration:none;font-weight:700}
-    .grid{display:grid;gap:10px}
-    .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:var(--shadow)}
-    .big{font-size:26px;font-weight:800}
-    .muted{color:var(--muted);font-size:12px}
-    table{width:100%;border-collapse:collapse;font-size:12px}
-    th,td{padding:7px 5px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+    .grid{display:grid;gap:10px}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:var(--shadow)} .big{font-size:26px;font-weight:800}.muted{color:var(--muted);font-size:12px}
+    table{width:100%;border-collapse:collapse;font-size:12px} th,td{padding:7px 5px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
     @media(max-width:700px){.cards{grid-template-columns:1fr}}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
   <div class="top">
-    <div><h1 style="margin:0;font-size:24px;">Reporte general</h1><div class="muted">Actualizado desde los archivos publicados del sistema.</div></div>
+    <div><h1 style="margin:0;font-size:24px;">Reporte general</h1><div class="muted">Actualizado desde los archivos publicados.</div></div>
     <a class="back" href="index.html">← Menú</a>
   </div>
-
   <div class="grid">
     <div class="cards">
       <div class="card"><div class="muted">Inventario normal</div><div id="invNormal" class="big">0</div><div class="muted">stock total publicado</div></div>
       <div class="card"><div class="muted">Inventario mercado</div><div id="invMercado" class="big">0</div><div class="muted">stock total publicado</div></div>
-      <div class="card"><div class="muted">Ventas normales</div><div id="ventasNormal" class="big">0</div><div class="muted">importe total publicado</div></div>
-      <div class="card"><div class="muted">Ventas mercado</div><div id="ventasMercado" class="big">0</div><div class="muted">importe total publicado</div></div>
+      <div class="card"><div class="muted">Ventas normales</div><div id="ventasNormal" class="big">$0.00</div><div class="muted">importe total publicado</div></div>
+      <div class="card"><div class="muted">Ventas mercado</div><div id="ventasMercado" class="big">$0.00</div><div class="muted">importe total publicado</div></div>
     </div>
-
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
-        <strong>Últimas ventas normales</strong>
-        <button id="excelNormal" type="button">Excel</button>
-      </div>
-      <table><thead><tr><th>Fecha</th><th>Producto</th><th>Cant.</th><th>Importe</th></tr></thead><tbody id="tbodyNormal"></tbody></table>
-    </div>
-
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
-        <strong>Últimas ventas mercado</strong>
-        <button id="excelMercado" type="button">Excel</button>
-      </div>
-      <table><thead><tr><th>Fecha</th><th>Producto</th><th>Cant.</th><th>Importe</th></tr></thead><tbody id="tbodyMercado"></tbody></table>
-    </div>
+    <div class="card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap"><strong>Últimas ventas normales</strong><button id="excelNormal" type="button">Excel</button></div><table><thead><tr><th>Fecha</th><th>Producto</th><th>Cant.</th><th>Importe</th></tr></thead><tbody id="tbodyNormal"></tbody></table></div>
+    <div class="card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap"><strong>Últimas ventas mercado</strong><button id="excelMercado" type="button">Excel</button></div><table><thead><tr><th>Fecha</th><th>Producto</th><th>Cant.</th><th>Importe</th></tr></thead><tbody id="tbodyMercado"></tbody></table></div>
   </div>
-
   <script>
-    async function fetchText(url){
-      const r = await fetch(url + "?_=" + Date.now(), { cache:"no-store" });
-      if(!r.ok) throw new Error(`${r.status} ${url}`);
-      return r.text();
-    }
-    async function fetchJSON(url){
-      const r = await fetch(url + "?_=" + Date.now(), { cache:"no-store" });
-      if(!r.ok) throw new Error(`${r.status} ${url}`);
-      return r.json();
-    }
-    function money(n){ return `$${Number(n || 0).toFixed(2)}`; }
-    function normalizeCsvText(text){
-      let t = String(text || "").replace(/\uFEFF/g,"").trim();
-      t = t.replace(/\r\n/g,"\n").replace(/\r/g,"\n");
-      if (!t.includes("\n")) t = t.replace(/\s+(?=[A-Z]{1,3}\d{6},\d{4}-\d{2}-\d{2},)/g,"\n");
-      return t;
-    }
-    function parseCSV(text){
-      const lines = normalizeCsvText(text).split(/\n+/).filter(Boolean);
-      if (!lines.length) return [];
-      const headers=[]; let current="", inQuotes=false;
-      for (let i=0;i<lines[0].length;i++){ const ch=lines[0][i]; if(ch === '"') inQuotes=!inQuotes; else if(ch === "," && !inQuotes){ headers.push(current.trim()); current=""; } else current += ch; }
-      headers.push(current.trim());
-      const rows=[];
-      for (let i=1;i<lines.length;i++){
-        const line=lines[i]; if(!line.trim()) continue;
-        const cols=[]; let value="", quoted=false;
-        for (let j=0;j<line.length;j++){ const ch=line[j]; if(ch === '"'){ if(quoted && line[j+1] === '"'){ value += '"'; j++; } else quoted=!quoted; } else if(ch === "," && !quoted){ cols.push(value); value=""; } else value += ch; }
-        cols.push(value);
-        const row={}; headers.forEach((h, idx)=> row[h]=cols[idx] ?? "");
-        rows.push(row);
-      }
-      return rows;
-    }
-    function isValidSaleRow(r){
-      const txt = [r.fecha,r.item,r.descripcion,r.issue,r.txn_id].join(" ");
-      const bad = ["<<<<<<<","=======",">>>>>>>","Updated upstream","Stashed changes"];
-      if (bad.some(x => txt.includes(x))) return false;
-      return Boolean(String(r.item||"").trim()) && (Number(r.cantidad||0) > 0 || Number(r.importe||0) > 0);
-    }
-    function renderSales(tbodyId, rows){
-      const tbody = document.getElementById(tbodyId);
-      tbody.innerHTML = rows.slice(0,10).map(r => `
-        <tr>
-          <td>${r.fecha || ""}</td>
-          <td>${r.descripcion || r.item || ""}</td>
-          <td>${Number(r.cantidad || 0)}</td>
-          <td>${money(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0)))}</td>
-        </tr>
-      `).join("");
-    }
-    function exportRows(name, rows){
-      if (!window.XLSX) return;
-      const sheet = rows.map(r => ({
-        "Fecha": r.fecha || "",
-        "SKU": r.item || "",
-        "Producto": r.descripcion || "",
-        "Cantidad": Number(r.cantidad || 0),
-        "Importe": Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0)))
-      }));
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sheet), "Detalle");
-      XLSX.writeFile(wb, name);
-    }
-    async function main(){
-      try{
-        const [menuNormal, menuMercado, salesNText, salesMText] = await Promise.all([
-          fetchJSON("menu.json").catch(() => []),
-          fetchJSON("menu_mercado.json").catch(() => []),
-          fetchText("ventas_detalle.csv").catch(() => ""),
-          fetchText("mercado/ventas_detalle.csv").catch(() => "")
-        ]);
-
-        const invN = Array.isArray(menuNormal) ? menuNormal.reduce((s,r)=>s+Number(r.stock||0),0) : 0;
-        const invM = Array.isArray(menuMercado) ? menuMercado.reduce((s,r)=>s+Number(r.stock||0),0) : 0;
-        document.getElementById("invNormal").textContent = String(invN);
-        document.getElementById("invMercado").textContent = String(invM);
-
-        const salesN = parseCSV(salesNText).map(r => ({
-          fecha:r.fecha || "", item:r.item || "", descripcion:r.descripcion || r.Producto || "",
-          cantidad:Number(r.cantidad || 0), precio_unit:Number(r.precio_unit || 0), importe:Number(r.importe || 0),
-          issue:r.issue || "", txn_id:r.txn_id || ""
-        })).filter(isValidSaleRow).sort((a,b)=>`${b.fecha}|${b.txn_id}`.localeCompare(`${a.fecha}|${a.txn_id}`));
-
-        const salesM = parseCSV(salesMText).map(r => ({
-          fecha:r.fecha || "", item:r.item || "", descripcion:r.descripcion || r.Producto || "",
-          cantidad:Number(r.cantidad || 0), precio_unit:Number(r.precio_unit || 0), importe:Number(r.importe || 0),
-          issue:r.issue || "", txn_id:r.txn_id || ""
-        })).filter(isValidSaleRow).sort((a,b)=>`${b.fecha}|${b.txn_id}`.localeCompare(`${a.fecha}|${a.txn_id}`));
-
-        document.getElementById("ventasNormal").textContent = money(salesN.reduce((s,r)=>s+Number(r.importe||0),0));
-        document.getElementById("ventasMercado").textContent = money(salesM.reduce((s,r)=>s+Number(r.importe||0),0));
-
-        renderSales("tbodyNormal", salesN);
-        renderSales("tbodyMercado", salesM);
-
-        document.getElementById("excelNormal").onclick = () => exportRows("reporte-general-ventas-normal.xlsx", salesN);
-        document.getElementById("excelMercado").onclick = () => exportRows("reporte-general-ventas-mercado.xlsx", salesM);
-      }catch(err){
-        console.error(err);
-      }
-    }
+    async function fetchText(url){const r=await fetch(url+"?_="+Date.now(),{cache:"no-store"}); if(!r.ok) throw new Error(`${r.status} ${url}`); return r.text();}
+    async function fetchJSON(url){const r=await fetch(url+"?_="+Date.now(),{cache:"no-store"}); if(!r.ok) throw new Error(`${r.status} ${url}`); return r.json();}
+    function money(n){return `$${Number(n||0).toFixed(2)}`;}
+    function normalizeCsvText(text){let t=String(text||"").replace(/\uFEFF/g,"").trim(); t=t.replace(/\r\n/g,"\n").replace(/\r/g,"\n"); if(!t.includes("\n")) t=t.replace(/\s+(?=[A-Z]{1,3}\d{6},\d{4}-\d{2}-\d{2},)/g,"\n"); return t;}
+    function parseCSV(text){const lines=normalizeCsvText(text).split(/\n+/).filter(Boolean); if(!lines.length) return []; const headers=[]; let current="", inQuotes=false; for(let i=0;i<lines[0].length;i++){{const ch=lines[0][i]; if(ch === '"') inQuotes=!inQuotes; else if(ch === "," && !inQuotes){{headers.push(current.trim()); current="";}} else current += ch;}} headers.push(current.trim()); const rows=[]; for(let i=1;i<lines.length;i++){{const line=lines[i]; if(!line.trim()) continue; const cols=[]; let value="", quoted=false; for(let j=0;j<line.length;j++){{const ch=line[j]; if(ch === '"'){{ if(quoted && line[j+1] === '"'){{value += '"'; j++;}} else quoted=!quoted; }} else if(ch === "," && !quoted){{cols.push(value); value="";}} else value += ch;}} cols.push(value); const row={{}}; headers.forEach((h, idx)=> row[h]=cols[idx] ?? ""); rows.push(row);}} return rows;}
+    function isValidSaleRow(r){const txt=[r.fecha,r.item,r.descripcion,r.issue,r.txn_id].join(" "); const bad=["<<<<<<<","=======",">>>>>>>","Updated upstream","Stashed changes"]; if(bad.some(x=>txt.includes(x))) return false; return Boolean(String(r.item||"").trim()) && (Number(r.cantidad||0)>0 || Number(r.importe||0)>0);}
+    function renderSales(tbodyId, rows){document.getElementById(tbodyId).innerHTML=rows.slice(0,10).map(r=>`<tr><td>${r.fecha||""}</td><td>${r.descripcion||r.item||""}</td><td>${Number(r.cantidad||0)}</td><td>${money(r.importe||(Number(r.cantidad||0)*Number(r.precio_unit||0)))}</td></tr>`).join("");}
+    function exportRows(name, rows){if(!window.XLSX) return; const sheet=rows.map(r=>({Fecha:r.fecha||"",SKU:r.item||"",Producto:r.descripcion||"",Cantidad:Number(r.cantidad||0),Importe:Number(r.importe||(Number(r.cantidad||0)*Number(r.precio_unit||0)))})); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sheet), "Detalle"); XLSX.writeFile(wb, name);}
+    async function main(){try{const [menuNormal,menuMercado,salesNText,salesMText]=await Promise.all([fetchJSON("menu.json").catch(()=>[]),fetchJSON("menu_mercado.json").catch(()=>[]),fetchText("ventas_detalle.csv").catch(()=>""),fetchText("mercado/ventas_detalle.csv").catch(()=>"" )]); const invN=Array.isArray(menuNormal)?menuNormal.reduce((s,r)=>s+Number(r.stock||0),0):0; const invM=Array.isArray(menuMercado)?menuMercado.reduce((s,r)=>s+Number(r.stock||0),0):0; document.getElementById("invNormal").textContent=String(invN); document.getElementById("invMercado").textContent=String(invM); const salesN=parseCSV(salesNText).map(r=>({fecha:r.fecha||"",item:r.item||"",descripcion:r.descripcion||r.Producto||"",cantidad:Number(r.cantidad||0),precio_unit:Number(r.precio_unit||0),importe:Number(r.importe||0),issue:r.issue||"",txn_id:r.txn_id||""})).filter(isValidSaleRow).sort((a,b)=>`${b.fecha}|${b.txn_id}`.localeCompare(`${a.fecha}|${a.txn_id}`)); const salesM=parseCSV(salesMText).map(r=>({fecha:r.fecha||"",item:r.item||"",descripcion:r.descripcion||r.Producto||"",cantidad:Number(r.cantidad||0),precio_unit:Number(r.precio_unit||0),importe:Number(r.importe||0),issue:r.issue||"",txn_id:r.txn_id||""})).filter(isValidSaleRow).sort((a,b)=>`${b.fecha}|${b.txn_id}`.localeCompare(`${a.fecha}|${a.txn_id}`)); document.getElementById("ventasNormal").textContent=money(salesN.reduce((s,r)=>s+Number(r.importe||0),0)); document.getElementById("ventasMercado").textContent=money(salesM.reduce((s,r)=>s+Number(r.importe||0),0)); renderSales("tbodyNormal", salesN); renderSales("tbodyMercado", salesM); document.getElementById("excelNormal").onclick=()=>exportRows("reporte-general-ventas-normal.xlsx", salesN); document.getElementById("excelMercado").onclick=()=>exportRows("reporte-general-ventas-mercado.xlsx", salesM);}catch(err){console.error(err);}}
     main();
   </script>
 </body>
