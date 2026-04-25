@@ -1,1005 +1,820 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 from __future__ import annotations
 
+import csv
+import hashlib
 import json
 import os
 import re
-from datetime import datetime, timezone
+import sys
+import urllib.request
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
-import pandas as pd
-
-try:
-    from build_reports import build_reports
-except ImportError:
-    import sys
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from build_reports import build_reports
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / "data"
-DOCS = ROOT / "docs"
-DIARIO_DIR = DOCS / "diario"
-MKT_DIR = DOCS / "mercado"
-MKT_DIARIO_DIR = MKT_DIR / "diario"
+DATA_DIR = ROOT / "data"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-INVENTORY_CSV = DATA / "inventory.csv"
-SALES_CSV = DATA / "sales.csv"
-PROD_CSV = DATA / "production.csv"
-
-INVENTORY_MKT_CSV = DATA / "inventory_mercado.csv"
-SALES_MKT_CSV = DATA / "sales_mercado.csv"
-TRANSFER_MKT_CSV = DATA / "transfer_mercado.csv"
-
-PROCESSED_EVENTS_CSV = DATA / "processed_events.csv"
-
-MENU_JSON = DOCS / "menu.json"
-REPORT_JSON = DOCS / "report.json"
-INV_OUT_CSV = DOCS / "inventario_actual.csv"
-INV_MKT_OUT_CSV = MKT_DIR / "inventario_actual.csv"
+INVENTORY_CSV = DATA_DIR / "inventory.csv"
+INVENTORY_MERCADO_CSV = DATA_DIR / "inventory_mercado.csv"
+SALES_CSV = DATA_DIR / "sales.csv"
+SALES_MERCADO_CSV = DATA_DIR / "sales_mercado.csv"
+PRODUCTION_CSV = DATA_DIR / "production.csv"
+TRANSFER_MERCADO_CSV = DATA_DIR / "transfer_mercado.csv"
+PROCESSED_EVENTS_CSV = DATA_DIR / "processed_events.csv"
 
 
-def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+@dataclass
+class ParsedPayload:
+    issue_number: str
+    issue_title: str
+    issue_body: str
+    issue_author: str
+    raw: dict[str, Any]
+    payload_type: str
+    fecha: str
+    metodo_pago: str
+    txn_id: str
+    issue_ref: str
+    accion: str
+    modo: str
+    valor: str
+    sku: str
+    descripcion: str
+    razon: str
+    detalle: str
+    notas: str
+    items: list[dict[str, Any]]
 
 
-def ensure_dir(path: Path) -> None:
-    path.mkdir(parents=True, exist_ok=True)
+def log(msg: str) -> None:
+    print(msg, flush=True)
 
 
-def ensure_files() -> None:
-    ensure_dir(DATA)
-    ensure_dir(DOCS)
-    ensure_dir(DIARIO_DIR)
-    ensure_dir(MKT_DIR)
-    ensure_dir(MKT_DIARIO_DIR)
-
-    if not INVENTORY_CSV.exists():
-        INVENTORY_CSV.write_text("item,descripcion,stock,precio,product_id\n", encoding="utf-8")
-
-    if not SALES_CSV.exists():
-        SALES_CSV.write_text(
-            "txn_id,fecha,item,cantidad,precio_unit,importe,issue,metodo_pago,source_id\n",
-            encoding="utf-8"
-        )
-
-    if not PROD_CSV.exists():
-        PROD_CSV.write_text(
-            "txn_id,fecha,item,cantidad,issue,source_id\n",
-            encoding="utf-8"
-        )
-
-    if not INVENTORY_MKT_CSV.exists():
-        INVENTORY_MKT_CSV.write_text("item,descripcion,stock,precio,product_id\n", encoding="utf-8")
-
-    if not SALES_MKT_CSV.exists():
-        SALES_MKT_CSV.write_text(
-            "txn_id,fecha,item,cantidad,precio_unit,importe,issue,metodo_pago,source_id\n",
-            encoding="utf-8"
-        )
-
-    if not TRANSFER_MKT_CSV.exists():
-        TRANSFER_MKT_CSV.write_text(
-            "txn_id,fecha,item,cantidad,issue,source_id\n",
-            encoding="utf-8"
-        )
-
-    if not PROCESSED_EVENTS_CSV.exists():
-        PROCESSED_EVENTS_CSV.write_text(
-            "event_key,issue_url,issue_number,type,processed_at\n",
-            encoding="utf-8"
-        )
-
-
-def grab_field(body: str, key: str) -> str:
-    pattern = rf"^\s*(?:\*\*\s*{re.escape(key)}\s*\*\*|{re.escape(key)})\s*:\s*(.*)$"
-    match = re.search(pattern, body or "", re.IGNORECASE | re.MULTILINE)
-    return match.group(1).strip() if match else ""
-
-
-def safe_parse_date(value: str, issue: dict | None = None) -> str:
-    raw = str(value or "").strip()
-    for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%Y/%m/%d"):
-        try:
-            return datetime.strptime(raw, fmt).date().isoformat()
-        except Exception:
-            pass
-
-    created = (issue or {}).get("created_at", "")
-    if created:
-        return str(created)[:10]
-
-    return datetime.now(timezone.utc).date().isoformat()
+def ensure_parent(path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
 
 
 def normalize_payment(value: str) -> str:
-    txt = str(value or "").strip().lower()
-    if txt in {"tarjeta", "transferencia"}:
-        return txt
+    v = str(value or "").strip().lower()
+    if v in {"tarjeta", "transferencia", "merma"}:
+        return v
     return "efectivo"
 
 
-def extract_client_txn_id(body: str) -> str:
-    field_value = grab_field(body, "ClientTxnId")
-    if field_value:
-        return field_value.strip()
-
-    match = re.search(r"VENTAS-TXN:([A-Za-z0-9:_-]+)", body or "")
-    return match.group(1).strip() if match else ""
-
-
-def parse_items_table(body: str, require_price: bool) -> list[dict]:
-    lines = (body or "").splitlines()
-    start_idx = None
-
-    for idx, line in enumerate(lines):
-        normalized = re.sub(r"[*\s]", "", line).lower()
-        if normalized == "items":
-            start_idx = idx + 1
-            break
-
-    if start_idx is None:
-        return []
-
-    items: list[dict] = []
-    for line in lines[start_idx:]:
-        stripped = line.strip()
-        if not stripped:
-            continue
-        if "|" not in stripped:
-            continue
-        if stripped.lower().startswith("sku |"):
-            continue
-        if stripped.startswith("---"):
-            continue
-
-        parts = [part.strip() for part in stripped.split("|")]
-        if len(parts) < 2:
-            continue
-
-        sku = parts[0].strip()
-        qty_raw = parts[1].strip()
-        price_raw = parts[2].strip() if len(parts) >= 3 else ""
-
-        if not sku:
-            continue
-
-        qty = pd.to_numeric(qty_raw, errors="coerce")
-        if pd.isna(qty) or int(qty) <= 0:
-            continue
-
-        item = {"item": sku, "cantidad": int(qty)}
-        if require_price:
-            item["precio_unit"] = price_raw
-        items.append(item)
-
-    return items
-
-
-def parse_single_item(body: str, require_price: bool) -> list[dict]:
-    sku = grab_field(body, "Item")
-    qty_raw = grab_field(body, "Cantidad")
-    price_raw = (
-        grab_field(body, "Precio unitario (opcional)")
-        or grab_field(body, "Precio unitario")
-        or grab_field(body, "Precio")
-    )
-
-    qty = pd.to_numeric(qty_raw, errors="coerce")
-    if not sku or pd.isna(qty) or int(qty) <= 0:
-        return []
-
-    item = {"item": sku.strip(), "cantidad": int(qty)}
-    if require_price:
-        item["precio_unit"] = price_raw.strip()
-    return [item]
-
-
-def _clean_items(items: list[dict], require_price: bool) -> list[dict]:
-    clean: list[dict] = []
-
-    for raw in items or []:
-        sku = str(raw.get("item", "")).strip()
-        qty = pd.to_numeric(raw.get("cantidad"), errors="coerce")
-        if not sku or pd.isna(qty) or int(qty) <= 0:
-            continue
-
-        item = {"item": sku, "cantidad": int(qty)}
-        if require_price:
-            price_value = raw.get("precio_unit", "")
-            item["precio_unit"] = "" if price_value is None else str(price_value).strip()
-
-        clean.append(item)
-
-    return clean
-
-
-def load_event_issue() -> dict | None:
-    path = os.environ.get("GITHUB_EVENT_PATH")
-    if not path or not os.path.exists(path):
-        return None
-
-    with open(path, "r", encoding="utf-8") as fh:
-        event = json.load(fh)
-
-    return event.get("issue")
-
-
-def _read_csv_safe(path: Path, columns: list[str]) -> pd.DataFrame:
-    if path.exists() and path.stat().st_size > 0:
-        df = pd.read_csv(path, dtype=str).fillna("")
-    else:
-        df = pd.DataFrame(columns=columns)
-
-    for col in columns:
-        if col not in df.columns:
-            df[col] = ""
-
-    return df[columns].copy()
-
-
-def load_inventory(path: Path) -> pd.DataFrame:
-    columns = ["item", "descripcion", "stock", "precio", "product_id"]
-    df = _read_csv_safe(path, columns)
-
-    df["item"] = df["item"].astype(str).str.strip()
-    df["descripcion"] = df["descripcion"].astype(str)
-    df["stock"] = pd.to_numeric(df["stock"], errors="coerce").fillna(0).astype(int)
-    df["precio"] = pd.to_numeric(df["precio"], errors="coerce")
-    df["product_id"] = df["product_id"].astype(str)
-
-    df = df[df["item"] != ""].copy()
-    df = df.drop_duplicates(subset=["item"], keep="last").reset_index(drop=True)
-    return df
-
-
-def save_inventory(df: pd.DataFrame, path: Path) -> None:
-    export = df.copy()
-    export["stock"] = pd.to_numeric(export["stock"], errors="coerce").fillna(0).astype(int)
-    export["precio"] = pd.to_numeric(export["precio"], errors="coerce")
-    export = export[["item", "descripcion", "stock", "precio", "product_id"]].sort_values("item")
-    export.to_csv(path, index=False)
-
-
-def load_inventory_general() -> pd.DataFrame:
-    return load_inventory(INVENTORY_CSV)
-
-
-def load_inventory_mkt() -> pd.DataFrame:
-    return load_inventory(INVENTORY_MKT_CSV)
-
-
-def make_event_key(data: dict) -> str:
-    client_txn_id = str(data.get("client_txn_id", "") or "").strip()
-    if client_txn_id:
-        return f"client:{client_txn_id}"
-
-    issue_url = str(data.get("issue_url", "") or "").strip()
-    return f"issue:{issue_url}" if issue_url else ""
-
-
-def load_processed_events() -> pd.DataFrame:
-    return _read_csv_safe(
-        PROCESSED_EVENTS_CSV,
-        ["event_key", "issue_url", "issue_number", "type", "processed_at"]
-    )
-
-
-def is_event_processed(event_key: str) -> bool:
-    if not event_key:
-        return False
-
-    df = load_processed_events()
-    return not df[df["event_key"].astype(str) == str(event_key)].empty
-
-
-def mark_event_processed(event_key: str, data: dict) -> None:
-    if not event_key:
-        return
-
-    df = load_processed_events()
-    df = df[df["event_key"].astype(str) != str(event_key)].copy()
-
-    row = pd.DataFrame([{
-        "event_key": event_key,
-        "issue_url": str(data.get("issue_url", "") or ""),
-        "issue_number": str(data.get("issue_number", "") or ""),
-        "type": str(data.get("type", "") or ""),
-        "processed_at": _now_iso()
-    }])
-
-    df = pd.concat([df, row], ignore_index=True)
-    df.to_csv(PROCESSED_EVENTS_CSV, index=False)
-
-
-def next_txn_id(prefix: str, *paths: Path) -> str:
-    max_n = 0
-    for path in paths:
-        if not path.exists() or path.stat().st_size == 0:
-            continue
-        try:
-            df = pd.read_csv(path, dtype=str).fillna("")
-        except Exception:
-            continue
-        if "txn_id" not in df.columns:
-            continue
-        for value in df["txn_id"].astype(str).tolist():
-            match = re.match(rf"^{re.escape(prefix)}(\d+)$", value.strip())
-            if match:
-                max_n = max(max_n, int(match.group(1)))
-    return f"{prefix}{max_n + 1:06d}"
-
-
-def parse_freeform_field(body: str, key: str) -> str:
-    lines = (body or "").splitlines()
-    start = None
-    for idx, line in enumerate(lines):
-        if re.match(rf"^\s*{re.escape(key)}\s*:\s*$", line, re.IGNORECASE):
-            start = idx + 1
-            break
-    if start is None:
-        return ""
-    chunks: list[str] = []
-    for line in lines[start:]:
-        if re.match(r"^\s*[A-Za-z_][A-Za-z0-9_ ]*\s*:\s*", line):
-            break
-        chunks.append(line.rstrip())
-    return "\n".join(chunks).strip()
-
-
-def infer_issue_type(title: str, labels: list[str], body: str) -> str:
-    lower_title = str(title or "").lower()
-    lower_body = str(body or "").lower()
-    labels_set = {str(x or "").strip().lower() for x in labels}
-
-    explicit_type = (
-        grab_field(body, "tipo")
-        or grab_field(body, "type")
-        or ""
-    ).strip().lower()
+def normalize_type(value: str) -> str:
+    v = str(value or "").strip().lower().replace(" ", "_").replace("-", "_")
     aliases = {
         "venta": "venta",
+        "venta_normal": "venta",
         "venta_mkt": "venta_mkt",
-        "venta-mercado": "venta_mkt",
-        "venta mercado": "venta_mkt",
-        "abasto_mkt": "abasto_mkt",
-        "abasto-mercado": "abasto_mkt",
-        "abasto mercado": "abasto_mkt",
+        "venta_mercado": "venta_mkt",
         "prod": "prod",
         "produccion": "prod",
-        "producción": "prod",
-        "ajuste_inv": "ajuste_inv",
-        "ajuste inv": "ajuste_inv",
-        "ajuste-inv": "ajuste_inv",
-        "ajuste_inv_mkt": "ajuste_inv_mkt",
-        "ajuste inv mkt": "ajuste_inv_mkt",
-        "ajuste_inv_mercado": "ajuste_inv_mkt",
-        "ajuste-inv-mkt": "ajuste_inv_mkt",
+        "abasto_mkt": "abasto_mkt",
+        "abasto_mercado": "abasto_mkt",
         "correccion_venta": "correccion_venta",
-        "corrección_venta": "correccion_venta",
-        "correccion venta": "correccion_venta",
-        "corrección venta": "correccion_venta",
         "correccion_venta_mkt": "correccion_venta_mkt",
-        "corrección_venta_mkt": "correccion_venta_mkt",
-        "correccion venta mkt": "correccion_venta_mkt",
-        "corrección venta mkt": "correccion_venta_mkt",
-        "correccion_venta_mercado": "correccion_venta_mkt",
-        "corrección_venta_mercado": "correccion_venta_mkt",
+        "ajuste_inv": "ajuste_inv",
+        "ajuste_inv_mkt": "ajuste_inv_mkt",
+        "merma": "merma",
+        "merma_mkt": "merma_mkt",
+        "regalada": "merma",
+        "regaladas": "merma",
+        "regalada_mkt": "merma_mkt",
+        "regaladas_mkt": "merma_mkt",
     }
-    if explicit_type in aliases:
-        return aliases[explicit_type]
-
-    if "venta-mercado" in labels_set or "venta mercado" in lower_title:
-        return "venta_mkt"
-    if "abasto-mercado" in labels_set or "abasto mercado" in lower_title:
-        return "abasto_mkt"
-    if "produccion" in labels_set or "producción" in lower_title or "produccion" in lower_title:
-        return "prod"
-    if "venta" in labels_set or lower_title.startswith("venta"):
-        return "venta"
-    if "ajuste-inventario" in labels_set or "ajuste inventario" in lower_title or "ajuste_inv" in lower_body:
-        return "ajuste_inv"
-    if "ajuste-inventario,mercado" in labels_set or "ajuste inventario mercado" in lower_title or "ajuste_inv_mkt" in lower_body:
-        return "ajuste_inv_mkt"
-    if "correccion-venta,mercado" in labels_set or "correccion venta mercado" in lower_title or "correccion_venta_mkt" in lower_body:
-        return "correccion_venta_mkt"
-    if "correccion-venta" in labels_set or "correccion venta" in lower_title or "correccion_venta" in lower_body:
-        return "correccion_venta"
-    return "none"
+    return aliases.get(v, v)
 
 
-def parse_issue(issue: dict) -> dict:
-    title = str((issue or {}).get("title", "") or "")
-    body = str((issue or {}).get("body", "") or "")
-    labels = [str(x.get("name", "")).strip().lower() for x in (issue or {}).get("labels", [])]
-
-    issue_type = infer_issue_type(title, labels, body)
-    require_price = issue_type in {"venta", "venta_mkt"}
-
-    fecha = safe_parse_date(grab_field(body, "Fecha"), issue)
-    notas = grab_field(body, "Notas")
-    metodo_pago = normalize_payment(
-        grab_field(body, "Método de pago")
-        or grab_field(body, "Metodo de pago")
-        or grab_field(body, "metodo_pago")
-    )
-    client_txn_id = extract_client_txn_id(body)
-
-    items = parse_items_table(body, require_price=require_price)
-    if not items:
-        items = parse_single_item(body, require_price=require_price)
-
-    detalle_text = parse_freeform_field(body, "detalle")
-    razon_text = parse_freeform_field(body, "razon")
-    accion = (grab_field(body, "accion") or "").strip().lower()
-    modo = (grab_field(body, "modo") or "").strip().lower()
-    sku = (grab_field(body, "sku") or grab_field(body, "item") or "").strip()
-    descripcion = (grab_field(body, "descripcion") or "").strip()
-    valor = (grab_field(body, "valor") or "").strip()
-    issue_ref = (grab_field(body, "issue_ref") or grab_field(body, "issue") or "").strip()
-    txn_ref = (grab_field(body, "txn_id") or grab_field(body, "txn") or client_txn_id).strip()
-
-    base = {
-        "type": issue_type,
-        "fecha": fecha,
-        "items": items,
-        "issue_url": (issue or {}).get("html_url", ""),
-        "issue_number": (issue or {}).get("number", ""),
-        "labels": labels,
-        "notas": notas,
-        "metodo_pago": metodo_pago,
-        "client_txn_id": client_txn_id,
-        "accion": accion,
-        "modo": modo,
-        "sku": sku,
-        "descripcion": descripcion,
-        "valor": valor,
-        "issue_ref": issue_ref,
-        "txn_ref": txn_ref,
-        "detalle": detalle_text,
-        "razon": razon_text,
-    }
-    return base
+def to_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(float(str(value).strip() or default))
+    except Exception:
+        return default
 
 
-def find_inventory_row(inv: pd.DataFrame, sku: str) -> pd.Series | None:
-    row = inv[inv["item"].astype(str) == str(sku)]
-    if row.empty:
-        return None
-    return row.iloc[0]
+def to_float(value: Any, default: float = 0.0) -> float:
+    try:
+        return float(str(value).strip() or default)
+    except Exception:
+        return default
 
 
-def apply_stock(inv: pd.DataFrame, items: list[dict], sign: int, path: Path) -> pd.DataFrame:
-    inv = inv.copy()
-
-    for raw in _clean_items(items, require_price=False):
-        sku = raw["item"]
-        qty = int(raw["cantidad"])
-
-        mask = inv["item"].astype(str) == str(sku)
-        if mask.any():
-            inv.loc[mask, "stock"] = pd.to_numeric(inv.loc[mask, "stock"], errors="coerce").fillna(0).astype(int) + (sign * qty)
-        else:
-            inv = pd.concat([
-                inv,
-                pd.DataFrame([{
-                    "item": sku,
-                    "descripcion": "",
-                    "stock": sign * qty,
-                    "precio": pd.NA,
-                    "product_id": ""
-                }])
-            ], ignore_index=True)
-
-    inv["stock"] = pd.to_numeric(inv["stock"], errors="coerce").fillna(0).astype(int)
-    save_inventory(inv, path)
-    return inv
+def sha1_text(text: str) -> str:
+    return hashlib.sha1(text.encode("utf-8")).hexdigest()
 
 
-def _upsert_rows(path: Path, rows: list[dict], key: str) -> None:
-    if not rows:
+def csv_read(path: Path) -> list[dict[str, str]]:
+    if not path.exists():
+        return []
+    with path.open("r", encoding="utf-8-sig", newline="") as f:
+        reader = csv.DictReader(f)
+        rows: list[dict[str, str]] = []
+        for raw in reader:
+            rows.append({str(k).strip(): (v if v is not None else "") for k, v in raw.items()})
+        return rows
+
+
+def csv_write(path: Path, rows: list[dict[str, Any]], fieldnames: list[str] | None = None) -> None:
+    ensure_parent(path)
+    rows = rows or []
+    if fieldnames is None:
+        keys: list[str] = []
+        seen: set[str] = set()
+        for row in rows:
+            for k in row.keys():
+                if k not in seen:
+                    seen.add(k)
+                    keys.append(k)
+        fieldnames = keys
+
+    with path.open("w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames, lineterminator="\n", extrasaction="ignore")
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({k: row.get(k, "") for k in fieldnames})
+
+
+def append_csv_row(path: Path, row: dict[str, Any], preferred_fieldnames: list[str] | None = None) -> None:
+    rows = csv_read(path)
+    rows.append({k: str(v) if v is not None else "" for k, v in row.items()})
+    fieldnames = preferred_fieldnames
+    if fieldnames is None:
+        fieldnames = []
+        seen: set[str] = set()
+        for r in rows:
+            for k in r.keys():
+                if k not in seen:
+                    seen.add(k)
+                    fieldnames.append(k)
+    csv_write(path, rows, fieldnames=fieldnames)
+
+
+def ensure_csv_if_missing(path: Path, fieldnames: list[str]) -> None:
+    if path.exists():
         return
-
-    incoming = pd.DataFrame(rows)
-    if path.exists() and path.stat().st_size > 0:
-        current = pd.read_csv(path, dtype=str).fillna("")
-    else:
-        current = pd.DataFrame(columns=incoming.columns.tolist())
-
-    for col in incoming.columns:
-        if col not in current.columns:
-            current[col] = ""
-
-    if key not in current.columns:
-        current[key] = ""
-
-    current = current[current[key].astype(str).isin(incoming[key].astype(str)) == False].copy()
-    merged = pd.concat([current, incoming], ignore_index=True)
-    merged.to_csv(path, index=False)
+    csv_write(path, [], fieldnames=fieldnames)
 
 
-def append_sales_general(
-    inv: pd.DataFrame,
-    fecha: str,
-    items: list[dict],
-    issue_url: str,
-    metodo_pago: str,
-    txn_id: str,
-    source_base: str
-) -> None:
-    clean = _clean_items(items, require_price=True)
-    rows = []
+def ensure_core_files() -> None:
+    ensure_csv_if_missing(INVENTORY_CSV, ["item", "descripcion", "stock", "precio", "product_id"])
+    ensure_csv_if_missing(INVENTORY_MERCADO_CSV, ["item", "descripcion", "stock", "precio", "product_id"])
+    sales_fields = [
+        "txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue",
+        "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"
+    ]
+    ensure_csv_if_missing(SALES_CSV, sales_fields)
+    ensure_csv_if_missing(SALES_MERCADO_CSV, sales_fields)
+    ensure_csv_if_missing(PRODUCTION_CSV, ["fecha", "item", "cantidad", "issue", "source_id", "descripcion"])
+    ensure_csv_if_missing(TRANSFER_MERCADO_CSV, ["fecha", "item", "cantidad", "issue", "source_id", "descripcion"])
+    ensure_csv_if_missing(PROCESSED_EVENTS_CSV, ["issue_number", "event_hash", "payload_type", "fecha", "status"])
 
-    for idx, it in enumerate(clean):
-        sku = it["item"]
-        qty = int(it["cantidad"])
-        price_text = str(it.get("precio_unit", "")).strip()
-        price_num = pd.to_numeric(price_text, errors="coerce")
 
-        if pd.isna(price_num):
-            row = find_inventory_row(inv, sku)
-            price_num = float(row["precio"]) if row is not None and pd.notna(row["precio"]) else 0.0
+def inventory_find_row(rows: list[dict[str, str]], sku: str) -> dict[str, str] | None:
+    for row in rows:
+        if str(row.get("item", "")).strip() == sku:
+            return row
+    return None
 
-        importe = float(qty) * float(price_num)
-        rows.append({
-            "txn_id": txn_id,
-            "fecha": fecha,
+
+def inventory_get_desc(rows: list[dict[str, str]], sku: str, fallback: str = "") -> str:
+    row = inventory_find_row(rows, sku)
+    if row:
+        return str(row.get("descripcion", "")).strip() or fallback
+    return fallback
+
+
+def inventory_get_price(rows: list[dict[str, str]], sku: str, fallback: float = 0.0) -> float:
+    row = inventory_find_row(rows, sku)
+    if row:
+        return to_float(row.get("precio", ""), fallback)
+    return fallback
+
+
+def inventory_adjust(path: Path, sku: str, descripcion: str, mode: str, value: int) -> None:
+    rows = csv_read(path)
+    row = inventory_find_row(rows, sku)
+
+    if row is None:
+        row = {
             "item": sku,
-            "cantidad": qty,
-            "precio_unit": f"{float(price_num):.2f}",
-            "importe": f"{importe:.2f}",
-            "issue": issue_url,
-            "metodo_pago": metodo_pago or "efectivo",
-            "source_id": f"{source_base}#{idx}"
-        })
+            "descripcion": descripcion,
+            "stock": "0",
+            "precio": "0",
+            "product_id": "",
+        }
+        rows.append(row)
 
-    _upsert_rows(SALES_CSV, rows, key="source_id")
+    current_stock = to_int(row.get("stock", 0), 0)
+    new_stock = value if mode == "set" else current_stock + value
+    row["stock"] = str(new_stock)
+    if descripcion and not str(row.get("descripcion", "")).strip():
+        row["descripcion"] = descripcion
 
-
-def append_sales_mkt(
-    inv: pd.DataFrame,
-    fecha: str,
-    items: list[dict],
-    issue_url: str,
-    metodo_pago: str,
-    txn_id: str,
-    source_base: str
-) -> None:
-    clean = _clean_items(items, require_price=True)
-    rows = []
-
-    for idx, it in enumerate(clean):
-        sku = it["item"]
-        qty = int(it["cantidad"])
-        price_text = str(it.get("precio_unit", "")).strip()
-        price_num = pd.to_numeric(price_text, errors="coerce")
-
-        if pd.isna(price_num):
-            row = find_inventory_row(inv, sku)
-            price_num = float(row["precio"]) if row is not None and pd.notna(row["precio"]) else 0.0
-
-        importe = float(qty) * float(price_num)
-        rows.append({
-            "txn_id": txn_id,
-            "fecha": fecha,
-            "item": sku,
-            "cantidad": qty,
-            "precio_unit": f"{float(price_num):.2f}",
-            "importe": f"{importe:.2f}",
-            "issue": issue_url,
-            "metodo_pago": metodo_pago or "efectivo",
-            "source_id": f"{source_base}#{idx}"
-        })
-
-    _upsert_rows(SALES_MKT_CSV, rows, key="source_id")
+    csv_write(path, rows, fieldnames=["item", "descripcion", "stock", "precio", "product_id"])
 
 
-def append_production(fecha: str, items: list[dict], issue_url: str, txn_id: str, source_base: str) -> None:
-    clean = _clean_items(items, require_price=False)
-    rows = []
-
-    for idx, it in enumerate(clean):
-        rows.append({
-            "txn_id": txn_id,
-            "fecha": fecha,
-            "item": it["item"],
-            "cantidad": int(it["cantidad"]),
-            "issue": issue_url,
-            "source_id": f"{source_base}#{idx}"
-        })
-
-    _upsert_rows(PROD_CSV, rows, key="source_id")
+def inventory_move_between(normal_sku: str, descripcion: str, qty: int) -> None:
+    if qty <= 0:
+        raise ValueError("La cantidad para abasto mercado debe ser mayor a 0")
+    inventory_adjust(INVENTORY_CSV, normal_sku, descripcion, "delta", -qty)
+    inventory_adjust(INVENTORY_MERCADO_CSV, normal_sku, descripcion, "delta", qty)
 
 
-def append_transfer_mkt(fecha: str, items: list[dict], issue_url: str, txn_id: str, source_base: str) -> None:
-    clean = _clean_items(items, require_price=False)
-    rows = []
-
-    for idx, it in enumerate(clean):
-        rows.append({
-            "txn_id": txn_id,
-            "fecha": fecha,
-            "item": it["item"],
-            "cantidad": int(it["cantidad"]),
-            "issue": issue_url,
-            "source_id": f"{source_base}#{idx}"
-        })
-
-    _upsert_rows(TRANSFER_MKT_CSV, rows, key="source_id")
+def parse_issue_event() -> dict[str, Any]:
+    event_path = os.environ.get("GITHUB_EVENT_PATH")
+    if not event_path:
+        raise RuntimeError("Falta GITHUB_EVENT_PATH")
+    with open(event_path, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 
-
-
-def parse_adjustment_items(text: str) -> list[dict]:
-    rows: list[dict] = []
-    for raw_line in (text or "").splitlines():
-        line = raw_line.strip()
-        if not line or "|" not in line:
+def strip_conflict_lines(text: str) -> str:
+    cleaned: list[str] = []
+    for line in str(text or "").splitlines():
+        if line.startswith("<<<<<<<") or line.startswith("=======") or line.startswith(">>>>>>>"):
             continue
-        if line.lower().startswith("sku |"):
+        if line.strip() in {"Updated upstream", "Stashed changes"}:
             continue
-        if line.startswith("---"):
+        cleaned.append(line)
+    return "\n".join(cleaned).strip()
+
+
+def extract_multiline_sections(body: str) -> dict[str, str]:
+    body = strip_conflict_lines(body)
+    lines = body.splitlines()
+    keys = {"detalle": [], "razon": [], "items_raw": [], "notas": []}
+    current: str | None = None
+
+    for raw in lines:
+        line = raw.rstrip()
+        low = line.strip().lower()
+        if re.match(r"^detalle\s*:\s*$", low):
+            current = "detalle"; continue
+        if re.match(r"^razon\s*:\s*$", low):
+            current = "razon"; continue
+        if re.match(r"^(items|productos)\s*:\s*$", low):
+            current = "items_raw"; continue
+        if re.match(r"^notas\s*:\s*$", low):
+            current = "notas"; continue
+        if current:
+            keys[current].append(line)
+
+    return {k: "\n".join(v).strip() for k, v in keys.items()}
+
+
+def extract_simple_fields(body: str) -> dict[str, str]:
+    body = strip_conflict_lines(body)
+    fields: dict[str, str] = {}
+    for raw in body.splitlines():
+        line = raw.strip()
+        if not line or ":" not in line:
             continue
-        parts = [part.strip() for part in line.split("|")]
+        key, value = line.split(":", 1)
+        k = key.strip().lower().replace(" ", "_")
+        v = value.strip()
+        if k in {"tipo", "type", "fecha", "txn_id", "issue_ref", "accion", "metodo_pago", "modo", "valor", "sku", "descripcion", "notas"}:
+            fields[k] = v
+    return fields
+
+
+def parse_markdown_table_items(text: str) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line:
+            continue
+        if line.startswith("|"):
+            line = line[1:]
+        if line.endswith("|"):
+            line = line[:-1]
+        if not line or ("---" in line and "|" in line):
+            continue
+        parts = [p.strip() for p in line.split("|")]
         if len(parts) < 2:
             continue
         sku = parts[0]
-        qty = pd.to_numeric(parts[1], errors="coerce")
-        if not sku or pd.isna(qty) or int(qty) <= 0:
+        if not sku or sku.lower() in {"sku", "item", "producto"}:
             continue
-        price_raw = parts[2] if len(parts) >= 3 else ""
-        item = {"item": sku, "cantidad": int(qty), "precio_unit": price_raw}
-        rows.append(item)
-    return rows
+        qty = to_int(parts[1], 0)
+        price = to_float(parts[2], 0.0) if len(parts) >= 3 else 0.0
+        desc = parts[3] if len(parts) >= 4 else ""
+        rows.append({"item": sku, "cantidad": qty, "precio": price, "descripcion": desc})
+    return [r for r in rows if str(r["item"]).strip() and int(r["cantidad"]) != 0]
 
 
-def load_sales(path: Path) -> pd.DataFrame:
-    columns = ["txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue", "metodo_pago", "source_id"]
-    df = _read_csv_safe(path, columns)
-    df["cantidad"] = pd.to_numeric(df["cantidad"], errors="coerce").fillna(0).astype(int)
-    df["precio_unit"] = pd.to_numeric(df["precio_unit"], errors="coerce").fillna(0.0)
-    df["importe"] = pd.to_numeric(df["importe"], errors="coerce").fillna(0.0)
-    df["metodo_pago"] = df["metodo_pago"].astype(str).replace("", "efectivo")
-    return df
+def parse_bullet_items(text: str) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for raw in text.splitlines():
+        line = raw.strip().lstrip("-").strip()
+        if not line or "|" not in line:
+            continue
+        parts = [p.strip() for p in line.split("|")]
+        if len(parts) < 2:
+            continue
+        sku = parts[0]
+        qty = to_int(parts[1], 0)
+        price = to_float(parts[2], 0.0) if len(parts) >= 3 else 0.0
+        desc = parts[3] if len(parts) >= 4 else ""
+        rows.append({"item": sku, "cantidad": qty, "precio": price, "descripcion": desc})
+    return [r for r in rows if str(r["item"]).strip()]
 
 
-def save_sales(df: pd.DataFrame, path: Path) -> None:
-    export = df.copy()
-    for col in ["txn_id", "fecha", "item", "issue", "metodo_pago", "source_id"]:
-        if col not in export.columns:
-            export[col] = ""
-    export["cantidad"] = pd.to_numeric(export["cantidad"], errors="coerce").fillna(0).astype(int)
-    export["precio_unit"] = pd.to_numeric(export["precio_unit"], errors="coerce").fillna(0.0)
-    export["importe"] = pd.to_numeric(export["importe"], errors="coerce").fillna(0.0)
-    export = export[["txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue", "metodo_pago", "source_id"]]
-    export.to_csv(path, index=False)
+def parse_json_body(body: str) -> dict[str, Any] | None:
+    text = strip_conflict_lines(body).strip()
+    if not text or not (text.startswith("{") and text.endswith("}")):
+        return None
+    try:
+        obj = json.loads(text)
+        if isinstance(obj, dict):
+            return obj
+    except Exception:
+        return None
+    return None
 
 
-def resolve_sales_mask(df: pd.DataFrame, txn_ref: str, issue_ref: str) -> pd.Series:
-    mask = pd.Series(False, index=df.index)
-    txn_ref = str(txn_ref or "").strip()
-    issue_ref = str(issue_ref or "").strip()
-    if txn_ref:
-        mask = mask | (df["txn_id"].astype(str).str.strip() == txn_ref)
-    if issue_ref:
-        issue_series = df["issue"].astype(str)
-        mask = mask | issue_series.str.strip().eq(issue_ref) | issue_series.str.contains(fr"/{re.escape(issue_ref)}$", regex=True)
-    return mask
+def parse_items_from_any(body: str, sections: dict[str, str], json_body: dict[str, Any] | None) -> list[dict[str, Any]]:
+    if json_body and isinstance(json_body.get("items"), list):
+        out: list[dict[str, Any]] = []
+        for item in json_body["items"]:
+            if not isinstance(item, dict):
+                continue
+            out.append({
+                "item": str(item.get("item", "")).strip(),
+                "cantidad": to_int(item.get("cantidad", 0), 0),
+                "precio": to_float(item.get("precio", 0), 0.0),
+                "descripcion": str(item.get("descripcion", "")).strip(),
+            })
+        return [r for r in out if r["item"]]
+
+    source = sections.get("items_raw", "") or sections.get("detalle", "")
+    rows = parse_markdown_table_items(source)
+    if rows:
+        return rows
+    rows = parse_bullet_items(source)
+    if rows:
+        return rows
+
+    parsed: list[dict[str, Any]] = []
+    for raw in source.splitlines():
+        line = raw.strip()
+        if not line:
+            continue
+        m = re.match(r"^(?P<sku>[A-Z0-9\-_]+)\s+[,;]?\s*(?P<qty>-?\d+)(?:\s+[,;]?\s*(?P<price>-?\d+(?:\.\d+)?))?$", line, re.IGNORECASE)
+        if m:
+            parsed.append({
+                "item": m.group("sku").strip(),
+                "cantidad": to_int(m.group("qty"), 0),
+                "precio": to_float(m.group("price") or 0, 0.0),
+                "descripcion": "",
+            })
+    return parsed
 
 
-def apply_inventory_adjustment(inv: pd.DataFrame, sku: str, descripcion: str, modo: str, valor: str, path: Path) -> pd.DataFrame:
-    inv = inv.copy()
-    sku = str(sku or "").strip()
-    if not sku:
-        raise ValueError("Falta SKU para ajuste de inventario")
-
-    value_num = pd.to_numeric(valor, errors="coerce")
-    if pd.isna(value_num):
-        raise ValueError("Valor de ajuste inválido")
-
-    mask = inv["item"].astype(str) == sku
-    if not mask.any():
-        inv = pd.concat([
-            inv,
-            pd.DataFrame([{
-                "item": sku,
-                "descripcion": str(descripcion or ""),
-                "stock": 0,
-                "precio": pd.NA,
-                "product_id": ""
-            }])
-        ], ignore_index=True)
-        mask = inv["item"].astype(str) == sku
-
-    if modo == "set":
-        inv.loc[mask, "stock"] = int(value_num)
-    else:
-        inv.loc[mask, "stock"] = pd.to_numeric(inv.loc[mask, "stock"], errors="coerce").fillna(0).astype(int) + int(value_num)
-
-    if str(descripcion or "").strip():
-        inv.loc[mask, "descripcion"] = str(descripcion).strip()
-
-    save_inventory(inv, path)
-    return inv
+def guess_type_from_title(title: str) -> str:
+    t = str(title or "").strip().lower().replace(" ", "_").replace("-", "_")
+    if "venta_mkt" in t or "venta_mercado" in t:
+        return "venta_mkt"
+    if "abasto_mkt" in t or "abasto_mercado" in t:
+        return "abasto_mkt"
+    if "produccion" in t or "prod" in t:
+        return "prod"
+    if "correccion_venta_mkt" in t:
+        return "correccion_venta_mkt"
+    if "correccion_venta" in t:
+        return "correccion_venta"
+    if "ajuste_inv_mkt" in t:
+        return "ajuste_inv_mkt"
+    if "ajuste_inv" in t:
+        return "ajuste_inv"
+    if "merma_mkt" in t:
+        return "merma_mkt"
+    if "merma" in t or "regalada" in t or "regaladas" in t:
+        return "merma"
+    if "venta" in t:
+        return "venta"
+    return ""
 
 
-def apply_sale_correction(
-    sales_path: Path,
-    inventory_path: Path,
-    fecha: str,
-    txn_ref: str,
-    issue_ref: str,
-    accion: str,
-    detalle: str,
-    metodo_pago: str,
-    issue_url: str,
-    source_base: str,
-    txn_prefix: str,
-) -> tuple[pd.DataFrame, pd.DataFrame]:
-    sales = load_sales(sales_path)
-    inv = load_inventory(inventory_path)
-    mask = resolve_sales_mask(sales, txn_ref, issue_ref)
-    target = sales[mask].copy()
+def parse_issue_payload(event: dict[str, Any]) -> ParsedPayload:
+    issue = event.get("issue", {}) or {}
+    title = str(issue.get("title", "")).strip()
+    body = str(issue.get("body", "")).strip()
+    author = str((issue.get("user") or {}).get("login", "")).strip()
+    number = str(issue.get("number", "")).strip()
 
-    if target.empty:
+    json_body = parse_json_body(body)
+    sections = extract_multiline_sections(body)
+    fields = extract_simple_fields(body)
+    payload_type = normalize_type((json_body or {}).get("type") or fields.get("type") or fields.get("tipo") or guess_type_from_title(title))
+    items = parse_items_from_any(body, sections, json_body)
+
+    fecha = str((json_body or {}).get("fecha", "")).strip() or fields.get("fecha", "").strip() or ""
+    metodo_pago = normalize_payment(str((json_body or {}).get("metodo_pago", "")).strip() or fields.get("metodo_pago", "").strip())
+    txn_id = str((json_body or {}).get("txn_id", "")).strip() or fields.get("txn_id", "").strip()
+    issue_ref = str((json_body or {}).get("issue_ref", "")).strip() or fields.get("issue_ref", "").strip()
+    accion = str((json_body or {}).get("accion", "")).strip().lower() or fields.get("accion", "").strip().lower()
+    modo = str((json_body or {}).get("modo", "")).strip().lower() or fields.get("modo", "").strip().lower()
+    valor = str((json_body or {}).get("valor", "")).strip() or fields.get("valor", "").strip()
+    sku = str((json_body or {}).get("sku", "")).strip() or fields.get("sku", "").strip()
+    descripcion = str((json_body or {}).get("descripcion", "")).strip() or fields.get("descripcion", "").strip()
+    razon = sections.get("razon", "") or str((json_body or {}).get("razon", "")).strip()
+    detalle = sections.get("detalle", "") or str((json_body or {}).get("detalle", "")).strip()
+    notas = sections.get("notas", "") or str((json_body or {}).get("notas", "")).strip() or fields.get("notas", "").strip()
+
+    if not txn_id and payload_type in {"venta", "venta_mkt", "merma", "merma_mkt"}:
+        txn_id = f"txn-issue-{number}"
+
+    return ParsedPayload(
+        issue_number=number,
+        issue_title=title,
+        issue_body=body,
+        issue_author=author,
+        raw=event,
+        payload_type=payload_type,
+        fecha=fecha,
+        metodo_pago=metodo_pago,
+        txn_id=txn_id,
+        issue_ref=issue_ref,
+        accion=accion,
+        modo=modo,
+        valor=valor,
+        sku=sku,
+        descripcion=descripcion,
+        razon=razon,
+        detalle=detalle,
+        notas=notas,
+        items=items,
+    )
+
+
+def processed_event_exists(issue_number: str, event_hash: str) -> bool:
+    rows = csv_read(PROCESSED_EVENTS_CSV)
+    for row in rows:
+        if str(row.get("issue_number", "")).strip() == issue_number and str(row.get("event_hash", "")).strip() == event_hash:
+            return True
+    return False
+
+
+def mark_processed(issue_number: str, event_hash: str, payload_type: str, fecha: str, status: str) -> None:
+    append_csv_row(
+        PROCESSED_EVENTS_CSV,
+        {"issue_number": issue_number, "event_hash": event_hash, "payload_type": payload_type, "fecha": fecha, "status": status},
+        preferred_fieldnames=["issue_number", "event_hash", "payload_type", "fecha", "status"],
+    )
+
+
+def add_github_comment(issue_number: str, body: str) -> None:
+    token = os.environ.get("GITHUB_TOKEN", "").strip()
+    repo = os.environ.get("GITHUB_REPOSITORY", "").strip()
+    if not token or not repo or not issue_number:
+        return
+    url = f"https://api.github.com/repos/{repo}/issues/{issue_number}/comments"
+    payload = json.dumps({"body": body}).encode("utf-8")
+    req = urllib.request.Request(
+        url,
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/vnd.github+json",
+            "Content-Type": "application/json",
+            "User-Agent": "inventory-bot",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            _ = resp.read()
+    except Exception as exc:
+        log(f"No se pudo comentar en issue #{issue_number}: {exc}")
+
+
+def close_github_issue(issue_number: str) -> None:
+    token = os.environ.get("GITHUB_TOKEN", "").strip()
+    repo = os.environ.get("GITHUB_REPOSITORY", "").strip()
+    if not token or not repo or not issue_number:
+        return
+    url = f"https://api.github.com/repos/{repo}/issues/{issue_number}"
+    payload = json.dumps({"state": "closed"}).encode("utf-8")
+    req = urllib.request.Request(
+        url,
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/vnd.github+json",
+            "Content-Type": "application/json",
+            "User-Agent": "inventory-bot",
+        },
+        method="PATCH",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            _ = resp.read()
+    except Exception as exc:
+        log(f"No se pudo cerrar issue #{issue_number}: {exc}")
+
+
+def resolve_items_with_inventory(items: list[dict[str, Any]], inventory_path: Path, zero_price: bool = False) -> list[dict[str, Any]]:
+    inventory_rows = csv_read(inventory_path)
+    resolved: list[dict[str, Any]] = []
+    for item in items:
+        sku = str(item.get("item", "")).strip()
+        if not sku:
+            continue
+        qty = to_int(item.get("cantidad", 0), 0)
+        if qty == 0:
+            continue
+        desc = str(item.get("descripcion", "")).strip() or inventory_get_desc(inventory_rows, sku, "")
+        price = 0.0 if zero_price else to_float(item.get("precio", 0), 0.0)
+        if not zero_price and price == 0:
+            price = inventory_get_price(inventory_rows, sku, 0.0)
+        resolved.append({"item": sku, "cantidad": qty, "precio": price, "descripcion": desc})
+    return resolved
+
+
+def register_sale(payload: ParsedPayload, mercado: bool, zero_price: bool = False) -> str:
+    inventory_path = INVENTORY_MERCADO_CSV if mercado else INVENTORY_CSV
+    sales_path = SALES_MERCADO_CSV if mercado else SALES_CSV
+    source_id = payload.issue_number
+    txn_id = payload.txn_id or f"txn-issue-{payload.issue_number}"
+    metodo_pago = normalize_payment(payload.metodo_pago)
+    fecha = payload.fecha
+    items = resolve_items_with_inventory(payload.items, inventory_path, zero_price=zero_price)
+    if not items:
+        raise ValueError("La operación no trae items válidos")
+
+    for item in items:
+        qty = to_int(item["cantidad"], 0)
+        price = 0.0 if zero_price else to_float(item["precio"], 0.0)
+        inventory_adjust(inventory_path, item["item"], item["descripcion"], "delta", -qty)
+        append_csv_row(
+            sales_path,
+            {
+                "txn_id": txn_id,
+                "fecha": fecha,
+                "item": item["item"],
+                "cantidad": qty,
+                "precio_unit": f"{price:.2f}",
+                "importe": f"{qty * price:.2f}",
+                "issue": payload.issue_number,
+                "metodo_pago": metodo_pago,
+                "source_id": source_id,
+                "descripcion": item["descripcion"],
+                "status": "activa",
+                "correction_ref": "",
+                "notas": payload.notas,
+            },
+            preferred_fieldnames=[
+                "txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue",
+                "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"
+            ],
+        )
+    return txn_id
+
+
+def register_production(payload: ParsedPayload) -> None:
+    items = resolve_items_with_inventory(payload.items, INVENTORY_CSV)
+    if not items:
+        raise ValueError("Producción sin items válidos")
+    for item in items:
+        qty = to_int(item["cantidad"], 0)
+        if qty <= 0:
+            continue
+        inventory_adjust(INVENTORY_CSV, item["item"], item["descripcion"], "delta", qty)
+        append_csv_row(
+            PRODUCTION_CSV,
+            {"fecha": payload.fecha, "item": item["item"], "cantidad": qty, "issue": payload.issue_number, "source_id": payload.issue_number, "descripcion": item["descripcion"]},
+            preferred_fieldnames=["fecha", "item", "cantidad", "issue", "source_id", "descripcion"],
+        )
+
+
+def register_abasto_mercado(payload: ParsedPayload) -> None:
+    items = resolve_items_with_inventory(payload.items, INVENTORY_CSV)
+    if not items:
+        raise ValueError("Abasto mercado sin items válidos")
+    for item in items:
+        qty = to_int(item["cantidad"], 0)
+        if qty <= 0:
+            continue
+        inventory_move_between(item["item"], item["descripcion"], qty)
+        append_csv_row(
+            TRANSFER_MERCADO_CSV,
+            {"fecha": payload.fecha, "item": item["item"], "cantidad": qty, "issue": payload.issue_number, "source_id": payload.issue_number, "descripcion": item["descripcion"]},
+            preferred_fieldnames=["fecha", "item", "cantidad", "issue", "source_id", "descripcion"],
+        )
+
+
+def parse_correction_detail_lines(text: str) -> list[dict[str, Any]]:
+    rows = parse_markdown_table_items(text)
+    if rows:
+        return rows
+    rows = parse_bullet_items(text)
+    if rows:
+        return rows
+    out: list[dict[str, Any]] = []
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line:
+            continue
+        parts = [p.strip() for p in line.split("|")]
+        if len(parts) < 2:
+            continue
+        sku = parts[0]
+        qty = to_int(parts[1], 0)
+        price = to_float(parts[2], 0.0) if len(parts) >= 3 else 0.0
+        out.append({"item": sku, "cantidad": qty, "precio": price, "descripcion": ""})
+    return [r for r in out if str(r["item"]).strip()]
+
+
+def find_sale_rows(sales_path: Path, txn_id: str, issue_ref: str) -> tuple[list[dict[str, str]], list[int]]:
+    rows = csv_read(sales_path)
+    matches: list[dict[str, str]] = []
+    indexes: list[int] = []
+    target_txn = str(txn_id or "").strip()
+    target_issue = str(issue_ref or "").strip()
+
+    for idx, row in enumerate(rows):
+        status = str(row.get("status", "activa")).strip().lower() or "activa"
+        if status in {"cancelada", "corregida"}:
+            continue
+        if target_txn and str(row.get("txn_id", "")).strip() == target_txn:
+            matches.append(row); indexes.append(idx); continue
+        if target_issue and str(row.get("issue", "")).strip() == target_issue:
+            matches.append(row); indexes.append(idx); continue
+    return matches, indexes
+
+
+def mark_sale_rows_status(sales_path: Path, indexes: list[int], status: str, correction_ref: str) -> None:
+    rows = csv_read(sales_path)
+    for idx in indexes:
+        if 0 <= idx < len(rows):
+            rows[idx]["status"] = status
+            rows[idx]["correction_ref"] = correction_ref
+    csv_write(
+        sales_path,
+        rows,
+        fieldnames=[
+            "txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue",
+            "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"
+        ],
+    )
+
+
+def revert_sale_rows_to_inventory(matches: list[dict[str, str]], inventory_path: Path) -> None:
+    for row in matches:
+        sku = str(row.get("item", "")).strip()
+        desc = str(row.get("descripcion", "")).strip()
+        qty = to_int(row.get("cantidad", 0), 0)
+        if sku and qty > 0:
+            inventory_adjust(inventory_path, sku, desc, "delta", qty)
+
+
+def append_corrected_sale(sales_path: Path, inventory_path: Path, payload: ParsedPayload, base_matches: list[dict[str, str]]) -> str:
+    fecha = payload.fecha or (base_matches[0].get("fecha", "") if base_matches else "")
+    metodo = normalize_payment(payload.metodo_pago or (base_matches[0].get("metodo_pago", "") if base_matches else ""))
+    new_txn = f"corr-{payload.issue_number}"
+    items = resolve_items_with_inventory(parse_correction_detail_lines(payload.detalle), inventory_path)
+    if not items:
+        raise ValueError("La corrección no trae detalle válido")
+    for item in items:
+        qty = to_int(item["cantidad"], 0)
+        if qty <= 0:
+            continue
+        price = to_float(item["precio"], 0.0)
+        inventory_adjust(inventory_path, item["item"], item["descripcion"], "delta", -qty)
+        append_csv_row(
+            sales_path,
+            {
+                "txn_id": new_txn,
+                "fecha": fecha,
+                "item": item["item"],
+                "cantidad": qty,
+                "precio_unit": f"{price:.2f}",
+                "importe": f"{qty * price:.2f}",
+                "issue": payload.issue_number,
+                "metodo_pago": metodo,
+                "source_id": payload.issue_number,
+                "descripcion": item["descripcion"],
+                "status": "activa",
+                "correction_ref": "",
+                "notas": payload.razon,
+            },
+            preferred_fieldnames=[
+                "txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue",
+                "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"
+            ],
+        )
+    return new_txn
+
+
+def handle_sale_correction(payload: ParsedPayload, mercado: bool) -> str:
+    inventory_path = INVENTORY_MERCADO_CSV if mercado else INVENTORY_CSV
+    sales_path = SALES_MERCADO_CSV if mercado else SALES_CSV
+    matches, indexes = find_sale_rows(sales_path, payload.txn_id, payload.issue_ref)
+    if not matches:
         raise ValueError("No encontré la venta a corregir")
+    revert_sale_rows_to_inventory(matches, inventory_path)
 
-    original_items = [{"item": row["item"], "cantidad": int(row["cantidad"])} for _, row in target.iterrows()]
-    inv = apply_stock(inv, original_items, sign=+1, path=inventory_path)
-    sales = sales[~mask].copy()
-
-    accion = str(accion or "").strip().lower()
-    if accion == "cancelar":
-        save_sales(sales, sales_path)
-        return inv, sales
-
-    new_items = parse_adjustment_items(detalle)
-    if not new_items:
-        raise ValueError("No encontré detalle válido para la corrección")
-
-    txn_id = next_txn_id(txn_prefix, sales_path)
-    payment = normalize_payment(metodo_pago or str(target["metodo_pago"].iloc[0] if not target.empty else "efectivo"))
-
-    rows = []
-    for idx, it in enumerate(_clean_items(new_items, require_price=True)):
-        sku = it["item"]
-        qty = int(it["cantidad"])
-        price_text = str(it.get("precio_unit", "")).strip()
-        price_num = pd.to_numeric(price_text, errors="coerce")
-        if pd.isna(price_num):
-            row = find_inventory_row(inv, sku)
-            price_num = float(row["precio"]) if row is not None and pd.notna(row["precio"]) else 0.0
-        importe = float(qty) * float(price_num)
-        rows.append({
-            "txn_id": txn_id,
-            "fecha": fecha,
-            "item": sku,
-            "cantidad": qty,
-            "precio_unit": f"{float(price_num):.2f}",
-            "importe": f"{importe:.2f}",
-            "issue": issue_url,
-            "metodo_pago": payment,
-            "source_id": f"{source_base}#corr#{idx}"
-        })
-
-    sales = pd.concat([sales, pd.DataFrame(rows)], ignore_index=True)
-    save_sales(sales, sales_path)
-    inv = apply_stock(inv, new_items, sign=-1, path=inventory_path)
-    return inv, sales
-
-def build_sales_detail(sales_path: Path, inv: pd.DataFrame) -> pd.DataFrame:
-    columns = ["txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue", "metodo_pago", "source_id"]
-    sales = _read_csv_safe(sales_path, columns)
-
-    if sales.empty:
-        return pd.DataFrame(columns=[
-            "txn_id", "fecha", "item", "cantidad", "precio_unit", "importe",
-            "issue", "metodo_pago", "payment", "source_id", "descripcion", "product_id"
-        ])
-
-    sales["cantidad"] = pd.to_numeric(sales["cantidad"], errors="coerce").fillna(0).astype(int)
-    sales["precio_unit"] = pd.to_numeric(sales["precio_unit"], errors="coerce")
-    sales["importe"] = pd.to_numeric(sales["importe"], errors="coerce")
-    sales["metodo_pago"] = sales["metodo_pago"].astype(str).replace("", "efectivo")
-
-    lookup = inv[["item", "descripcion", "product_id"]].drop_duplicates(subset=["item"], keep="last")
-    detail = sales.merge(lookup, how="left", on="item")
-    detail["payment"] = detail["metodo_pago"]
-    return detail
+    action = str(payload.accion or "").strip().lower()
+    if action == "cancelar":
+        mark_sale_rows_status(sales_path, indexes, "cancelada", payload.issue_number)
+        return "cancelada"
+    if action == "ajustar":
+        mark_sale_rows_status(sales_path, indexes, "corregida", payload.issue_number)
+        return append_corrected_sale(sales_path, inventory_path, payload, matches)
+    raise ValueError("Acción de corrección no válida. Usa cancelar o ajustar")
 
 
-def build_prod_detail(prod_path: Path, inv: pd.DataFrame) -> pd.DataFrame:
-    columns = ["txn_id", "fecha", "item", "cantidad", "issue", "source_id"]
-    prod = _read_csv_safe(prod_path, columns)
-    if prod.empty:
-        return pd.DataFrame(columns=["txn_id", "fecha", "item", "cantidad", "issue", "source_id", "descripcion", "product_id"])
-
-    prod["cantidad"] = pd.to_numeric(prod["cantidad"], errors="coerce").fillna(0).astype(int)
-    lookup = inv[["item", "descripcion", "product_id"]].drop_duplicates(subset=["item"], keep="last")
-    return prod.merge(lookup, how="left", on="item")
-
-
-def write_menu_json(inv: pd.DataFrame) -> None:
-    menu_df = inv.copy()
-    menu_df["precio"] = pd.to_numeric(menu_df["precio"], errors="coerce")
-    menu_df["stock"] = pd.to_numeric(menu_df["stock"], errors="coerce").fillna(0).astype(int)
-    menu_df = menu_df[menu_df["item"].astype(str) != ""].copy()
-    menu_df = menu_df.sort_values(["item"]).reset_index(drop=True)
-
-    menu = []
-    for _, row in menu_df.iterrows():
-        price = None if pd.isna(row["precio"]) else float(row["precio"])
-        menu.append({
-            "product_id": str(row.get("product_id", "") or ""),
-            "item": str(row["item"]),
-            "descripcion": str(row.get("descripcion", "") or ""),
-            "precio": price if price is not None else "",
-            "stock": int(row.get("stock", 0) or 0)
-        })
-
-    MENU_JSON.write_text(json.dumps(menu, ensure_ascii=False, indent=2), encoding="utf-8")
+def handle_inventory_adjust(payload: ParsedPayload, mercado: bool) -> None:
+    inventory_path = INVENTORY_MERCADO_CSV if mercado else INVENTORY_CSV
+    sku = str(payload.sku or "").strip()
+    descripcion = str(payload.descripcion or "").strip()
+    mode = str(payload.modo or "delta").strip().lower()
+    value = to_int(payload.valor, 0)
+    if not sku:
+        raise ValueError("Falta sku para ajuste de inventario")
+    if mode not in {"delta", "set"}:
+        raise ValueError("Modo inválido, usa delta o set")
+    inventory_adjust(inventory_path, sku, descripcion, mode, value)
 
 
-def write_inventory_exports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame) -> None:
-    inv_gen.sort_values("item").to_csv(INV_OUT_CSV, index=False)
-    inv_mkt.sort_values("item").to_csv(INV_MKT_OUT_CSV, index=False)
-
-    report = {
-        "generated_at": _now_iso(),
-        "general_items": int(len(inv_gen)),
-        "general_stock_total": int(pd.to_numeric(inv_gen["stock"], errors="coerce").fillna(0).sum()) if not inv_gen.empty else 0,
-        "mercado_items": int(len(inv_mkt)),
-        "mercado_stock_total": int(pd.to_numeric(inv_mkt["stock"], errors="coerce").fillna(0).sum()) if not inv_mkt.empty else 0,
+def build_event_hash(payload: ParsedPayload) -> str:
+    payload_base = {
+        "type": payload.payload_type, "fecha": payload.fecha, "metodo_pago": payload.metodo_pago,
+        "txn_id": payload.txn_id, "issue_ref": payload.issue_ref, "accion": payload.accion,
+        "modo": payload.modo, "valor": payload.valor, "sku": payload.sku, "descripcion": payload.descripcion,
+        "razon": payload.razon, "detalle": payload.detalle, "notas": payload.notas, "items": payload.items, "body": payload.issue_body,
     }
-    REPORT_JSON.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    return sha1_text(json.dumps(payload_base, ensure_ascii=False, sort_keys=True))
 
 
-def build_all_reports(inv_gen: pd.DataFrame, inv_mkt: pd.DataFrame) -> None:
-    write_menu_json(inv_gen)
-    write_inventory_exports(inv_gen, inv_mkt)
+def process_payload(payload: ParsedPayload) -> str:
+    ptype = payload.payload_type
+    if not ptype:
+        raise ValueError("No pude detectar el tipo de operación")
 
-    general_sales_detail = build_sales_detail(SALES_CSV, inv_gen)
-    general_prod_detail = build_prod_detail(PROD_CSV, inv_gen)
-    build_reports(inv_gen, inv_mkt, general_sales_detail, general_prod_detail, out_dir=DOCS)
-
-    market_sales_detail = build_sales_detail(SALES_MKT_CSV, inv_mkt)
-    empty_prod = pd.DataFrame(columns=["fecha", "item", "cantidad", "descripcion", "product_id"])
-    build_reports(inv_gen, inv_mkt, market_sales_detail, empty_prod, out_dir=MKT_DIR)
-
-
-def source_base_from_data(data: dict) -> str:
-    return make_event_key(data)
+    if ptype == "venta":
+        txn = register_sale(payload, mercado=False, zero_price=False)
+        return f"Venta normal registrada. txn={txn}"
+    if ptype == "venta_mkt":
+        txn = register_sale(payload, mercado=True, zero_price=False)
+        return f"Venta mercado registrada. txn={txn}"
+    if ptype == "merma":
+        txn = register_sale(payload, mercado=False, zero_price=True)
+        return f"Merma/regaladas normal registrada. txn={txn}"
+    if ptype == "merma_mkt":
+        txn = register_sale(payload, mercado=True, zero_price=True)
+        return f"Merma/regaladas mercado registrada. txn={txn}"
+    if ptype == "prod":
+        register_production(payload)
+        return "Producción aplicada a inventory.csv"
+    if ptype == "abasto_mkt":
+        register_abasto_mercado(payload)
+        return "Abasto mercado aplicado (normal -> mercado)"
+    if ptype == "ajuste_inv":
+        handle_inventory_adjust(payload, mercado=False)
+        return "Ajuste de inventario normal aplicado"
+    if ptype == "ajuste_inv_mkt":
+        handle_inventory_adjust(payload, mercado=True)
+        return "Ajuste de inventario mercado aplicado"
+    if ptype == "correccion_venta":
+        result = handle_sale_correction(payload, mercado=False)
+        return f"Corrección de venta normal aplicada: {result}"
+    if ptype == "correccion_venta_mkt":
+        result = handle_sale_correction(payload, mercado=True)
+        return f"Corrección de venta mercado aplicada: {result}"
+    raise ValueError(f"Tipo no soportado: {ptype}")
 
 
 def main() -> None:
-    ensure_files()
+    ensure_core_files()
+    event = parse_issue_event()
+    payload = parse_issue_payload(event)
+    event_hash = build_event_hash(payload)
 
-    inv_gen = load_inventory_general()
-    inv_mkt = load_inventory_mkt()
-
-    issue = load_event_issue()
-
-    if issue is None:
-        build_all_reports(inv_gen, inv_mkt)
+    if processed_event_exists(payload.issue_number, event_hash):
+        log(f"Issue #{payload.issue_number} ya estaba procesado. No hago nada.")
         return
 
-    data = parse_issue(issue)
-    event_key = make_event_key(data)
-    movement_type = data.get("type", "none")
-
-    if movement_type != "none" and is_event_processed(event_key):
-        build_all_reports(inv_gen, inv_mkt)
-        return
-
-    if movement_type == "venta_mkt":
-        txn_id = next_txn_id("SM", SALES_MKT_CSV)
-        source_base = source_base_from_data(data)
-
-        append_sales_mkt(
-            inv_mkt,
-            data["fecha"],
-            data["items"],
-            data["issue_url"],
-            data.get("metodo_pago", "efectivo"),
-            txn_id,
-            source_base
-        )
-        inv_mkt = apply_stock(inv_mkt, data["items"], sign=-1, path=INVENTORY_MKT_CSV)
-        mark_event_processed(event_key, data)
-
-    elif movement_type == "abasto_mkt":
-        txn_id = next_txn_id("TM", TRANSFER_MKT_CSV)
-        source_base = source_base_from_data(data)
-
-        inv_gen = apply_stock(inv_gen, data["items"], sign=-1, path=INVENTORY_CSV)
-        inv_mkt = apply_stock(inv_mkt, data["items"], sign=+1, path=INVENTORY_MKT_CSV)
-        append_transfer_mkt(data["fecha"], data["items"], data["issue_url"], txn_id, source_base)
-        mark_event_processed(event_key, data)
-
-    elif movement_type == "venta":
-        txn_id = next_txn_id("S", SALES_CSV)
-        source_base = source_base_from_data(data)
-
-        append_sales_general(
-            inv_gen,
-            data["fecha"],
-            data["items"],
-            data["issue_url"],
-            data.get("metodo_pago", "efectivo"),
-            txn_id,
-            source_base
-        )
-        inv_gen = apply_stock(inv_gen, data["items"], sign=-1, path=INVENTORY_CSV)
-        mark_event_processed(event_key, data)
-
-    elif movement_type == "prod":
-        txn_id = next_txn_id("P", PROD_CSV)
-        source_base = source_base_from_data(data)
-
-        append_production(data["fecha"], data["items"], data["issue_url"], txn_id, source_base)
-        inv_gen = apply_stock(inv_gen, data["items"], sign=+1, path=INVENTORY_CSV)
-        mark_event_processed(event_key, data)
-
-    elif movement_type == "ajuste_inv":
-        inv_gen = apply_inventory_adjustment(
-            inv_gen,
-            data.get("sku", ""),
-            data.get("descripcion", ""),
-            data.get("modo", "delta"),
-            data.get("valor", ""),
-            INVENTORY_CSV,
-        )
-        mark_event_processed(event_key, data)
-
-    elif movement_type == "ajuste_inv_mkt":
-        inv_mkt = apply_inventory_adjustment(
-            inv_mkt,
-            data.get("sku", ""),
-            data.get("descripcion", ""),
-            data.get("modo", "delta"),
-            data.get("valor", ""),
-            INVENTORY_MKT_CSV,
-        )
-        mark_event_processed(event_key, data)
-
-    elif movement_type == "correccion_venta":
-        source_base = source_base_from_data(data)
-        inv_gen, _ = apply_sale_correction(
-            SALES_CSV,
-            INVENTORY_CSV,
-            data["fecha"],
-            data.get("txn_ref", ""),
-            data.get("issue_ref", ""),
-            data.get("accion", ""),
-            data.get("detalle", ""),
-            data.get("metodo_pago", ""),
-            data["issue_url"],
-            source_base,
-            "S",
-        )
-        mark_event_processed(event_key, data)
-
-    elif movement_type == "correccion_venta_mkt":
-        source_base = source_base_from_data(data)
-        inv_mkt, _ = apply_sale_correction(
-            SALES_MKT_CSV,
-            INVENTORY_MKT_CSV,
-            data["fecha"],
-            data.get("txn_ref", ""),
-            data.get("issue_ref", ""),
-            data.get("accion", ""),
-            data.get("detalle", ""),
-            data.get("metodo_pago", ""),
-            data["issue_url"],
-            source_base,
-            "SM",
-        )
-        mark_event_processed(event_key, data)
-
-    build_all_reports(inv_gen, inv_mkt)
+    try:
+        result = process_payload(payload)
+        mark_processed(payload.issue_number, event_hash, payload.payload_type, payload.fecha, "ok")
+        log(result)
+        add_github_comment(payload.issue_number, f"✅ Procesado correctamente.\n\n{result}")
+        close_github_issue(payload.issue_number)
+    except Exception as exc:
+        err = f"❌ Error procesando issue #{payload.issue_number}: {exc}"
+        log(err)
+        mark_processed(payload.issue_number, event_hash, payload.payload_type, payload.fecha, "error")
+        add_github_comment(payload.issue_number, err)
+        raise
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as exc:
+        log(f"Fallo fatal: {exc}")
+        sys.exit(1)
