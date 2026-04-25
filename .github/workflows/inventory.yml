@@ -49,20 +49,24 @@ jobs:
           VENTAS_SLACK_CHANNEL: ${{ secrets.VENTAS_SLACK_CHANNEL }}
           SLACK_CHANNEL_VENTAS_BAZAR: ${{ secrets.SLACK_CHANNEL_VENTAS_BAZAR }}
           VENTAS_BAZAR_SLACK_CHANNEL: ${{ secrets.VENTAS_BAZAR_SLACK_CHANNEL }}
+          TZ: America/Mexico_City
         run: python scripts/process_issue.py
-        
+
       - name: Build reports
+        env:
+          TZ: America/Mexico_City
         run: python scripts/build_reports.py
 
       - name: Commit and push
         env:
           BRANCH_NAME: ${{ github.ref_name }}
+          TZ: America/Mexico_City
         run: |
+          set -e
           git config user.name "inventory-bot"
           git config user.email "actions@users.noreply.github.com"
 
           branch="${BRANCH_NAME:-$(git rev-parse --abbrev-ref HEAD)}"
-          git fetch origin "$branch" --prune
 
           git add scripts/process_issue.py scripts/build_reports.py .github/workflows/inventory.yml
           git add data/inventory.csv data/inventory_mercado.csv data/sales.csv data/sales_mercado.csv data/production.csv data/transfer_mercado.csv data/processed_events.csv
@@ -76,4 +80,21 @@ jobs:
           fi
 
           git commit -m "chore(inventory): actualizar inventarios y reportes"
-          git push origin HEAD:"$branch"
+
+          for i in 1 2 3; do
+            echo "Intento de push $i..."
+            git fetch origin "$branch"
+            git rebase "origin/$branch" || {
+              git rebase --abort || true
+              echo "Rebase falló."
+              exit 1
+            }
+
+            if git push origin HEAD:"$branch"; then
+              echo "Push exitoso."
+              exit 0
+            fi
+          done
+
+          echo "No se pudo hacer push después de varios intentos."
+          exit 1
