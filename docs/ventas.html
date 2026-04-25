@@ -28,7 +28,7 @@
 <body>
   <div class="card">
     <div class="top">
-      <div><h1 style="margin:0;font-size:20px;">Ventas del día</h1><div class="muted">Ahora puede cargar por producto o por venta registrada.</div></div>
+      <div><h1 style="margin:0;font-size:20px;">Ventas del día</h1><div class="muted">Ahora la vista por venta registrada sí agrupa cada venta completa.</div></div>
       <a class="back" href="index.html">← Menú</a>
     </div>
 
@@ -122,7 +122,7 @@
     }
     function sortRows(rows){
       const s = rows.slice();
-      const byName = r => String(r.descripcion || skuToNice(r.item || "")).toLowerCase();
+      const byName = r => String(r.descripcion || r.nombre || skuToNice(r.item || "")).toLowerCase();
       const byAmount = r => Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0)));
       const byDate = r => `${String(r.fecha || "")}|${String(r.txn_id || "")}|${String(r.issue || "")}`;
       if(_orden === "az") s.sort((a,b)=>byName(a).localeCompare(byName(b)));
@@ -147,7 +147,8 @@
           descripcion: r.descripcion || skuToNice(r.item || ""),
           cantidad: 0,
           importe: 0,
-          veces: 0
+          veces: 0,
+          fecha: r.fecha || ""
         };
         current.cantidad += Number(r.cantidad || 0);
         current.importe += Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0)));
@@ -156,14 +157,44 @@
       });
       return Array.from(bucket.values());
     }
+    function groupByRegistro(rows){
+      const bucket = new Map();
+      rows.forEach(r => {
+        const key = String(r.txn_id || r.issue || `${r.fecha}|${r.metodo_pago}|sin-id`).trim();
+        const current = bucket.get(key) || {
+          clave: key,
+          fecha: r.fecha || "",
+          txn_id: r.txn_id || "",
+          issue: r.issue || "",
+          metodo_pago: r.metodo_pago || "efectivo",
+          cantidad: 0,
+          importe: 0,
+          productos: []
+        };
+        const qty = Number(r.cantidad || 0);
+        const imp = Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0)));
+        current.cantidad += qty;
+        current.importe += imp;
+        current.productos.push({
+          nombre: r.descripcion || skuToNice(r.item || ""),
+          sku: r.item || "",
+          cantidad: qty
+        });
+        bucket.set(key, current);
+      });
+      return Array.from(bucket.values()).map(reg => {
+        reg.productos = reg.productos.sort((a,b)=>a.nombre.localeCompare(b.nombre));
+        reg.nombre = `Venta ${reg.txn_id || reg.issue || ""}`.trim();
+        return reg;
+      });
+    }
     function render(){
       const rows = rowsForCurrentView();
       const tbody = document.getElementById("tbody");
 
       if (_vista === "producto"){
-        const grouped = groupByProduct(rows);
-        const sortedGrouped = sortRows(grouped);
-        tbody.innerHTML = sortedGrouped.map(r => `
+        const grouped = sortRows(groupByProduct(rows));
+        tbody.innerHTML = grouped.map(r => `
           <tr>
             <td>
               <div class="name">${r.descripcion || skuToNice(r.item || "")}</div>
@@ -174,30 +205,31 @@
             <td>${money(r.importe || 0)}</td>
           </tr>
         `).join("");
-        const units = sortedGrouped.reduce((s,r)=>s+Number(r.cantidad||0),0);
-        const total = sortedGrouped.reduce((s,r)=>s+Number(r.importe||0),0);
-        document.getElementById("count").textContent = String(sortedGrouped.length);
+        const units = grouped.reduce((s,r)=>s+Number(r.cantidad||0),0);
+        const total = grouped.reduce((s,r)=>s+Number(r.importe||0),0);
+        document.getElementById("count").textContent = String(grouped.length);
         document.getElementById("units").textContent = String(units);
         document.getElementById("total").textContent = money(total);
-        document.getElementById("status").textContent = sortedGrouped.length ? "Vista por producto." : "No hay ventas para ese filtro.";
+        document.getElementById("status").textContent = grouped.length ? "Vista por producto." : "No hay ventas para ese filtro.";
       } else {
-        tbody.innerHTML = rows.map(r => `
+        const grouped = sortRows(groupByRegistro(rows));
+        tbody.innerHTML = grouped.map(r => `
           <tr>
             <td>
-              <div class="name">${r.descripcion || skuToNice(r.item || "")}</div>
-              <div class="sub">${r.item || ""}</div>
-              <div class="sub">${r.fecha || ""} · ${r.metodo_pago || "efectivo"} · issue ${r.issue || "-"} · txn ${r.txn_id || "-"}</div>
+              <div class="name">${r.txn_id || r.issue || "Venta registrada"}</div>
+              <div class="sub">${r.fecha || ""} · ${r.metodo_pago || "efectivo"}${r.issue ? ` · issue ${r.issue}` : ""}${r.txn_id ? ` · txn ${r.txn_id}` : ""}</div>
+              <div class="sub">${r.productos.map(p => `${p.nombre} (${p.cantidad})`).join(" · ")}</div>
             </td>
             <td>${Number(r.cantidad || 0)}</td>
-            <td>${money(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0)))}</td>
+            <td>${money(r.importe || 0)}</td>
           </tr>
         `).join("");
-        const units = rows.reduce((s,r)=>s+Number(r.cantidad||0),0);
-        const total = rows.reduce((s,r)=>s+Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0))),0);
-        document.getElementById("count").textContent = String(rows.length);
+        const units = grouped.reduce((s,r)=>s+Number(r.cantidad||0),0);
+        const total = grouped.reduce((s,r)=>s+Number(r.importe||0),0);
+        document.getElementById("count").textContent = String(grouped.length);
         document.getElementById("units").textContent = String(units);
         document.getElementById("total").textContent = money(total);
-        document.getElementById("status").textContent = rows.length ? "Vista por venta registrada." : "No hay ventas para ese filtro.";
+        document.getElementById("status").textContent = grouped.length ? "Vista agrupada por venta registrada." : "No hay ventas para ese filtro.";
       }
       syncViewButtons();
     }
@@ -213,6 +245,17 @@
         "Importe": Number(r.importe || 0)
       })).sort((a,b)=>String(a["Producto"]).localeCompare(String(b["Producto"])));
     }
+    function buildResumenPorRegistro(rows){
+      return groupByRegistro(rows).map(r => ({
+        "Fecha": r.fecha || "",
+        "Txn": r.txn_id || "",
+        "Issue": r.issue || "",
+        "Método de pago": r.metodo_pago || "efectivo",
+        "Productos": r.productos.map(p => `${p.nombre} (${p.cantidad})`).join(" | "),
+        "Cantidad": Number(r.cantidad || 0),
+        "Importe": Number(r.importe || 0)
+      }));
+    }
 
     function exportExcelDelDia(){
       const fecha = document.getElementById("fecha").value, rows = rowsForCurrentView();
@@ -222,74 +265,12 @@
 
       const wb = XLSX.utils.book_new();
       if (_vista === "producto") {
-        const resumenProducto = buildResumenPorProducto(rows);
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(resumenProducto), "Por producto");
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(buildResumenPorProducto(rows)), "Por producto");
       } else {
-        const detalle = rows.map(r => ({
-          "Fecha":r.fecha || fecha,"SKU":r.item || "","Producto":r.descripcion || skuToNice(r.item || ""),
-          "Cantidad":Number(r.cantidad || 0),"Precio unitario":Number(r.precio_unit || 0),
-          "Importe":Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0))),
-          "Método de pago":(r.metodo_pago || "efectivo"),"Issue":r.issue || "","Txn":r.txn_id || ""
-        }));
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(detalle), "Por registro");
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(buildResumenPorRegistro(rows)), "Por venta");
       }
       XLSX.writeFile(wb, "ventas-" + _vista + "-" + fecha + "-" + _metodo + "-" + _orden + ".xlsx");
     }
-
-    const PALETAS_ORDEN = [
-      ["PALETA-CREMA-ALGODON","ALGODÓN"],["PALETA-CREMA-ARROZ","ARROZ"],["PALETA-CREMA-PREMIUM-BAILEYS","BAILEYS"],["PALETA-CREMA-BESO-DE-ANGEL","BESO D ÁNGEL"],
-      ["PALETA-CREMA-PREMIUM-CAJETA","CAJETA"],["PALETA-CREMA-CAPUCHINO","CAPUCHINO"],["PALETA-CREMA-CHICLE","CHICLE"],["PALETA-CREMA-CHOCOLATE","CHOCOLATE"],
-      ["PALETA-CREMA-PREMIUM-CHONGOS","CHONGOS"],["PALETA-CREMA-COCO","COCO"],["PALETA-CREMA-DURAZNOS-CON-CREMA","DURAZNO&CREMA"],["PALETA-CREMA-PREMIUM-FERRERO","FERRERO"],
-      ["PALETA-AGUA-FRESA","FRESA agua"],["PALETA-CREMA-FRESA-CREMA","FRESA crema"],["PALETA-CREMA-FRESA-CON-CREMA","FRESAS&CREAM"],["PALETA-AGUA-PREMIUM-FRUTOS-ROJOS","FRUTOS ROJOS"],
-      ["PALETA-AGUA-GROSSELLA","GROSELLA"],["PALETA-AGUA-GUANABANA","GUANABANA"],["PALETA-AGUA-GUAYABA","GUAYABA"],["PALETA-AGUA-KIWI","KIWI"],
-      ["PALETA-CREMA-PREMIUM-KAHLUA","KAHLÚA"],["PALETA-AGUA-LIMON","LIMÓN"],["PALETA-AGUA-PREMIUM-LIMON-CHAMOY","LIMÓN CHAMOY"],["PALETA-CREMA-MAMEY","MAMEY"],
-      ["PALETA-AGUA-MANDARINA","MANDARINA"],["PALETA-AGUA-MANGO","MANGO"],["PALETA-AGUA-PREMIUM-MANGO-CHAMOY","MANGO CHAMOY"],["PALETA-AGUA-MARACUYA","MARACUYÁ"],
-      ["PALETA-CREMA-MAZAPAN","MAZAPÁN"],["PALETA-AGUA-MELON","MELÓN"],["PALETA-CREMA-MENTA-CHOCOLATE","MENTA CON CH"],["PALETA-CREMA-PREMIUM-MOCTEZUMA","MOCTEZUMA"],
-      ["PALETA-CREMA-PREMIUM-NUEZ","NUEZ"],["PALETA-CREMA-PREMIUM-NUTELLA","NUTELLA"],["PALETA-CREMA-OREO","OREO"],["PALETA-CREMA-PAY-DE-LIMON","PAY DE LIMÓN"],
-      ["PALETAS-PERRO","PERRO"],["PALETA-AGUA-PREMIUM-PICAFRESA","PICAFRESA"],["PALETA-AGUA-PREMIUM-PICAPANDA","PICAPANDAS"],["PALETA-AGUA-PINA","PIÑA"],
-      ["PALETA-AGUA-PREMIUM-PINA-CHAMOY","PIÑA CHAMOY"],["PALETA-CREMA-PREMIUM-PINON","PIÑON"],["PALETA-CREMA-PREMIUM-PISTACHE","PISTACHE"],["PALETA-AGUA-PREMIUM-PULPARINDO","PULPARINDO"],
-      ["PALETA-CREMA-PREMIUM-QUESO","QUESO"],["PALETA-CREMA-PREMIUM-QUESO-CON-ZARZAMORA","QUESO/ZARZA"],["PALETA-CREMA-PREMIUM-RAFFAELLO","RAFFAELLO"],["PALETA-CREMA-ROMPOPE","ROMPOPE"],
-      ["PALETA-CREMA-PREMIUM-RON-CON-PASAS","RÓN PASAS"],["PALETA-CREMA-SALTED-CARAMEL","SALTED CARAMEL"],["PALETA-AGUA-SANDIA","SANDÍA"],["PALETA-AGUA-PREMIUM-SANDIA-CHAMOY","SANDÍA CHAMOY"],
-      ["PALETA-CREMA-PREMIUM-SELVA-BLANCA","SELVA BLANCA"],["PALETA-CREMA-PREMIUM-SELVA-NEGRA","SELVA NEGRA"],["PALETA-CREMA-PREMIUM-SNICKERS","SNICKERS"],["PALETA-AGUA-TAMARINDO","TAMARINDO"],
-      ["PALETA-CREMA-TARO","TARO"],["PALETA-CREMA-TRIX","TRIX"],["PALETA-AGUA-UVA","UVA"],["PALETA-CREMA-VAINILLA","VAINILLA"],
-      ["PALETA-CREMA-PREMIUM-VINO-TINTO-RELLENO","VINO"],["PALETA-AGUA-ZAPOTE","ZAPOTE"],["PALETA-ALCOHOL-PERLA-NEGRA","PERLA NEGRA"],["PALETA-ALCOHOL-PINA-COLADA","PIÑA COLADA"],
-      ["PALETA-ALCOHOL-TEQUILA","TEQUILA"],["PALETA-SIN-AZUCAR-CAJETA","CAJETA SA"],["PALETA-SIN-AZUCAR-CAPUCHINO","CAPUKETO"],["PALETA-SIN-AZUCAR-CHOCOLATE-CON-FRESA","CHOCOFRESA K"],
-      ["PALETA-SIN-AZUCAR-CHOCOLATE","CHOCOKETO"],["PALETA-SIN-AZUCAR-COCO","COCOKETO"],["PALETA-SIN-AZUCAR-FERRERO","FERREROKETO"],["PALETA-SIN-AZUCAR-FRESA-CHAMOY","FRESA SA"],
-      ["PALETA-SIN-AZUCAR-FRUTOS-ROJOS","FRUTOSKETO"],["PALETA-SIN-AZUCAR-GROSELLA","GROSELLA SA"],["PALETA-SIN-AZUCAR-GUANABANA","GUANABANASA"],["PALETA-SIN-AZUCAR-LIMON-CHAMOY","LIMONCHM SA"],
-      ["PALETA-SIN-AZUCAR-LIMON-MENTA","LIMÓNMENTA"],["PALETA-SIN-AZUCAR-MAMEY","MAMEY SA"],["PALETA-SIN-AZUCAR-MANGO","MANGO SA"],["PALETA-SIN-AZUCAR-MAZAPAN","MAZAKETO"],
-      ["PALETA-SIN-AZUCAR-MENTA","MENTAKETO"],["PALETA-SIN-AZUCAR-NUEZ","NUEZKETO"],["PALETA-SIN-AZUCAR-PINON","PIÑONKETO"],["PALETA-SIN-AZUCAR-PISTACHE","PISTAKETO"],
-      ["PALETA-SIN-AZUCAR-VAINILLA","VAINILLAKETO"]
-    ];
-    function buildPaletasResumen(rows){
-      const mapa = new Map();
-      rows.forEach(r => {
-        const sku = String(r.item || "").trim();
-        if (!sku) return;
-        const qty = Number(r.cantidad || 0);
-        const imp = Number(r.importe || (Number(r.cantidad || 0) * Number(r.precio_unit || 0)));
-        const current = mapa.get(sku) || { cantidad: 0, importe: 0 };
-        current.cantidad += qty;
-        current.importe += imp;
-        mapa.set(sku, current);
-      });
-      return PALETAS_ORDEN.map(([sku, nombre]) => {
-        const found = mapa.get(sku) || { cantidad: 0, importe: 0 };
-        return {"SKU": sku, "Paleta": nombre, "Cantidad": Number(found.cantidad || 0), "Importe": Number(found.importe || 0)};
-      });
-    }
-    function exportPaletasExcel(prefix){
-      const fecha = document.getElementById("fecha").value;
-      const rows = rowsForCurrentView();
-      if (!fecha) return alert("Selecciona una fecha");
-      if (!window.XLSX) return alert("No se pudo cargar la librería de Excel");
-      const paletas = buildPaletasResumen(rows);
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.json_to_sheet(paletas);
-      ws["!cols"] = [{ wch: 42 }, { wch: 24 }, { wch: 10 }, { wch: 12 }];
-      XLSX.utils.book_append_sheet(wb, ws, "Paletas");
-      XLSX.writeFile(wb, `${prefix}-paletas-${fecha}-${_metodo}-${_orden}.xlsx`);
-    }
-
     async function loadRowsByDate(fecha){
       const dailyPath = `diario/${fecha}-ventas.csv`;
       try {
@@ -326,7 +307,6 @@
     document.getElementById("viewProduct").onclick = () => { _vista = "producto"; render(); };
     document.getElementById("viewRegistro").onclick = () => { _vista = "registro"; render(); };
     document.getElementById("excel").onclick = () => exportExcelDelDia();
-    document.getElementById("excelPaletas").onclick = () => exportPaletasExcel("ventas");
     document.getElementById("imprimir").onclick = () => window.print();
     syncViewButtons();
   </script>
