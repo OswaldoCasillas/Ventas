@@ -1,47 +1,5 @@
 [
   {
-    "product_id": "1C271C39",
-    "item": "BEBIDA-CHAMOYADA",
-    "descripcion": "BEBIDA Chamoyada",
-    "precio": 60.0,
-    "stock": 9999999999999
-  },
-  {
-    "product_id": "F76E2099",
-    "item": "BEBIDA-CHOCOLATE-CALIENTE",
-    "descripcion": "BEBIDA Chocolate Caliente",
-    "precio": 35.0,
-    "stock": 9999999999999
-  },
-  {
-    "product_id": "1DD9CEE1",
-    "item": "BEBIDA-CHOCOLATE-CALIENTE-VEGANO",
-    "descripcion": "BEBIDA Chocolate Caliente Vegano",
-    "precio": 40.0,
-    "stock": 9999999999999
-  },
-  {
-    "product_id": "2188FC39",
-    "item": "BEBIDA-FRAPUCHINO",
-    "descripcion": "BEBIDA Frapuchino",
-    "precio": 60.0,
-    "stock": 9999999999999
-  },
-  {
-    "product_id": "CFCEA938",
-    "item": "BOTANA-DORILOCOS",
-    "descripcion": "BOTANA Dorilocos",
-    "precio": 50.0,
-    "stock": 9999999999999
-  },
-  {
-    "product_id": "7E9B8EC2",
-    "item": "BOTANA-PLATANITOS",
-    "descripcion": "BOTANA Platanitos",
-    "precio": 15.0,
-    "stock": 9999999999999
-  },
-  {
     "product_id": "7968996E",
     "item": "HELADO-CLASICO-LITRO",
     "descripcion": "Helado Clasico Litro",
@@ -95,27 +53,6 @@
     "item": "HELADO-SIN-AZUCAR-MEDIO-LITRO",
     "descripcion": "Helado Sin Azucar Medio Litro",
     "precio": 95.0,
-    "stock": 9999999999999
-  },
-  {
-    "product_id": "D7361A46",
-    "item": "MALTEADA-CLASICA",
-    "descripcion": "MALTEADA Clasica",
-    "precio": 65.0,
-    "stock": 9999999999999
-  },
-  {
-    "product_id": "F63212B1",
-    "item": "MALTEADA-GOURMET",
-    "descripcion": "MALTEADA Gourmet",
-    "precio": 70.0,
-    "stock": 9999999999999
-  },
-  {
-    "product_id": "8E1F2139",
-    "item": "MALTEADA-SIN-AZUCAR",
-    "descripcion": "MALTEADA Sin Azucar",
-    "precio": 75.0,
     "stock": 9999999999999
   },
   {
@@ -570,7 +507,7 @@
     "product_id": "MINIAGUA6",
     "item": "PALETA-MINI-MINI-AGUA",
     "descripcion": "PALETA MINI Mini Agua",
-    "precio": 6.0,
+    "precio": 10.0,
     "stock": 9999999999999
   },
   {
@@ -584,7 +521,7 @@
     "product_id": "C371ED40",
     "item": "PALETA-MINI-MINI-CREMA",
     "descripcion": "PALETA MINI Mini Crema",
-    "precio": 8.0,
+    "precio": 10.0,
     "stock": 9999999999999
   },
   {
