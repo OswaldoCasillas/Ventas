@@ -50,8 +50,18 @@ jobs:
           TZ: America/Mexico_City
         run: python scripts/process_issue.py
 
-      - name: Sync menu from inventory
+      - name: Clean inventory mercado
+        run: python scripts/clean_inventory_mercado.py
+        env:
+          TZ: America/Mexico_City
+
+      - name: Sync menu normal from inventory
         run: python scripts/sync_menu_from_inventory.py
+        env:
+          TZ: America/Mexico_City
+
+      - name: Sync menu mercado from inventory_mercado
+        run: python scripts/sync_menu_mercado_from_inventory.py
         env:
           TZ: America/Mexico_City
 
@@ -72,8 +82,10 @@ jobs:
           branch="${BRANCH_NAME:-$(git rev-parse --abbrev-ref HEAD)}"
           git fetch origin "$branch" --prune
 
-          git add scripts/sync_menu_from_inventory.py
-          git add docs/menu.json data/inventory.csv data/inventory_mercado.csv data/sales.csv data/sales_mercado.csv docs/diario docs/mercado/diario docs/ventas_detalle.csv docs/mercado/ventas_detalle.csv docs/ventas_por_dia.csv docs/ventas_por_item.csv docs/produccion_detalle.csv 2>/dev/null || true
+          git add scripts/sync_menu_from_inventory.py scripts/sync_menu_mercado_from_inventory.py scripts/clean_inventory_mercado.py
+          git add docs/menu.json docs/menu_mercado.json
+          git add data/inventory.csv data/inventory_mercado.csv data/sales.csv data/sales_mercado.csv
+          git add docs/diario docs/mercado/diario docs/ventas_detalle.csv docs/mercado/ventas_detalle.csv docs/ventas_por_dia.csv docs/ventas_por_item.csv docs/produccion_detalle.csv 2>/dev/null || true
           git add -A
 
           if git diff --cached --quiet; then
@@ -81,5 +93,5 @@ jobs:
             exit 0
           fi
 
-          git commit -m "chore(inventory): actualizar inventario, menu y reportes"
+          git commit -m "chore(inventory): actualizar inventarios, menus y reportes"
           git push origin HEAD:"$branch"
