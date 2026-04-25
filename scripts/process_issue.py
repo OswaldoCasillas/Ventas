@@ -31,6 +31,7 @@ class ParsedPayload:
     issue_title: str
     issue_body: str
     issue_author: str
+    labels: list[str]
     raw: dict[str, Any]
     payload_type: str
     fecha: str
@@ -196,7 +197,6 @@ def inventory_get_price(rows: list[dict[str, str]], sku: str, fallback: float = 
 def inventory_adjust(path: Path, sku: str, descripcion: str, mode: str, value: int) -> None:
     rows = csv_read(path)
     row = inventory_find_row(rows, sku)
-
     if row is None:
         row = {"item": sku, "descripcion": descripcion, "stock": "0", "precio": "0", "product_id": ""}
         rows.append(row)
@@ -245,14 +245,23 @@ def extract_multiline_sections(body: str) -> dict[str, str]:
     for raw in lines:
         line = raw.rstrip()
         low = line.strip().lower()
-        if re.match(r"^detalle\s*:\s*$", low):
-            current = "detalle"; continue
-        if re.match(r"^razon\s*:\s*$", low):
-            current = "razon"; continue
-        if re.match(r"^(items|productos)\s*:\s*$", low):
-            current = "items_raw"; continue
-        if re.match(r"^notas\s*:\s*$", low):
-            current = "notas"; continue
+
+        if re.match(r"^detalle\s*:?\s*$", low):
+            current = "detalle"
+            continue
+        if re.match(r"^razon\s*:?\s*$", low):
+            current = "razon"
+            continue
+        if re.match(r"^(items|productos)\s*:?\s*$", low):
+            current = "items_raw"
+            continue
+        if re.match(r"^notas\s*:?\s*$", low):
+            current = "notas"
+            continue
+
+        if re.match(r"^[a-záéíóúüñ_ ]+\s*:\s*$", low) and current:
+            current = None
+
         if current:
             keys[current].append(line)
 
@@ -269,7 +278,7 @@ def extract_simple_fields(body: str) -> dict[str, str]:
         key, value = line.split(":", 1)
         k = key.strip().lower().replace(" ", "_")
         v = value.strip()
-        if k in {"tipo", "type", "fecha", "txn_id", "issue_ref", "accion", "metodo_pago", "modo", "valor", "sku", "descripcion", "notas"}:
+        if k in {"tipo", "type", "fecha", "txn_id", "client_txn_id", "issue_ref", "accion", "metodo_pago", "modo", "valor", "sku", "descripcion", "notas", "items"}:
             fields[k] = v
     return fields
 
@@ -278,7 +287,7 @@ def parse_markdown_table_items(text: str) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for raw in text.splitlines():
         line = raw.strip()
-        if not line:
+        if not line or "|" not in line:
             continue
         if line.startswith("|"):
             line = line[1:]
@@ -329,7 +338,9 @@ def parse_json_body(body: str) -> dict[str, Any] | None:
     return None
 
 
-def parse_items_from_any(body: str, sections: dict[str, str], json_body: dict[str, Any] | None) -> list[dict[str, Any]]:
+def parse_items_from_any(body: str, sections: dict[str, str], json_body: dict[str, Any] | None, fields: dict[str, str] | None = None) -> list[dict[str, Any]]:
+    fields = fields or {}
+
     if json_body and isinstance(json_body.get("items"), list):
         out: list[dict[str, Any]] = []
         for item in json_body["items"]:
@@ -341,7 +352,30 @@ def parse_items_from_any(body: str, sections: dict[str, str], json_body: dict[st
                 "precio": to_float(item.get("precio", 0), 0.0),
                 "descripcion": str(item.get("descripcion", "")).strip(),
             })
-        return [r for r in out if r["item"]]
+        out = [r for r in out if r["item"] and to_int(r["cantidad"], 0) != 0]
+        if out:
+            return out
+
+    raw_items_field = str(fields.get("items", "")).strip()
+    if raw_items_field:
+        try:
+            parsed = json.loads(raw_items_field)
+            if isinstance(parsed, list):
+                out: list[dict[str, Any]] = []
+                for item in parsed:
+                    if not isinstance(item, dict):
+                        continue
+                    out.append({
+                        "item": str(item.get("item", "")).strip(),
+                        "cantidad": to_int(item.get("cantidad", 0), 0),
+                        "precio": to_float(item.get("precio", 0), 0.0),
+                        "descripcion": str(item.get("descripcion", "")).strip(),
+                    })
+                out = [r for r in out if r["item"] and to_int(r["cantidad"], 0) != 0]
+                if out:
+                    return out
+        except Exception:
+            pass
 
     source = sections.get("items_raw", "") or sections.get("detalle", "")
     rows = parse_markdown_table_items(source)
@@ -358,8 +392,13 @@ def parse_items_from_any(body: str, sections: dict[str, str], json_body: dict[st
             continue
         m = re.match(r"^(?P<sku>[A-Z0-9\-_]+)\s+[,;]?\s*(?P<qty>-?\d+)(?:\s+[,;]?\s*(?P<price>-?\d+(?:\.\d+)?))?$", line, re.IGNORECASE)
         if m:
-            parsed.append({"item": m.group("sku").strip(), "cantidad": to_int(m.group("qty"), 0), "precio": to_float(m.group("price") or 0, 0.0), "descripcion": ""})
-    return parsed
+            parsed.append({
+                "item": m.group("sku").strip(),
+                "cantidad": to_int(m.group("qty"), 0),
+                "precio": to_float(m.group("price") or 0, 0.0),
+                "descripcion": "",
+            })
+    return [r for r in parsed if r["item"] and to_int(r["cantidad"], 0) != 0]
 
 
 def guess_type_from_title(title: str) -> str:
@@ -387,22 +426,49 @@ def guess_type_from_title(title: str) -> str:
     return ""
 
 
+def guess_type_from_labels(labels: list[str]) -> str:
+    normalized = [normalize_type(x) for x in labels]
+    priority = [
+        "correccion_venta_mkt", "correccion_venta",
+        "ajuste_inv_mkt", "ajuste_inv",
+        "abasto_mkt", "venta_mkt",
+        "merma_mkt", "merma",
+        "prod", "venta",
+    ]
+    for p in priority:
+        if p in normalized:
+            return p
+    return ""
+
+
 def parse_issue_payload(event: dict[str, Any]) -> ParsedPayload:
     issue = event.get("issue", {}) or {}
     title = str(issue.get("title", "")).strip()
     body = str(issue.get("body", "")).strip()
     author = str((issue.get("user") or {}).get("login", "")).strip()
     number = str(issue.get("number", "")).strip()
+    labels = [str((x or {}).get("name", "")).strip() for x in (issue.get("labels") or [])]
 
     json_body = parse_json_body(body)
     sections = extract_multiline_sections(body)
     fields = extract_simple_fields(body)
-    payload_type = normalize_type((json_body or {}).get("type") or fields.get("type") or fields.get("tipo") or guess_type_from_title(title))
-    items = parse_items_from_any(body, sections, json_body)
+    payload_type = normalize_type(
+        (json_body or {}).get("type")
+        or fields.get("type")
+        or fields.get("tipo")
+        or guess_type_from_title(title)
+        or guess_type_from_labels(labels)
+    )
+    items = parse_items_from_any(body, sections, json_body, fields)
 
     fecha = str((json_body or {}).get("fecha", "")).strip() or fields.get("fecha", "").strip() or ""
     metodo_pago = normalize_payment(str((json_body or {}).get("metodo_pago", "")).strip() or fields.get("metodo_pago", "").strip())
-    txn_id = str((json_body or {}).get("txn_id", "")).strip() or fields.get("txn_id", "").strip()
+    txn_id = (
+        str((json_body or {}).get("txn_id", "")).strip()
+        or str((json_body or {}).get("client_txn_id", "")).strip()
+        or fields.get("txn_id", "").strip()
+        or fields.get("client_txn_id", "").strip()
+    )
     issue_ref = str((json_body or {}).get("issue_ref", "")).strip() or fields.get("issue_ref", "").strip()
     accion = str((json_body or {}).get("accion", "")).strip().lower() or fields.get("accion", "").strip().lower()
     modo = str((json_body or {}).get("modo", "")).strip().lower() or fields.get("modo", "").strip().lower()
@@ -417,10 +483,10 @@ def parse_issue_payload(event: dict[str, Any]) -> ParsedPayload:
         txn_id = f"txn-issue-{number}"
 
     return ParsedPayload(
-        issue_number=number, issue_title=title, issue_body=body, issue_author=author, raw=event,
-        payload_type=payload_type, fecha=fecha, metodo_pago=metodo_pago, txn_id=txn_id,
-        issue_ref=issue_ref, accion=accion, modo=modo, valor=valor, sku=sku,
-        descripcion=descripcion, razon=razon, detalle=detalle, notas=notas, items=items,
+        issue_number=number, issue_title=title, issue_body=body, issue_author=author, labels=labels, raw=event,
+        payload_type=payload_type, fecha=fecha, metodo_pago=metodo_pago, txn_id=txn_id, issue_ref=issue_ref,
+        accion=accion, modo=modo, valor=valor, sku=sku, descripcion=descripcion, razon=razon,
+        detalle=detalle, notas=notas, items=items,
     )
 
 
@@ -464,97 +530,6 @@ def close_github_issue(issue_number: str) -> None:
             _ = resp.read()
     except Exception as exc:
         log(f"No se pudo cerrar issue #{issue_number}: {exc}")
-
-
-def slack_token() -> str:
-    return str(os.environ.get("SLACK_BOT_TOKEN") or os.environ.get("SLACK_API_TOKEN") or "").strip()
-
-
-def slack_channel_for_scope(scope: str) -> str:
-    if scope == "mercado":
-        return str(
-            os.environ.get("SLACK_CHANNEL_VENTAS_BAZAR")
-            or os.environ.get("VENTAS_BAZAR_SLACK_CHANNEL")
-            or ""
-        ).strip()
-    return str(
-        os.environ.get("SLACK_CHANNEL_VENTAS")
-        or os.environ.get("VENTAS_SLACK_CHANNEL")
-        or ""
-    ).strip()
-
-
-def post_slack_message(text: str, scope: str) -> None:
-    token = slack_token()
-    channel = slack_channel_for_scope(scope)
-    if not token or not channel:
-        log(f"Slack omitido: faltan token/canal para scope={scope}")
-        return
-
-    payload = json.dumps({"channel": channel, "text": text}).encode("utf-8")
-    req = urllib.request.Request(
-        "https://slack.com/api/chat.postMessage",
-        data=payload,
-        headers={
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json; charset=utf-8",
-            "User-Agent": "inventory-bot",
-        },
-        method="POST",
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            data = json.loads(resp.read().decode("utf-8", errors="ignore"))
-            if not data.get("ok", False):
-                log(f"Slack respondió error: {data}")
-    except Exception as exc:
-        log(f"No se pudo enviar mensaje a Slack: {exc}")
-
-
-def format_items_for_slack(items: list[dict[str, Any]]) -> str:
-    if not items:
-        return "Sin items"
-    return "\n".join(
-        f"• {str(it.get('item','')).strip()} x{to_int(it.get('cantidad',0),0)}"
-        + (f" (${to_float(it.get('precio',0),0.0):.2f})" if 'precio' in it else "")
-        for it in items
-    )
-
-
-def slack_summary(payload: ParsedPayload, result: str) -> tuple[str, str]:
-    ptype = payload.payload_type
-    scope = "mercado" if ptype in {"venta_mkt", "correccion_venta_mkt", "ajuste_inv_mkt", "merma_mkt"} else "normal"
-    title_map = {
-        "venta": "🧾 Venta",
-        "venta_mkt": "🧾 Venta mercado",
-        "correccion_venta": "✏️ Corrección de venta",
-        "correccion_venta_mkt": "✏️ Corrección venta mercado",
-        "merma": "🎁 Merma / regaladas",
-        "merma_mkt": "🎁 Merma mercado",
-        "ajuste_inv": "📦 Ajuste inventario",
-        "ajuste_inv_mkt": "📦 Ajuste inventario mercado",
-    }
-    title = title_map.get(ptype, f"Movimiento {ptype}")
-    lines = [title, f"Fecha: {payload.fecha or '-'}", f"Issue: #{payload.issue_number or '-'}"]
-    if payload.txn_id:
-        lines.append(f"Txn: {payload.txn_id}")
-    if payload.metodo_pago:
-        lines.append(f"Método: {payload.metodo_pago}")
-    if payload.sku:
-        lines.append(f"SKU: {payload.sku}")
-    if payload.valor:
-        lines.append(f"Valor: {payload.valor}")
-    if payload.accion:
-        lines.append(f"Acción: {payload.accion}")
-    if payload.notas:
-        lines.append(f"Notas: {payload.notas}")
-    if payload.razon:
-        lines.append(f"Razón: {payload.razon}")
-    if payload.items:
-        lines.append("Items:")
-        lines.append(format_items_for_slack(payload.items))
-    lines.append(f"Resultado: {result}")
-    return ("\n".join(lines), scope)
 
 
 def resolve_items_with_inventory(items: list[dict[str, Any]], inventory_path: Path, zero_price: bool = False) -> list[dict[str, Any]]:
@@ -812,8 +787,6 @@ def main() -> None:
         mark_processed(payload.issue_number, event_hash, payload.payload_type, payload.fecha, "ok")
         log(result)
         add_github_comment(payload.issue_number, f"✅ Procesado correctamente.\n\n{result}")
-        text, scope = slack_summary(payload, result)
-        post_slack_message(text, scope)
         close_github_issue(payload.issue_number)
     except Exception as exc:
         err = f"❌ Error procesando issue #{payload.issue_number}: {exc}"
