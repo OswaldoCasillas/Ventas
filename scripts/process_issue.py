@@ -198,13 +198,7 @@ def inventory_adjust(path: Path, sku: str, descripcion: str, mode: str, value: i
     row = inventory_find_row(rows, sku)
 
     if row is None:
-        row = {
-            "item": sku,
-            "descripcion": descripcion,
-            "stock": "0",
-            "precio": "0",
-            "product_id": "",
-        }
+        row = {"item": sku, "descripcion": descripcion, "stock": "0", "precio": "0", "product_id": ""}
         rows.append(row)
 
     current_stock = to_int(row.get("stock", 0), 0)
@@ -364,12 +358,7 @@ def parse_items_from_any(body: str, sections: dict[str, str], json_body: dict[st
             continue
         m = re.match(r"^(?P<sku>[A-Z0-9\-_]+)\s+[,;]?\s*(?P<qty>-?\d+)(?:\s+[,;]?\s*(?P<price>-?\d+(?:\.\d+)?))?$", line, re.IGNORECASE)
         if m:
-            parsed.append({
-                "item": m.group("sku").strip(),
-                "cantidad": to_int(m.group("qty"), 0),
-                "precio": to_float(m.group("price") or 0, 0.0),
-                "descripcion": "",
-            })
+            parsed.append({"item": m.group("sku").strip(), "cantidad": to_int(m.group("qty"), 0), "precio": to_float(m.group("price") or 0, 0.0), "descripcion": ""})
     return parsed
 
 
@@ -428,25 +417,10 @@ def parse_issue_payload(event: dict[str, Any]) -> ParsedPayload:
         txn_id = f"txn-issue-{number}"
 
     return ParsedPayload(
-        issue_number=number,
-        issue_title=title,
-        issue_body=body,
-        issue_author=author,
-        raw=event,
-        payload_type=payload_type,
-        fecha=fecha,
-        metodo_pago=metodo_pago,
-        txn_id=txn_id,
-        issue_ref=issue_ref,
-        accion=accion,
-        modo=modo,
-        valor=valor,
-        sku=sku,
-        descripcion=descripcion,
-        razon=razon,
-        detalle=detalle,
-        notas=notas,
-        items=items,
+        issue_number=number, issue_title=title, issue_body=body, issue_author=author, raw=event,
+        payload_type=payload_type, fecha=fecha, metodo_pago=metodo_pago, txn_id=txn_id,
+        issue_ref=issue_ref, accion=accion, modo=modo, valor=valor, sku=sku,
+        descripcion=descripcion, razon=razon, detalle=detalle, notas=notas, items=items,
     )
 
 
@@ -459,11 +433,7 @@ def processed_event_exists(issue_number: str, event_hash: str) -> bool:
 
 
 def mark_processed(issue_number: str, event_hash: str, payload_type: str, fecha: str, status: str) -> None:
-    append_csv_row(
-        PROCESSED_EVENTS_CSV,
-        {"issue_number": issue_number, "event_hash": event_hash, "payload_type": payload_type, "fecha": fecha, "status": status},
-        preferred_fieldnames=["issue_number", "event_hash", "payload_type", "fecha", "status"],
-    )
+    append_csv_row(PROCESSED_EVENTS_CSV, {"issue_number": issue_number, "event_hash": event_hash, "payload_type": payload_type, "fecha": fecha, "status": status}, preferred_fieldnames=["issue_number", "event_hash", "payload_type", "fecha", "status"])
 
 
 def add_github_comment(issue_number: str, body: str) -> None:
@@ -473,17 +443,7 @@ def add_github_comment(issue_number: str, body: str) -> None:
         return
     url = f"https://api.github.com/repos/{repo}/issues/{issue_number}/comments"
     payload = json.dumps({"body": body}).encode("utf-8")
-    req = urllib.request.Request(
-        url,
-        data=payload,
-        headers={
-            "Authorization": f"Bearer {token}",
-            "Accept": "application/vnd.github+json",
-            "Content-Type": "application/json",
-            "User-Agent": "inventory-bot",
-        },
-        method="POST",
-    )
+    req = urllib.request.Request(url, data=payload, headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json", "Content-Type": "application/json", "User-Agent": "inventory-bot"}, method="POST")
     try:
         with urllib.request.urlopen(req, timeout=20) as resp:
             _ = resp.read()
@@ -498,22 +458,103 @@ def close_github_issue(issue_number: str) -> None:
         return
     url = f"https://api.github.com/repos/{repo}/issues/{issue_number}"
     payload = json.dumps({"state": "closed"}).encode("utf-8")
-    req = urllib.request.Request(
-        url,
-        data=payload,
-        headers={
-            "Authorization": f"Bearer {token}",
-            "Accept": "application/vnd.github+json",
-            "Content-Type": "application/json",
-            "User-Agent": "inventory-bot",
-        },
-        method="PATCH",
-    )
+    req = urllib.request.Request(url, data=payload, headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json", "Content-Type": "application/json", "User-Agent": "inventory-bot"}, method="PATCH")
     try:
         with urllib.request.urlopen(req, timeout=20) as resp:
             _ = resp.read()
     except Exception as exc:
         log(f"No se pudo cerrar issue #{issue_number}: {exc}")
+
+
+def slack_token() -> str:
+    return str(os.environ.get("SLACK_BOT_TOKEN") or os.environ.get("SLACK_API_TOKEN") or "").strip()
+
+
+def slack_channel_for_scope(scope: str) -> str:
+    if scope == "mercado":
+        return str(
+            os.environ.get("SLACK_CHANNEL_VENTAS_BAZAR")
+            or os.environ.get("VENTAS_BAZAR_SLACK_CHANNEL")
+            or ""
+        ).strip()
+    return str(
+        os.environ.get("SLACK_CHANNEL_VENTAS")
+        or os.environ.get("VENTAS_SLACK_CHANNEL")
+        or ""
+    ).strip()
+
+
+def post_slack_message(text: str, scope: str) -> None:
+    token = slack_token()
+    channel = slack_channel_for_scope(scope)
+    if not token or not channel:
+        log(f"Slack omitido: faltan token/canal para scope={scope}")
+        return
+
+    payload = json.dumps({"channel": channel, "text": text}).encode("utf-8")
+    req = urllib.request.Request(
+        "https://slack.com/api/chat.postMessage",
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json; charset=utf-8",
+            "User-Agent": "inventory-bot",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            data = json.loads(resp.read().decode("utf-8", errors="ignore"))
+            if not data.get("ok", False):
+                log(f"Slack respondió error: {data}")
+    except Exception as exc:
+        log(f"No se pudo enviar mensaje a Slack: {exc}")
+
+
+def format_items_for_slack(items: list[dict[str, Any]]) -> str:
+    if not items:
+        return "Sin items"
+    return "\n".join(
+        f"• {str(it.get('item','')).strip()} x{to_int(it.get('cantidad',0),0)}"
+        + (f" (${to_float(it.get('precio',0),0.0):.2f})" if 'precio' in it else "")
+        for it in items
+    )
+
+
+def slack_summary(payload: ParsedPayload, result: str) -> tuple[str, str]:
+    ptype = payload.payload_type
+    scope = "mercado" if ptype in {"venta_mkt", "correccion_venta_mkt", "ajuste_inv_mkt", "merma_mkt"} else "normal"
+    title_map = {
+        "venta": "🧾 Venta",
+        "venta_mkt": "🧾 Venta mercado",
+        "correccion_venta": "✏️ Corrección de venta",
+        "correccion_venta_mkt": "✏️ Corrección venta mercado",
+        "merma": "🎁 Merma / regaladas",
+        "merma_mkt": "🎁 Merma mercado",
+        "ajuste_inv": "📦 Ajuste inventario",
+        "ajuste_inv_mkt": "📦 Ajuste inventario mercado",
+    }
+    title = title_map.get(ptype, f"Movimiento {ptype}")
+    lines = [title, f"Fecha: {payload.fecha or '-'}", f"Issue: #{payload.issue_number or '-'}"]
+    if payload.txn_id:
+        lines.append(f"Txn: {payload.txn_id}")
+    if payload.metodo_pago:
+        lines.append(f"Método: {payload.metodo_pago}")
+    if payload.sku:
+        lines.append(f"SKU: {payload.sku}")
+    if payload.valor:
+        lines.append(f"Valor: {payload.valor}")
+    if payload.accion:
+        lines.append(f"Acción: {payload.accion}")
+    if payload.notas:
+        lines.append(f"Notas: {payload.notas}")
+    if payload.razon:
+        lines.append(f"Razón: {payload.razon}")
+    if payload.items:
+        lines.append("Items:")
+        lines.append(format_items_for_slack(payload.items))
+    lines.append(f"Resultado: {result}")
+    return ("\n".join(lines), scope)
 
 
 def resolve_items_with_inventory(items: list[dict[str, Any]], inventory_path: Path, zero_price: bool = False) -> list[dict[str, Any]]:
@@ -552,19 +593,10 @@ def register_sale(payload: ParsedPayload, mercado: bool, zero_price: bool = Fals
         append_csv_row(
             sales_path,
             {
-                "txn_id": txn_id,
-                "fecha": fecha,
-                "item": item["item"],
-                "cantidad": qty,
-                "precio_unit": f"{price:.2f}",
-                "importe": f"{qty * price:.2f}",
-                "issue": payload.issue_number,
-                "metodo_pago": metodo_pago,
-                "source_id": source_id,
-                "descripcion": item["descripcion"],
-                "status": "activa",
-                "correction_ref": "",
-                "notas": payload.notas,
+                "txn_id": txn_id, "fecha": fecha, "item": item["item"], "cantidad": qty,
+                "precio_unit": f"{price:.2f}", "importe": f"{qty * price:.2f}",
+                "issue": payload.issue_number, "metodo_pago": metodo_pago, "source_id": source_id,
+                "descripcion": item["descripcion"], "status": "activa", "correction_ref": "", "notas": payload.notas,
             },
             preferred_fieldnames=[
                 "txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue",
@@ -583,11 +615,7 @@ def register_production(payload: ParsedPayload) -> None:
         if qty <= 0:
             continue
         inventory_adjust(INVENTORY_CSV, item["item"], item["descripcion"], "delta", qty)
-        append_csv_row(
-            PRODUCTION_CSV,
-            {"fecha": payload.fecha, "item": item["item"], "cantidad": qty, "issue": payload.issue_number, "source_id": payload.issue_number, "descripcion": item["descripcion"]},
-            preferred_fieldnames=["fecha", "item", "cantidad", "issue", "source_id", "descripcion"],
-        )
+        append_csv_row(PRODUCTION_CSV, {"fecha": payload.fecha, "item": item["item"], "cantidad": qty, "issue": payload.issue_number, "source_id": payload.issue_number, "descripcion": item["descripcion"]}, preferred_fieldnames=["fecha", "item", "cantidad", "issue", "source_id", "descripcion"])
 
 
 def register_abasto_mercado(payload: ParsedPayload) -> None:
@@ -599,11 +627,7 @@ def register_abasto_mercado(payload: ParsedPayload) -> None:
         if qty <= 0:
             continue
         inventory_move_between(item["item"], item["descripcion"], qty)
-        append_csv_row(
-            TRANSFER_MERCADO_CSV,
-            {"fecha": payload.fecha, "item": item["item"], "cantidad": qty, "issue": payload.issue_number, "source_id": payload.issue_number, "descripcion": item["descripcion"]},
-            preferred_fieldnames=["fecha", "item", "cantidad", "issue", "source_id", "descripcion"],
-        )
+        append_csv_row(TRANSFER_MERCADO_CSV, {"fecha": payload.fecha, "item": item["item"], "cantidad": qty, "issue": payload.issue_number, "source_id": payload.issue_number, "descripcion": item["descripcion"]}, preferred_fieldnames=["fecha", "item", "cantidad", "issue", "source_id", "descripcion"])
 
 
 def parse_correction_detail_lines(text: str) -> list[dict[str, Any]]:
@@ -652,14 +676,7 @@ def mark_sale_rows_status(sales_path: Path, indexes: list[int], status: str, cor
         if 0 <= idx < len(rows):
             rows[idx]["status"] = status
             rows[idx]["correction_ref"] = correction_ref
-    csv_write(
-        sales_path,
-        rows,
-        fieldnames=[
-            "txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue",
-            "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"
-        ],
-    )
+    csv_write(sales_path, rows, fieldnames=["txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue", "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"])
 
 
 def revert_sale_rows_to_inventory(matches: list[dict[str, str]], inventory_path: Path) -> None:
@@ -687,24 +704,12 @@ def append_corrected_sale(sales_path: Path, inventory_path: Path, payload: Parse
         append_csv_row(
             sales_path,
             {
-                "txn_id": new_txn,
-                "fecha": fecha,
-                "item": item["item"],
-                "cantidad": qty,
-                "precio_unit": f"{price:.2f}",
-                "importe": f"{qty * price:.2f}",
-                "issue": payload.issue_number,
-                "metodo_pago": metodo,
-                "source_id": payload.issue_number,
-                "descripcion": item["descripcion"],
-                "status": "activa",
-                "correction_ref": "",
-                "notas": payload.razon,
+                "txn_id": new_txn, "fecha": fecha, "item": item["item"], "cantidad": qty,
+                "precio_unit": f"{price:.2f}", "importe": f"{qty * price:.2f}",
+                "issue": payload.issue_number, "metodo_pago": metodo, "source_id": payload.issue_number,
+                "descripcion": item["descripcion"], "status": "activa", "correction_ref": "", "notas": payload.razon,
             },
-            preferred_fieldnames=[
-                "txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue",
-                "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"
-            ],
+            preferred_fieldnames=["txn_id", "fecha", "item", "cantidad", "precio_unit", "importe", "issue", "metodo_pago", "source_id", "descripcion", "status", "correction_ref", "notas"],
         )
     return new_txn
 
@@ -716,7 +721,6 @@ def handle_sale_correction(payload: ParsedPayload, mercado: bool) -> str:
     if not matches:
         raise ValueError("No encontré la venta a corregir")
     revert_sale_rows_to_inventory(matches, inventory_path)
-
     action = str(payload.accion or "").strip().lower()
     if action == "cancelar":
         mark_sale_rows_status(sales_path, indexes, "cancelada", payload.issue_number)
@@ -808,6 +812,8 @@ def main() -> None:
         mark_processed(payload.issue_number, event_hash, payload.payload_type, payload.fecha, "ok")
         log(result)
         add_github_comment(payload.issue_number, f"✅ Procesado correctamente.\n\n{result}")
+        text, scope = slack_summary(payload, result)
+        post_slack_message(text, scope)
         close_github_issue(payload.issue_number)
     except Exception as exc:
         err = f"❌ Error procesando issue #{payload.issue_number}: {exc}"
