@@ -434,3 +434,5 @@ txn-issue-307,2026-04-25,BEBIDA-CHAMOYADA,1,60.0,60.0,307,efectivo,307,BEBIDA Ch
 txn-issue-307,2026-04-25,HELADO-NIEVE-LITRO,1,150.0,150.0,307,efectivo,307,Helado Nieve Litro,activa,,
 txn-issue-307,2026-04-25,PALETA-MINI-MINI-SIN-AZUCAR,3,10.0,30.0,307,efectivo,307,PALETA MINI Sin Azucar,activa,,
 txn-issue-307,2026-04-25,PALETAS-PERRO,2,30.0,60.0,307,efectivo,307,Paletas para Perro,activa,,
+txn-issue-308,2026-04-25,AGUA-FRESCA-GRANDE,1,35.0,35.0,308,efectivo,308,AGUA FRESCA Grande,activa,,
+txn-issue-308,2026-04-25,PALETA-MINI-MINI-CREMA,2,8.0,16.0,308,efectivo,308,PALETA MINI Mini Crema,activa,,
