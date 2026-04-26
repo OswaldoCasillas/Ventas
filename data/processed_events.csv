@@ -35,3 +35,4 @@ issue_number,event_hash,payload_type,fecha,status
 335,fdc15b49efcd14f49ffbd14d1f2bc2d1b6beb90f,venta,2026-04-25,ok
 337,aceab3aeb07fe43595793da52ba1c3452478bafa,venta,2026-04-25,ok
 339,f4742f14017f317e904395377e38bcdfae3f8ac8,venta,2026-04-25,ok
+341,ecb6bded841860348747cf79371a84b41102f469,venta,2026-04-25,ok
