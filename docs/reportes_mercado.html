@@ -13,15 +13,15 @@
     .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
     .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px}
     .muted{color:var(--muted)} .stats{display:flex;gap:18px;flex-wrap:wrap}
-    button,a.btn,input,select{font:inherit}
-    .btn,.btn-link{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 12px;text-decoration:none;color:var(--text);display:inline-flex;align-items:center;justify-content:center}
+    button,a.btn,input{font:inherit}
+    .btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 12px;text-decoration:none;color:var(--text);display:inline-flex;align-items:center;justify-content:center}
     .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
-    input,select{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}
+    input{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}
     .sale{border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:10px;background:#fff}
     .sale-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
     .pill{display:inline-block;padding:4px 8px;border:1px solid var(--line);border-radius:999px;font-size:12px}
     table{width:100%;border-collapse:collapse;margin-top:8px} th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left}
-    .right{text-align:right}.empty{padding:22px;text-align:center;color:var(--muted)}
+    .right{text-align:right} .empty{padding:22px;text-align:center;color:var(--muted)}
   </style>
 </head>
 <body>
@@ -29,16 +29,16 @@
   <div class="top">
     <div>
       <h1 style="margin:0">Ventas del día · Mercado</h1>
-      <div class="muted">Vista agrupada por venta de mercado. Ya no pide escribir SKU a mano para corregir.</div>
+      <div class="muted">Se restauró el botón de reporte de paletas en mercado.</div>
     </div>
     <a class="btn" href="index.html">← Menú</a>
   </div>
-
   <div class="card">
     <div class="row">
       <label>Fecha <input id="fecha" type="date"></label>
       <button class="btn primary" id="cargar">Cargar</button>
-      <a class="btn" id="excelBtn" href="mercado/ventas_detalle.csv" download>Excel</a>
+      <a class="btn" href="mercado/ventas_detalle.csv" download>Excel</a>
+      <button class="btn" id="reportePaletas">Reporte paletas</button>
     </div>
     <div class="stats" style="margin-top:10px">
       <div><strong id="regs">0</strong><div class="muted">Registros</div></div>
@@ -46,27 +46,19 @@
       <div><strong id="total">$0.00</strong><div class="muted">Total</div></div>
     </div>
   </div>
-
   <div id="list" class="card"><div class="empty">Selecciona una fecha y presiona Cargar.</div></div>
 </div>
-
 <script>
-const APP_CONFIG = window.APP_CONFIG || {};
+
+const PALETAS_ORDEN = [["PALETA-CREMA-ALGODON", "ALGODÓN"], ["PALETA-CREMA-ARROZ", "ARROZ"], ["PALETA-CREMA-PREMIUM-BAILEYS", "BAILEYS"], ["PALETA-CREMA-BESO-DE-ANGEL", "BESO D ÁNGEL"], ["PALETA-CREMA-PREMIUM-CAJETA", "CAJETA"], ["PALETA-CREMA-CAPUCHINO", "CAPUCHINO"], ["PALETA-CREMA-CHICLE", "CHICLE"], ["PALETA-CREMA-CHOCOLATE", "CHOCOLATE"], ["PALETA-CREMA-PREMIUM-CHONGOS", "CHONGOS"], ["PALETA-CREMA-COCO", "COCO"], ["PALETA-CREMA-DURAZNOS-CON-CREMA", "DURAZNO&CREMA"], ["PALETA-CREMA-PREMIUM-FERRERO", "FERRERO"], ["PALETA-AGUA-FRESA", "FRESA agua"], ["PALETA-CREMA-FRESA-CREMA", "FRESA crema"], ["PALETA-CREMA-FRESA-CON-CREMA", "FRESAS&CREAM"], ["PALETA-AGUA-PREMIUM-FRUTOS-ROJOS", "FRUTOS ROJOS"], ["PALETA-AGUA-GROSSELLA", "GROSELLA"], ["PALETA-AGUA-GUANABANA", "GUANABANA"], ["PALETA-AGUA-GUAYABA", "GUAYABA"], ["PALETA-AGUA-KIWI", "KIWI"], ["PALETA-CREMA-PREMIUM-KAHLUA", "KAHLÚA"], ["PALETA-AGUA-LIMON", "LIMÓN"], ["PALETA-AGUA-PREMIUM-LIMON-CHAMOY", "LIMÓN CHAMOY"], ["PALETA-CREMA-MAMEY", "MAMEY"], ["PALETA-AGUA-MANDARINA", "MANDARINA"], ["PALETA-AGUA-MANGO", "MANGO"], ["PALETA-AGUA-PREMIUM-MANGO-CHAMOY", "MANGO CHAMOY"], ["PALETA-AGUA-MARACUYA", "MARACUYÁ"], ["PALETA-CREMA-MAZAPAN", "MAZAPÁN"], ["PALETA-AGUA-MELON", "MELÓN"], ["PALETA-CREMA-MENTA-CHOCOLATE", "MENTA CON CH"], ["PALETA-CREMA-PREMIUM-MOCTEZUMA", "MOCTEZUMA"], ["PALETA-CREMA-PREMIUM-NUEZ", "NUEZ"], ["PALETA-CREMA-PREMIUM-NUTELLA", "NUTELLA"], ["PALETA-CREMA-OREO", "OREO"], ["PALETA-CREMA-PAY-DE-LIMON", "PAY DE LIMÓN"], ["PALETAS-PERRO", "PERRO"], ["PALETA-AGUA-PREMIUM-PICAFRESA", "PICAFRESA"], ["PALETA-AGUA-PREMIUM-PICAPANDA", "PICAPANDAS"], ["PALETA-AGUA-PINA", "PIÑA"], ["PALETA-AGUA-PREMIUM-PINA-CHAMOY", "PIÑA CHAMOY"], ["PALETA-CREMA-PREMIUM-PINON", "PIÑON"], ["PALETA-CREMA-PREMIUM-PISTACHE", "PISTACHE"], ["PALETA-AGUA-PREMIUM-PULPARINDO", "PULPARINDO"], ["PALETA-CREMA-PREMIUM-QUESO", "QUESO"], ["PALETA-CREMA-PREMIUM-QUESO-CON-ZARZAMORA", "QUESO/ZARZA"], ["PALETA-CREMA-PREMIUM-RAFFAELLO", "RAFFAELLO"], ["PALETA-CREMA-ROMPOPE", "ROMPOPE"], ["PALETA-CREMA-PREMIUM-RON-CON-PASAS", "RÓN PASAS"], ["PALETA-CREMA-SALTED-CARAMEL", "SALTED CARAMEL"], ["PALETA-AGUA-SANDIA", "SANDÍA"], ["PALETA-AGUA-PREMIUM-SANDIA-CHAMOY", "SANDÍA CHAMOY"], ["PALETA-CREMA-PREMIUM-SELVA-BLANCA", "SELVA BLANCA"], ["PALETA-CREMA-PREMIUM-SELVA-NEGRA", "SELVA NEGRA"], ["PALETA-CREMA-PREMIUM-SNICKERS", "SNICKERS"], ["PALETA-AGUA-TAMARINDO", "TAMARINDO"], ["PALETA-CREMA-TARO", "TARO"], ["PALETA-CREMA-TRIX", "TRIX"], ["PALETA-AGUA-UVA", "UVA"], ["PALETA-CREMA-VAINILLA", "VAINILLA"], ["PALETA-CREMA-PREMIUM-VINO-TINTO-RELLENO", "VINO"], ["PALETA-AGUA-ZAPOTE", "ZAPOTE"], ["PALETA-ALCOHOL-PERLA-NEGRA", "PERLA NEGRA"], ["PALETA-ALCOHOL-PINA-COLADA", "PIÑA COLADA"], ["PALETA-ALCOHOL-TEQUILA", "TEQUILA"], ["PALETA-SIN-AZUCAR-CAJETA", "CAJETA SA"], ["PALETA-SIN-AZUCAR-CAPUCHINO", "CAPUKETO"], ["PALETA-SIN-AZUCAR-CHOCOLATE-CON-FRESA", "CHOCOFRESA K"], ["PALETA-SIN-AZUCAR-CHOCOLATE", "CHOCOKETO"], ["PALETA-SIN-AZUCAR-COCO", "COCOKETO"], ["PALETA-SIN-AZUCAR-FERRERO", "FERREROKETO"], ["PALETA-SIN-AZUCAR-FRESA-CHAMOY", "FRESA SA"], ["PALETA-SIN-AZUCAR-FRUTOS-ROJOS", "FRUTOSKETO"], ["PALETA-SIN-AZUCAR-GROSELLA", "GROSELLA SA"], ["PALETA-SIN-AZUCAR-GUANABANA", "GUANABANASA"], ["PALETA-SIN-AZUCAR-LIMON-CHAMOY", "LIMONCHM SA"], ["PALETA-SIN-AZUCAR-LIMON-MENTA", "LIMÓNMENTA"], ["PALETA-SIN-AZUCAR-MAMEY", "MAMEY SA"], ["PALETA-SIN-AZUCAR-MANGO", "MANGO SA"], ["PALETA-SIN-AZUCAR-MAZAPAN", "MAZAKETO"], ["PALETA-SIN-AZUCAR-MENTA", "MENTAKETO"], ["PALETA-SIN-AZUCAR-NUEZ", "NUEZKETO"], ["PALETA-SIN-AZUCAR-PINON", "PIÑONKETO"], ["PALETA-SIN-AZUCAR-PISTACHE", "PISTAKETO"], ["PALETA-SIN-AZUCAR-VAINILLA", "VAINILLAKETO"]];
 function todayISO(){const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function money(n){return `$${Number(n||0).toFixed(2)}`;}
 async function fetchText(url){const r=await fetch(url+`?_=${Date.now()}`,{cache:'no-store'}); if(!r.ok) throw new Error(url); return await r.text();}
-function parseCSV(text){
-  const rows=[]; let row=[]; let cur=''; let q=false;
-  for(let i=0;i<text.length;i++){
-    const c=text[i];
+function parseCSV(text){ const rows=[]; let row=[]; let cur=''; let q=false;
+  for(let i=0;i<text.length;i++){ const c=text[i];
     if(c === '"'){ if(q && text[i+1] === '"'){ cur+='"'; i++; } else q=!q; continue; }
     if(c===',' && !q){ row.push(cur); cur=''; continue; }
-    if((c==='\n' || c==='\r') && !q){
-      if(c==='\r' && text[i+1]==='\n') i++;
-      row.push(cur); cur='';
-      if(row.some(x=>x!=='')) rows.push(row);
-      row=[]; continue;
-    }
+    if((c==='\n' || c==='\r') && !q){ if(c==='\r' && text[i+1]==='\n') i++; row.push(cur); cur=''; if(row.some(x=>x!=='')) rows.push(row); row=[]; continue; }
     cur+=c;
   }
   if(cur.length || row.length){ row.push(cur); rows.push(row); }
@@ -74,55 +66,28 @@ function parseCSV(text){
   const headers=rows[0].map(h=>String(h||'').trim());
   return rows.slice(1).map(r=>{ const o={}; headers.forEach((h,idx)=>o[h]=(r[idx]??'').trim()); return o; });
 }
-function normalizeSales(rows){
-  return rows.filter(r => (r.status || 'activa') === 'activa' || !r.status).map(r => ({
-    txn_id: r.txn_id || '',
-    fecha: r.fecha || '',
-    item: r.item || '',
-    cantidad: Number(r.cantidad || 0),
-    precio_unit: Number(r.precio_unit || 0),
-    importe: Number(r.importe || 0),
-    issue: r.issue || '',
-    metodo_pago: r.metodo_pago || 'efectivo',
-    descripcion: r.descripcion || r.item || '',
-    notas: r.notas || ''
-  }));
-}
-function groupByTxn(rows){
-  const map=new Map();
-  for(const r of rows){
-    const key = r.txn_id || `issue-${r.issue}`;
-    if(!map.has(key)) map.set(key, {txn_id:key, fecha:r.fecha, issue:r.issue, metodo_pago:r.metodo_pago, notas:r.notas, items:[], total:0, unidades:0});
-    const g=map.get(key);
-    g.items.push(r); g.total += r.importe; g.unidades += r.cantidad;
-    if(!g.fecha && r.fecha) g.fecha = r.fecha;
-    if(!g.issue && r.issue) g.issue = r.issue;
-  }
-  return Array.from(map.values()).sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'') || (b.txn_id||'').localeCompare(a.txn_id||''));
-}
-function correctionURL(group){
-  const payload = encodeURIComponent(JSON.stringify({
-    scope:'mercado',
-    fecha: group.fecha || '',
-    txn_id: group.txn_id || '',
-    issue: group.issue || '',
-    metodo_pago: group.metodo_pago || '',
-    items: group.items.map(i=>({item:i.item, descripcion:i.descripcion, cantidad:i.cantidad, precio:i.precio_unit}))
-  }));
-  return `corregir_venta.html?data=${payload}`;
-}
+function normalizeSales(rows){ return rows.filter(r => (r.status || 'activa') === 'activa' || !r.status).map(r => ({
+  txn_id:r.txn_id||'', fecha:r.fecha||'', item:r.item||'', cantidad:Number(r.cantidad||0), precio_unit:Number(r.precio_unit||0), importe:Number(r.importe||0), issue:r.issue||'', metodo_pago:r.metodo_pago||'efectivo', descripcion:r.descripcion||r.item||'', notas:r.notas||''
+}));}
+function groupByTxn(rows){ const map=new Map(); for(const r of rows){ const key=r.txn_id||`issue-${r.issue}`; if(!map.has(key)) map.set(key,{txn_id:key, fecha:r.fecha, issue:r.issue, metodo_pago:r.metodo_pago, notas:r.notas, items:[], total:0, unidades:0}); const g=map.get(key); g.items.push(r); g.total+=r.importe; g.unidades+=r.cantidad; if(!g.fecha&&r.fecha) g.fecha=r.fecha; if(!g.issue&&r.issue) g.issue=r.issue; } return Array.from(map.values()).sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'') || (b.txn_id||'').localeCompare(a.txn_id||''));}
+function payload(group, scope){ return encodeURIComponent(JSON.stringify({ scope, fecha:group.fecha||'', txn_id:group.txn_id||'', issue:group.issue||'', metodo_pago:group.metodo_pago||'', items:group.items.map(i=>({item:i.item, descripcion:i.descripcion, cantidad:i.cantidad, precio:i.precio_unit})) })); }
+function downloadText(filename, text){ const blob=new Blob([text],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
+function buildPaletasCSV(rows){ const sales=normalizeSales(rows); const totals=new Map(); for(const r of sales) totals.set(r.item,(totals.get(r.item)||0)+Number(r.cantidad||0)); const lines=['SKU,NOMBRE,CANTIDAD']; for(const [sku,name] of PALETAS_ORDEN) lines.push(`"${sku.replace(/"/g,'""')}","${name.replace(/"/g,'""')}",${totals.get(sku)||0}`); return lines.join('\n'); }
+
+const CSV_PATH='mercado/ventas_detalle.csv';
+const SCOPE='mercado';
 async function cargar(){
   const fecha=document.getElementById('fecha').value;
   const list=document.getElementById('list');
   try{
-    const rows = normalizeSales(parseCSV(await fetchText('mercado/ventas_detalle.csv')));
-    const filtered = fecha ? rows.filter(r=>String(r.fecha).trim()===fecha) : rows;
-    const groups = groupByTxn(filtered);
-    document.getElementById('regs').textContent = String(groups.length);
-    document.getElementById('units').textContent = String(filtered.reduce((s,r)=>s+r.cantidad,0));
-    document.getElementById('total').textContent = money(filtered.reduce((s,r)=>s+r.importe,0));
+    const rows=normalizeSales(parseCSV(await fetchText(CSV_PATH)));
+    const filtered=fecha ? rows.filter(r=>String(r.fecha).trim()===fecha) : rows;
+    const groups=groupByTxn(filtered);
+    document.getElementById('regs').textContent=String(groups.length);
+    document.getElementById('units').textContent=String(filtered.reduce((s,r)=>s+r.cantidad,0));
+    document.getElementById('total').textContent=money(filtered.reduce((s,r)=>s+r.importe,0));
     if(!groups.length){ list.innerHTML='<div class="empty">No hay ventas para esa fecha.</div>'; return; }
-    list.innerHTML = groups.map(g=>`
+    list.innerHTML=groups.map(g=>`
       <div class="sale">
         <div class="sale-head">
           <div>
@@ -132,7 +97,9 @@ async function cargar(){
           <div class="right">
             <div><strong>${money(g.total)}</strong></div>
             <div class="muted">${g.unidades} unidades</div>
-            <div style="margin-top:8px"><a class="btn primary" href="${correctionURL(g)}">Corregir esta venta</a></div>
+            <div class="row" style="margin-top:8px;justify-content:flex-end">
+              <a class="btn primary" href="corregir_venta.html?data=${payload(g,SCOPE)}">Corregir esta venta</a>
+            </div>
           </div>
         </div>
         <table>
@@ -141,14 +108,19 @@ async function cargar(){
             ${g.items.map(i=>`<tr><td><strong>${i.descripcion}</strong><div class="muted">${i.item}</div></td><td class="right">${i.cantidad}</td><td class="right">${money(i.precio_unit)}</td><td class="right">${money(i.importe)}</td></tr>`).join('')}
           </tbody>
         </table>
-      </div>
-    `).join('');
-  }catch(err){
-    list.innerHTML='<div class="empty">No se pudo cargar mercado/ventas_detalle.csv</div>';
-  }
+      </div>`).join('');
+  }catch(err){ list.innerHTML='<div class="empty">No se pudo cargar el detalle.</div>'; }
 }
 document.getElementById('fecha').value=todayISO();
 document.getElementById('cargar').addEventListener('click', cargar);
+document.getElementById('reportePaletas').addEventListener('click', async ()=>{
+  try{
+    const fecha=document.getElementById('fecha').value;
+    const rows=normalizeSales(parseCSV(await fetchText(CSV_PATH)));
+    const filtered=fecha ? rows.filter(r=>String(r.fecha).trim()===fecha) : rows;
+    downloadText(`reporte_paletas_mercado_${fecha || todayISO()}.csv`, buildPaletasCSV(filtered));
+  }catch(e){ alert('No se pudo generar el reporte de paletas.'); }
+});
 </script>
 </body>
 </html>
