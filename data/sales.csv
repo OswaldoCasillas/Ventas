@@ -430,3 +430,7 @@ txn-issue-303,2026-04-25,PALETA-AGUA-PREMIUM-FRUTOS-ROJOS,1,30.00,30.00,303,efec
 txn-issue-303,2026-04-25,PALETA-CREMA-FRESA-CON-CREMA,1,35.00,35.00,303,efectivo,303,PALETA CREMA Fresa con Crema,activa,,
 txn-issue-305,2026-04-25,PALETA-MINI-MINI-AGUA,1,6.00,6.00,305,efectivo,305,PALETA MINI Mini Agua,activa,,
 txn-issue-306,2026-04-25,AGUA-FRESCA-GRANDE,2,35.00,70.00,306,efectivo,306,AGUA FRESCA Grande,activa,,
+txn-issue-307,2026-04-25,PALETA-MINI-MINI-SIN-AZUCAR,3,10.00,30.00,307,efectivo,307,PALETA MINI Sin Azucar,activa,,
+txn-issue-307,2026-04-25,PALETAS-PERRO,2,30.00,60.00,307,efectivo,307,Paletas para Perro,activa,,
+txn-issue-307,2026-04-25,BEBIDA-CHAMOYADA,1,60.00,60.00,307,efectivo,307,BEBIDA Chamoyada,activa,,
+txn-issue-307,2026-04-25,HELADO-NIEVE-LITRO,1,150.00,150.00,307,efectivo,307,Helado Nieve Litro,activa,,
