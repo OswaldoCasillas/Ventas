@@ -502,3 +502,6 @@ txn-issue-347,2026-04-25,MALTEADA-GOURMET,1,70.0,70.0,347,efectivo,347,MALTEADA 
 txn-issue-348,2026-04-25,HELADO-CLASICO-SENCILLO,1,35.0,35.0,348,efectivo,348,Helado Clasico Sencillo,activa,,
 txn-issue-349,2026-04-25,HELADO-SIN-AZUCAR-SENCILLO,1,45.0,45.0,349,efectivo,349,Helado Sin Azucar Sencillo,activa,,
 txn-issue-350,2026-04-25,PALETA-CREMA-ARROZ,1,35.0,35.0,350,efectivo,350,PALETA CREMA Arroz,activa,,
+txn-issue-351,2026-04-26,AGUA-FRESCA-GRANDE,1,35.0,35.0,351,efectivo,351,AGUA FRESCA Grande,activa,,
+txn-issue-351,2026-04-26,PALETA-AGUA-FRESA,1,25.0,25.0,351,efectivo,351,PALETA AGUA Fresa,activa,,
+txn-issue-351,2026-04-26,PALETA-SIN-AZUCAR-PISTACHE,1,45.0,45.0,351,efectivo,351,PALETA Pistaketo,activa,,
