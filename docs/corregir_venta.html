@@ -1,99 +1,158 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Corregir venta</title>
-  <style>
-    :root{--bg:#f7f7fb;--card:#fff;--line:#e5e7eb;--text:#1f2937;--muted:#6b7280;--brand:#0f62fe;--shadow:0 6px 16px rgba(0,0,0,.05)}
-    *{box-sizing:border-box} body{font-family:system-ui,Arial,sans-serif;max-width:820px;margin:10px auto;padding:0 10px;background:var(--bg);color:var(--text)}
-    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:var(--shadow)} .top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-    .back{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 10px;border:1px solid #d1d5db;border-radius:10px;background:#fff;color:var(--text);text-decoration:none;font-weight:700}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px} @media(max-width:700px){.grid{grid-template-columns:1fr}}
-    input,select,textarea,button{font:inherit} input,select,textarea{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:10px;background:#fff} textarea{min-height:96px;resize:vertical}
-    button{padding:10px 12px;border:1px solid #d1d5db;border-radius:10px;background:#fff;cursor:pointer;font-weight:700} .primary{background:var(--brand);border-color:var(--brand);color:#fff}
-    .muted{color:var(--muted);font-size:12px} .stack{display:grid;gap:8px}
-  </style>
   <script src="config.js"></script>
+  <style>
+    :root{--bg:#f5f7fb;--card:#fff;--line:#d9deea;--text:#162033;--muted:#667085;--brand:#0f62fe;--danger:#b42318}
+    *{box-sizing:border-box} body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:1000px;margin:0 auto;padding:14px}
+    .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+    label{display:grid;gap:6px}
+    input,select,textarea,button{font:inherit}
+    input,select,textarea{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}
+    textarea{min-height:90px}
+    .btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 12px;text-decoration:none;color:var(--text)}
+    .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+    .btn.danger{background:#fff;color:var(--danger);border-color:#efc1be}
+    table{width:100%;border-collapse:collapse;margin-top:8px} th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left}
+    .right{text-align:right}.muted{color:var(--muted)}
+  </style>
 </head>
 <body>
-  <div class="card">
-    <div class="top">
-      <div><h1 style="margin:0;font-size:22px;">Corregir venta</h1><div class="muted">Genera una corrección sin borrar el historial original.</div></div>
-      <a class="back" href="index.html">← Menú</a>
+<div class="wrap">
+  <div class="row" style="justify-content:space-between">
+    <div>
+      <h1 style="margin:0">Corregir venta</h1>
+      <div class="muted">Se carga sola la venta original. Solo ajustas cantidades o precios en pantalla.</div>
     </div>
-    <div class="stack">
-      <div class="grid">
-        <div><div class="muted">Alcance</div><select id="scope"><option value="normal">Normal</option><option value="mercado">Mercado</option></select></div>
-        <div><div class="muted">Fecha original</div><input id="fecha" type="date"></div>
-        <div><div class="muted">Txn ID</div><input id="txn" type="text" placeholder="Ej. txn-..."></div>
-        <div><div class="muted">Issue</div><input id="issue" type="text" placeholder="Ej. 123"></div>
-        <div><div class="muted">Acción</div><select id="accion"><option value="cancelar">Cancelar venta</option><option value="ajustar">Ajustar cantidades/precios</option></select></div>
-        <div><div class="muted">Método pago corregido</div><select id="metodo"><option value="">Sin cambio</option><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta</option><option value="transferencia">Transferencia</option></select></div>
-      </div>
-      <div><div class="muted">Detalle de corrección</div><textarea id="detalle" placeholder="Una línea por producto. Formato: SKU | CANTIDAD | PRECIO&#10;Ejemplo: PALETA-CREMA-OREO | 2 | 30&#10;Si cancelas la venta, aquí puedes dejar la razón."></textarea></div>
-      <div><div class="muted">Razón</div><textarea id="razon" placeholder="Ej. me equivoqué al cobrar / metí un producto de más / error de cantidad"></textarea></div>
-      <div class="grid">
-        <button id="githubBtn" type="button">Abrir issue en GitHub</button>
-        <button id="apiBtn" class="primary" type="button">Enviar corrección</button>
-      </div>
+    <a class="btn" href="javascript:history.back()">← Regresar</a>
+  </div>
+
+  <div class="card">
+    <div class="grid">
+      <label>Alcance <input id="scope" readonly></label>
+      <label>Fecha original <input id="fecha" readonly></label>
+      <label>Txn ID <input id="txn" readonly></label>
+      <label>Issue <input id="issue" readonly></label>
+      <label>Acción
+        <select id="accion">
+          <option value="ajustar">Ajustar esta venta</option>
+          <option value="cancelar">Cancelar venta</option>
+        </select>
+      </label>
+      <label>Método corregido
+        <select id="metodo">
+          <option value="">Sin cambio</option>
+          <option value="efectivo">Efectivo</option>
+          <option value="tarjeta">Tarjeta</option>
+          <option value="transferencia">Transferencia</option>
+        </select>
+      </label>
     </div>
   </div>
-  <script>
-    const APP_CONFIG = window.APP_CONFIG || {};
-    const ORG = APP_CONFIG.ORG || "OswaldoCasillas";
-    const REPO = APP_CONFIG.REPO || "Ventas";
-    const API_URL = APP_CONFIG.API_URL || "https://ventas-backend-rose.vercel.app/api/create-issue";
-    function qs(k){ return new URLSearchParams(location.search).get(k) || ""; }
-    function todayISO(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
-    document.getElementById("scope").value = qs("scope") || "normal";
-    document.getElementById("fecha").value = qs("fecha") || todayISO();
-    document.getElementById("txn").value = qs("txn_id");
-    document.getElementById("issue").value = qs("issue");
 
-    function buildPayload(){
-      const scope = document.getElementById("scope").value;
-      return {
-        type: scope === "mercado" ? "correccion_venta_mkt" : "correccion_venta",
-        fecha: document.getElementById("fecha").value,
-        txn_id: document.getElementById("txn").value.trim(),
-        issue_ref: document.getElementById("issue").value.trim(),
-        accion: document.getElementById("accion").value,
-        metodo_pago: document.getElementById("metodo").value,
-        detalle: document.getElementById("detalle").value,
-        razon: document.getElementById("razon").value
-      };
-    }
-    function buildGitHubUrl(){
-      const p = buildPayload();
-      const labels = p.type === "correccion_venta_mkt" ? "correccion-venta,mercado" : "correccion-venta";
-      const title = `[${p.type}] ${p.txn_id || p.issue_ref || p.fecha}`;
-      const body = `tipo: ${p.type}\nfecha: ${p.fecha}\ntxn_id: ${p.txn_id}\nissue_ref: ${p.issue_ref}\naccion: ${p.accion}\nmetodo_pago: ${p.metodo_pago}\n\ndetalle:\n${p.detalle}\n\nrazon:\n${p.razon}`;
-      const u = new URL(`https://github.com/${ORG}/${REPO}/issues/new`);
-      u.searchParams.set("title", title); u.searchParams.set("body", body); u.searchParams.set("labels", labels);
-      return u.toString();
-    }
-    document.getElementById("githubBtn").onclick = () => location.href = buildGitHubUrl();
-    document.getElementById("apiBtn").onclick = async () => {
-      const p = buildPayload();
-      if (!p.fecha || (!p.txn_id && !p.issue_ref)) return alert("Pon fecha y txn o issue.");
-      if (!API_URL) return alert("Falta API_URL");
-      try {
-        const resp = await fetch(API_URL, {
-          method:"POST", headers:{"Content-Type":"application/json"},
-          body: JSON.stringify(p)
-        });
-        if (!resp.ok) {
-          let msg = resp.statusText;
-          try { const j = await resp.json(); msg = j.error || JSON.stringify(j); } catch(_){
-          }
-          return alert("No se pudo enviar: " + msg);
-        }
-        const data = await resp.json().catch(()=>({}));
-        alert(`Corrección enviada ✅${data.number ? ` (issue #${data.number})` : ""}`);
-      } catch(err) {
-        alert("No se pudo enviar la corrección.");
-      }
-    };
-  </script>
+  <div class="card">
+    <strong>Productos</strong>
+    <div class="muted">Aquí editas cantidades y precios. No necesitas escribir SKU manualmente.</div>
+    <table>
+      <thead><tr><th>Producto</th><th class="right">Cantidad</th><th class="right">Precio</th><th></th></tr></thead>
+      <tbody id="body"></tbody>
+    </table>
+    <div class="row" style="margin-top:10px">
+      <button class="btn" id="agregarFila">Agregar renglón</button>
+      <div class="muted">Si quieres borrar un producto, pon cantidad 0 o usa quitar.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <label>Razón
+      <textarea id="razon" placeholder="Ej. cobré mal, cliente cambió producto, capturé cantidad incorrecta"></textarea>
+    </label>
+    <div class="row" style="margin-top:10px">
+      <button class="btn danger" id="abrirIssue">Abrir issue en GitHub</button>
+      <button class="btn primary" id="enviar">Enviar corrección</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const APP_CONFIG = window.APP_CONFIG || {};
+const API_URL = APP_CONFIG.API_URL || "https://ventas-backend-rose.vercel.app/api/create-issue";
+const dataParam = new URLSearchParams(location.search).get('data');
+let base = {scope:'normal', fecha:'', txn_id:'', issue:'', metodo_pago:'', items:[]};
+try{ if(dataParam) base = {...base, ...JSON.parse(decodeURIComponent(dataParam))}; }catch(e){}
+const bodyEl = document.getElementById('body');
+
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function addRow(item={}){
+  const tr=document.createElement('tr');
+  tr.innerHTML = `
+    <td>
+      <input data-k="descripcion" placeholder="Descripción" value="${esc(item.descripcion || '')}" style="width:100%;margin-bottom:6px">
+      <input data-k="item" placeholder="SKU" value="${esc(item.item || '')}" style="width:100%">
+    </td>
+    <td class="right"><input data-k="cantidad" type="number" step="1" min="0" value="${Number(item.cantidad ?? 1)}" style="width:100px;text-align:right"></td>
+    <td class="right"><input data-k="precio" type="number" step="0.01" min="0" value="${Number(item.precio ?? 0)}" style="width:110px;text-align:right"></td>
+    <td class="right"><button class="btn" type="button">Quitar</button></td>
+  `;
+  tr.querySelector('button').onclick=()=>tr.remove();
+  bodyEl.appendChild(tr);
+}
+function rows(){
+  return Array.from(bodyEl.querySelectorAll('tr')).map(tr=>{
+    const get=k=>tr.querySelector(`[data-k="${k}"]`)?.value ?? '';
+    return { item:get('item').trim(), descripcion:get('descripcion').trim(), cantidad:Number(get('cantidad')||0), precio:Number(get('precio')||0) };
+  }).filter(r=>r.item && r.cantidad >= 0);
+}
+function detalleText(){ return rows().map(r => `${r.item} | ${r.cantidad} | ${r.precio} | ${r.descripcion}`).join('\n'); }
+function issuePayload(){
+  return {
+    type: base.scope === 'mercado' ? 'correccion_venta_mkt' : 'correccion_venta',
+    fecha: base.fecha || '',
+    txn_id: base.txn_id || '',
+    issue_ref: base.issue || '',
+    accion: document.getElementById('accion').value,
+    metodo_pago: document.getElementById('metodo').value,
+    razon: document.getElementById('razon').value.trim(),
+    detalle: detalleText()
+  };
+}
+async function enviar(openOnly=false){
+  if(!base.txn_id && !base.issue){ alert('Falta identificar la venta original.'); return; }
+  if(document.getElementById('accion').value === 'ajustar' && !rows().length){ alert('Agrega al menos un renglón válido.'); return; }
+  const payload = issuePayload();
+  if(openOnly){
+    const txt = `type: ${payload.type}\nfecha: ${payload.fecha}\ntxn_id: ${payload.txn_id}\nissue_ref: ${payload.issue_ref}\naccion: ${payload.accion}\nmetodo_pago: ${payload.metodo_pago}\nrazon:\n${payload.razon}\ndetalle:\n${payload.detalle}`;
+    const title = encodeURIComponent(`Corrección venta ${base.txn_id || base.issue}`);
+    const body = encodeURIComponent(txt);
+    const repo = `${APP_CONFIG.ORG || 'OswaldoCasillas'}/${APP_CONFIG.REPO || 'Ventas'}`;
+    location.href = `https://github.com/${repo}/issues/new?title=${title}&body=${body}`;
+    return;
+  }
+  const resp = await fetch(API_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+  if(!resp.ok){
+    let msg = resp.statusText;
+    try{ const e = await resp.json(); msg = e.error || JSON.stringify(e); }catch(_){}
+    alert(`No se pudo crear la corrección: ${msg}`);
+    return;
+  }
+  const data = await resp.json().catch(()=>({}));
+  alert(`Corrección creada${data.number ? ` (#${data.number})` : ''}.`);
+}
+document.getElementById('scope').value = base.scope === 'mercado' ? 'Mercado' : 'Normal';
+document.getElementById('fecha').value = base.fecha || '';
+document.getElementById('txn').value = base.txn_id || '';
+document.getElementById('issue').value = base.issue || '';
+(base.items || []).forEach(addRow);
+if(!(base.items || []).length) addRow({});
+document.getElementById('agregarFila').onclick = ()=>addRow({});
+document.getElementById('enviar').onclick = ()=>enviar(false).catch(()=>alert('Error enviando corrección'));
+document.getElementById('abrirIssue').onclick = ()=>enviar(true);
+</script>
 </body>
 </html>
