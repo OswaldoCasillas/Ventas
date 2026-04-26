@@ -466,3 +466,5 @@ txn-issue-328,2026-04-25,PALETA-MINI-MINI-AGUA,1,6.00,6.00,328,efectivo,328,PALE
 txn-issue-330,2026-04-25,BEBIDA-CHAMOYADA,1,60.00,60.00,330,efectivo,330,BEBIDA Chamoyada,activa,,
 txn-issue-330,2026-04-25,HELADO-CLASICO-SENCILLO,1,35.00,35.00,330,efectivo,330,Helado Clasico Sencillo,activa,,
 txn-issue-330,2026-04-25,HELADO-GOURMET-SENCILLO,1,40.00,40.00,330,efectivo,330,Helado Gourmet Sencillo,activa,,
+txn-issue-331,2026-04-25,PALETA-AGUA-SANDIA,1,25.00,25.00,331,efectivo,331,PALETA AGUA Sandia,activa,,
+txn-issue-331,2026-04-25,HELADO-CLASICO-SENCILLO,2,35.00,70.00,331,efectivo,331,Helado Clasico Sencillo,activa,,
