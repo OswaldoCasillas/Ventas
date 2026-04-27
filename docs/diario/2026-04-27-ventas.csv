@@ -2,3 +2,6 @@ txn_id,fecha,item,cantidad,precio_unit,importe,issue,metodo_pago,source_id,descr
 txn-issue-357,2026-04-27,PALETA-AGUA-GUAYABA,1,25.0,25.0,357,efectivo,357,PALETA AGUA Guayaba,activa,,
 txn-issue-357,2026-04-27,PALETA-AGUA-UVA,1,25.0,25.0,357,efectivo,357,PALETA AGUA Uva,activa,,
 txn-issue-357,2026-04-27,PALETA-CREMA-PAY-DE-LIMON,1,35.0,35.0,357,efectivo,357,PALETA CREMA Pay de Limon,activa,,
+txn-issue-358,2026-04-27,PALETA-AGUA-GUAYABA,1,25.0,25.0,358,efectivo,358,PALETA AGUA Guayaba,activa,,
+txn-issue-358,2026-04-27,PALETA-AGUA-PREMIUM-MANGO-CHAMOY,1,30.0,30.0,358,efectivo,358,PALETA AGUA PREMIUM Mango-Chamoy,activa,,
+txn-issue-358,2026-04-27,PALETA-AGUA-PREMIUM-PICAPANDA,1,30.0,30.0,358,efectivo,358,PALETA AGUA PREMIUM Picapanda,activa,,
