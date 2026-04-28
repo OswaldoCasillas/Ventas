@@ -86,3 +86,4 @@ issue_number,event_hash,payload_type,fecha,status
 397,29b00cb341f5ff81da5ed3e2fe2c35e75e96903e,venta,2026-04-28,ok
 398,a2351011a72e06091f9f6aaadb3e02d1e82b361c,venta,2026-04-28,ok
 400,bf76fd427341fb5a6f4e78462d8a70cdf023d484,venta,2026-04-28,ok
+401,76fe88484fc57e33ee735293bec5c4ee8a7842f8,venta,2026-04-28,ok
