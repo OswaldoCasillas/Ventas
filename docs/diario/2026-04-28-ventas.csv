@@ -1,0 +1,2 @@
+txn_id,fecha,item,cantidad,precio_unit,importe,issue,metodo_pago,source_id,descripcion,status,correction_ref,notas
+txn-issue-382,2026-04-28,AGUA-FRESCA-GRANDE,3,35.0,105.0,382,efectivo,382,AGUA FRESCA Grande,activa,,
