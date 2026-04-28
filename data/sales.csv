@@ -587,3 +587,6 @@ txn-issue-404,2026-04-28,PALETAS-PERRO,1,30.00,30.00,404,efectivo,404,Paletas pa
 txn-issue-404,2026-04-28,BEBIDA-CHAMOYADA-PEQUENA,1,40.00,40.00,404,efectivo,404,BEBIDA Chamoyada Pequeña,activa,,
 txn-issue-405,2026-04-28,PALETA-AGUA-LIMON,1,25.00,25.00,405,efectivo,405,PALETA AGUA Limon,activa,,
 txn-issue-407,2026-04-28,HELADO-CLASICO-SENCILLO,1,35.00,35.00,407,efectivo,407,Helado Clasico Sencillo,activa,,
+txn-issue-409,2026-04-28,PALETA-AGUA-LIMON,1,25.00,25.00,409,efectivo,409,PALETA AGUA Limon,activa,,
+txn-issue-409,2026-04-28,PALETA-AGUA-MANDARINA,1,25.00,25.00,409,efectivo,409,PALETA AGUA Mandarina,activa,,
+txn-issue-409,2026-04-28,PALETA-AGUA-SANDIA,1,25.00,25.00,409,efectivo,409,PALETA AGUA Sandia,activa,,
